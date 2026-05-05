@@ -978,6 +978,37 @@
   });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Usamos 'supabase' a secas, que es como lo carga la librería de arriba
+  const supabaseUrl = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
+  const supabaseKey = 'sb_publishable_UszbWvU6PAHV7NC6Dn51og_NQoGp...'; // <--- PEGA AQUÍ TU LLAVE REAL de la imagen image_cd4376.png
+  
+  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  const form = document.getElementById('form-inventario');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const nombre = document.getElementById('nombre').value;
+    const marca = document.getElementById('marca').value;
+    const precio = document.getElementById('precio').value;
+
+    const { data, error } = await _supabase
+      .from('INVENTARIO') 
+      .insert([{ nombre_equipo: nombre, marca: marca, precio: parseFloat(precio) }]);
+
+    if (error) {
+      alert("Error al guardar: " + error.message);
+      console.log(error);
+    } else {
+      alert("¡Equipo registrado con éxito en PROTEC!");
+      form.reset();
+    }
+  });
+</script>
+  
 <script>
   // Navbar scroll
   window.addEventListener('scroll', () => {
