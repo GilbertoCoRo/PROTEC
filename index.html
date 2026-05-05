@@ -935,7 +935,48 @@
       </div>
     </div>
   </div>
+  <section id="crud-admin" style="padding: 50px; background: #0a192f; color: white;">
+  <h3>Panel de Inventario PROTEC</h3>
+  <form id="form-inventario" style="display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
+    <input type="text" id="nombre" placeholder="Nombre del Equipo" required style="padding: 10px;">
+    <input type="text" id="marca" placeholder="Marca (Hikvision, etc.)" style="padding: 10px;">
+    <input type="number" id="precio" placeholder="Precio" style="padding: 10px;">
+    <button type="submit" style="background: #00d1a3; color: black; padding: 10px; cursor: pointer; border: none; font-weight: bold;">
+      Guardar en Inventario
+    </button>
+  </form>
+</section>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Vercel inyecta estas variables automáticamente si usas un framework, 
+  // pero para HTML puro, usaremos las llaves directamente por ahora:
+  const supabaseUrl = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
+  const supabaseKey = 'TU_LLAVE_PUBLISHABLE_DE_SUPABASE'; // Copia la de image_cd4376.png
+  const _supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+
+  const form = document.getElementById('form-inventario');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const nombre = document.getElementById('nombre').value;
+    const marca = document.getElementById('marca').value;
+    const precio = document.getElementById('precio').value;
+
+    const { data, error } = await _supabase
+      .from('INVENTARIO') // Debe coincidir con el nombre en image_3b3636.png
+      .insert([{ nombre_equipo: nombre, marca: marca, precio: parseFloat(precio) }]);
+
+    if (error) {
+      alert("Error al guardar: " + error.message);
+    } else {
+      alert("¡Equipo registrado con éxito!");
+      form.reset();
+    }
+  });
+</script>
 
 <script>
   // Navbar scroll
