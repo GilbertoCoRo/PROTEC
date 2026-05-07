@@ -63,6 +63,9 @@
       <a href="#desarrollo" class="nav-link text-gray-300 py-2 border-b border-cyan-900/30" onclick="toggleMenu()">Desarrollo Web</a>
       <a href="#mantenimiento" class="nav-link text-gray-300 py-2" onclick="toggleMenu()">Mantenimiento</a>
       <button onclick="openModal();toggleMenu();" class="cta-btn w-full px-5 py-3 text-sm text-cyan-400 rounded-lg mt-2"><span>Cotizar Ahora</span></button>
+      <button id="btn-admin-control" onclick="abrirLoginOMenu()" class="bg-cyan-500 text-black px-6 py-2 rounded-xl font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(0,229,255,0.4)]">
+  ADMIN
+</button>
     </div>
   </div>
 </nav>
@@ -928,6 +931,59 @@ loadProducts();
       alert("¡Equipo registrado con éxito en PROTEC!");
       form.reset();
     }
+    // --- LÓGICA DE LOGIN ---
+
+// Función para decidir si abrir el login o cerrar sesión
+async function abrirLoginOMenu() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    
+    if (session) {
+        // Si ya hay sesión, preguntar si quiere salir
+        if (confirm("¿Deseas cerrar la sesión administrativa?")) {
+            await _supabase.auth.signOut();
+            location.reload();
+        }
+    } else {
+        // Si no hay sesión, mostrar el modal
+        document.getElementById('modal-login').classList.remove('hidden');
+    }
+}
+
+// Manejar el envío del formulario
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const errorMsg = document.getElementById('login-error');
+
+    const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+    });
+
+    if (error) {
+        errorMsg.innerText = "Error: Credenciales incorrectas";
+        errorMsg.classList.remove('hidden');
+    } else {
+        alert("¡Acceso concedido, Gilberto!");
+        location.reload(); // Recargamos para que el sistema reconozca al usuario
+    }
+});
+
+// Comprobar sesión al cargar la página
+async function checkUser() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    const btn = document.getElementById('btn-admin-control');
+    
+    if (session) {
+        btn.innerText = "LOGOUT";
+        btn.classList.replace('bg-cyan-500', 'bg-red-500');
+        // Aquí podrías mostrar el formulario CRUD que tenías antes
+        console.log("Admin conectado:", session.user.email);
+    }
+}
+
+checkUser();
   });
 </script>
   
@@ -948,5 +1004,28 @@ loadProducts();
     a.addEventListener('click', () => document.getElementById('mobileMenu').classList.remove('open'));
   });
 </script>
+<div id="modal-login" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
+    <div class="glass-panel max-w-md w-full p-10 rounded-3xl border border-cyan-500/30 relative">
+        <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="absolute top-6 right-6 text-gray-500 hover:text-white">✕</button>
+        
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-cyan-500 rounded-2xl mx-auto flex items-center justify-center text-black text-3xl font-black mb-4 shadow-[0_0_20px_#00E5FF]">P</div>
+            <h3 class="text-2xl font-['Orbitron'] text-white">ACCESO <span class="text-cyan-400">ADMIN</span></h3>
+        </div>
+
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label class="block text-xs text-cyan-400 uppercase tracking-widest mb-2">Correo Electrónico</label>
+                <input type="email" id="login-email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition" placeholder="admin@protec.ink" required>
+            </div>
+            <div>
+                <label class="block text-xs text-cyan-400 uppercase tracking-widest mb-2">Contraseña</label>
+                <input type="password" id="login-password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="w-full bg-cyan-500 text-black font-black py-4 rounded-xl hover:shadow-[0_0_20px_#00E5FF] transition-all">ENTRAR AL SISTEMA</button>
+            <p id="login-error" class="text-red-500 text-xs text-center hidden"></p>
+        </form>
+    </div>
+</div>
 </body>
 </html>
