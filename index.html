@@ -1,988 +1,1205 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PROTEC — Seguridad & Sistemas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
-  
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PROTEC — Seguridad & Sistemas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg-deep: #000000;
+    --bg-main: #000000;
+    --accent-cyan: #00E5FF;
+    --accent-blue: #00BFFF;
+    --accent-glow: rgba(0,229,255,0.15);
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(0,229,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: #E0F7FA;
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  #cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent-cyan); border-radius: 50%;
+    pointer-events: none; z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    position: fixed; width: 40px; height: 40px;
+    border: 1px solid rgba(0,229,255,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+  }
+  body:hover #cursor { opacity: 1; }
+
+  /* Grid Background */
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+  }
+
+  /* Glow Text */
+  .glow-text {
+    text-shadow: 0 0 20px rgba(0,229,255,0.6), 0 0 40px rgba(0,229,255,0.3);
+  }
+  .glow-border {
+    box-shadow: 0 0 20px rgba(0,229,255,0.2), inset 0 0 20px rgba(0,229,255,0.05);
+  }
+
+  /* Navbar */
+  #navbar {
+    transition: all 0.4s ease;
+  }
+  #navbar.scrolled {
+    background: rgba(2,12,27,0.9) !important;
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(0,229,255,0.1);
+    box-shadow: 0 4px 30px rgba(0,229,255,0.05);
+  }
+
+  /* Hero Gradient Text */
+  .hero-gradient {
+    background: linear-gradient(135deg, #ffffff 0%, #00E5FF 40%, #00BFFF 70%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: gradientShift 4s ease infinite;
+  }
+  @keyframes gradientShift {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+  }
+  @keyframes floatSlow {
+    0%,100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
+  /* Pulse glow */
+  @keyframes pulseGlow {
+    0%,100% { box-shadow: 0 0 20px rgba(0,229,255,0.3), 0 0 40px rgba(0,229,255,0.1); }
+    50% { box-shadow: 0 0 40px rgba(0,229,255,0.6), 0 0 80px rgba(0,229,255,0.2); }
+  }
+
+  /* Scan line */
+  @keyframes scanLine {
+    0% { top: -100%; }
+    100% { top: 200%; }
+  }
+
+  /* CTA Button */
+  .cta-btn {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, rgba(0,229,255,0.1), rgba(0,191,255,0.2));
+    border: 1px solid var(--accent-cyan);
+    transition: all 0.3s;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.1em;
+  }
+  .cta-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .cta-btn:hover::before { opacity: 1; }
+  .cta-btn:hover { color: #020C1B; transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,229,255,0.4); }
+  .cta-btn:active { transform: translateY(0) scale(0.97); }
+  .cta-btn span { position: relative; z-index: 1; }
+  .cta-btn::after {
+    content: ''; position: absolute;
+    top: -50%; left: -60%; width: 30%; height: 200%;
+    background: rgba(255,255,255,0.15);
+    transform: skewX(-20deg);
+    transition: left 0.5s;
+  }
+  .cta-btn:hover::after { left: 130%; }
+
+  /* Service Cards 3D */
+  .service-card {
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+  }
+  .service-card:hover {
+    box-shadow: 0 25px 60px rgba(0,229,255,0.2), 0 0 0 1px rgba(0,229,255,0.3);
+  }
+
+  /* Product Card 3D */
+  .product-card {
+    transform-style: preserve-3d;
+    transition: box-shadow 0.3s ease;
+    will-change: transform;
+  }
+  .product-card .card-inner {
+    transition: transform 0.1s ease;
+    transform-style: preserve-3d;
+  }
+  .product-card:hover {
+    box-shadow: 0 30px 80px rgba(0,229,255,0.25), 0 0 0 1px rgba(0,229,255,0.4);
+  }
+  .product-card .card-image {
+    transition: transform 0.1s ease;
+    transform: translateZ(10px);
+  }
+
+  /* Skeleton */
+  .skeleton {
+    background: linear-gradient(90deg, rgba(0,229,255,0.05) 25%, rgba(0,229,255,0.1) 50%, rgba(0,229,255,0.05) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* Modal */
+  #modal {
+    transition: opacity 0.4s ease, visibility 0.4s;
+  }
+  #modal.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  #modal:not(.hidden) { opacity: 1; visibility: visible; }
+  #modal-content {
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
+  }
+  #modal.hidden #modal-content { transform: scale(0.85) translateY(20px); opacity: 0; }
+  #modal:not(.hidden) #modal-content { transform: scale(1) translateY(0); opacity: 1; }
+
+  /* Nav links */
+  .nav-link {
+    position: relative; font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; letter-spacing: 0.05em;
+    transition: color 0.3s;
+  }
+  .nav-link::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent-cyan);
+    box-shadow: 0 0 8px var(--accent-cyan);
+    transition: width 0.3s;
+  }
+  .nav-link:hover { color: var(--accent-cyan); }
+  .nav-link:hover::after { width: 100%; }
+
+  /* Wave animation */
+  @keyframes wave {
+    0% { d: path("M0,40 Q50,10 100,40 Q150,70 200,40 Q250,10 300,40 L300,80 L0,80 Z"); }
+    50% { d: path("M0,40 Q50,70 100,40 Q150,10 200,40 Q250,70 300,40 L300,80 L0,80 Z"); }
+    100% { d: path("M0,40 Q50,10 100,40 Q150,70 200,40 Q250,10 300,40 L300,80 L0,80 Z"); }
+  }
+
+  /* Hamburger */
+  .hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--accent-cyan);
+    transition: all 0.3s;
+    margin: 5px 0;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Neon divider */
+  .neon-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+    box-shadow: 0 0 10px rgba(0,229,255,0.5);
+  }
+
+  /* Orbit animation */
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+  }
+
+  /* Typing cursor blink */
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+  .type-cursor { animation: blink 0.7s infinite; }
+
+  /* Input focus */
+  .input-field {
+    background: rgba(0,229,255,0.03);
+    border: 1px solid rgba(0,229,255,0.15);
+    transition: all 0.3s;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .input-field:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.1), 0 0 20px rgba(0,229,255,0.1);
+    background: rgba(0,229,255,0.05);
+  }
+
+  /* Stats counter */
+  .stat-number {
+    font-family: 'Orbitron', monospace;
+    background: linear-gradient(135deg, #ffffff, var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  @media (max-width: 768px) {
+    body { cursor: auto; }
+    #cursor, #cursor-ring { display: none; }
+    .service-card:hover { transform: none !important; }
+  }
+</style>
 </head>
 <body>
-<style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --navy: #070e1c;
-      --navy-2: #0d1a31;
-      --navy-3: #122040;
-      --sky: #3cc8f5;
-      --sky-2: #0ea5e9;
-      --sky-glow: rgba(60,200,245,0.18);
-      --sky-faint: rgba(60,200,245,0.07);
-      --silver: #e8eef6;
-      --silver-2: #f4f7fb;
-      --text-body: #667084;
-      --text-dark: #0d1a31;
-      --white: #ffffff;
-      --radius: 1.1rem;
-      --radius-sm: 0.6rem;
-    }
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
 
-    html { scroll-behavior: smooth; font-size: 16px; }
+<!-- Grid Background -->
+<div class="grid-bg"></div>
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--white);
-      color: var(--text-dark);
-      line-height: 1.65;
-      overflow-x: hidden;
-    }
+<!-- Ambient orbs -->
+<div style="position:fixed;top:10%;left:5%;width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,0.06) 0%,transparent 70%);pointer-events:none;z-index:0;animation:floatSlow 8s ease-in-out infinite;"></div>
+<div style="position:fixed;bottom:20%;right:5%;width:350px;height:350px;background:radial-gradient(circle,rgba(0,191,255,0.05) 0%,transparent 70%);pointer-events:none;z-index:0;animation:floatSlow 10s ease-in-out infinite reverse;"></div>
 
-    /* ─── TYPOGRAPHY ─── */
-    h1,h2,h3,h4 { font-family: 'Syne', sans-serif; line-height: 1.15; }
-
-    /* ─── UTILS ─── */
-    .container { max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
-    .section { padding: 6rem 0; }
-    .tag {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--sky-2); background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2);
-      padding: 0.35rem 0.85rem; border-radius: 99px;
-    }
-    .tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--sky); display:block; }
-    .divider { width: 48px; height: 3px; border-radius: 99px; background: linear-gradient(90deg, var(--sky), var(--sky-2)); margin: 1.1rem 0 0; }
-    .divider.center { margin: 1.1rem auto 0; }
-
-    /* ─── NAVBAR ─── */
-    #nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      transition: background 0.35s, box-shadow 0.35s, backdrop-filter 0.35s;
-    }
-    #nav.scrolled {
-      background: rgba(7,14,28,0.92);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 2px 32px rgba(0,0,0,0.35);
-    }
-    .nav-inner {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.25rem 1.5rem; max-width: 1160px; margin: 0 auto;
-    }
-    .logo {
-      display: flex; align-items: center; gap: 0.65rem; text-decoration: none;
-    }
-    .logo-icon {
-      width: 38px; height: 38px; border-radius: 9px; background: var(--sky);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 18px rgba(60,200,245,0.45);
-    }
-    .logo-text { font-family:'Syne',sans-serif; font-weight:800; font-size:1.2rem; color:#fff; letter-spacing:0.07em; }
-    .nav-links { display:flex; align-items:center; gap:2rem; }
-    .nav-links a {
-      font-size:0.875rem; font-weight:500; color:rgba(255,255,255,0.65); text-decoration:none;
-      transition:color 0.2s; position:relative; padding-bottom: 2px;
-    }
-    .nav-links a::after {
-      content:''; position:absolute; bottom:0; left:0; width:0; height:2px;
-      background: var(--sky); border-radius:99px; transition: width 0.25s ease;
-    }
-    .nav-links a:hover { color:#fff; }
-    .nav-links a:hover::after { width:100%; }
-    .nav-cta {
-      font-size:0.85rem; font-weight:600; background:var(--sky); color:var(--navy);
-      padding:0.55rem 1.3rem; border-radius:8px; text-decoration:none;
-      transition: box-shadow 0.25s, transform 0.25s;
-      box-shadow: 0 0 16px rgba(60,200,245,0.4);
-    }
-    .nav-cta:hover { box-shadow:0 0 28px rgba(60,200,245,0.6); transform: translateY(-1px); }
-    .hamburger { display:none; background:none; border:none; cursor:pointer; color:#fff; }
-    .mobile-menu {
-      display:none; position:fixed; inset:0; z-index:200;
-      background:rgba(7,14,28,0.97); backdrop-filter:blur(20px);
-      flex-direction:column; align-items:center; justify-content:center; gap:2.5rem;
-    }
-    .mobile-menu.open { display:flex; }
-    .mobile-menu a {
-      font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:700; color:#fff;
-      text-decoration:none; transition:color 0.2s;
-    }
-    .mobile-menu a:hover { color:var(--sky); }
-    .mobile-close {
-      position:absolute; top:1.5rem; right:1.5rem; background:none; border:none;
-      color:#fff; cursor:pointer; font-size:1.5rem;
-    }
-
-    /* ─── HERO ─── */
-    .hero {
-      min-height: 100vh;
-      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-2) 45%, #0b2550 100%);
-      display: flex; align-items: center; position: relative; overflow: hidden;
-      padding-top: 90px;
-    }
-    .hero-grid {
-      position:absolute; inset:0; pointer-events:none;
-      background-image:
-        linear-gradient(rgba(60,200,245,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(60,200,245,0.04) 1px, transparent 1px);
-      background-size: 64px 64px;
-    }
-    .hero-glow {
-      position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px);
-    }
-    .hero-glow-1 { width:600px; height:600px; background:rgba(60,200,245,0.09); top:-100px; right:-100px; }
-    .hero-glow-2 { width:400px; height:400px; background:rgba(14,165,233,0.07); bottom:-50px; left:-80px; }
-
-    .hero-inner {
-      position:relative; z-index:5; width:100%; display:grid;
-      grid-template-columns:1fr 1fr; gap:4rem; align-items:center;
-    }
-    .hero-left {}
-    .hero-eyebrow { margin-bottom:1.5rem; }
-    .hero-title {
-      font-size: clamp(2.4rem, 5vw, 3.8rem);
-      font-weight: 800; color: #fff; margin-bottom: 1.4rem;
-      line-height: 1.1;
-    }
-    .hero-title span { color: var(--sky); }
-    .hero-sub { color: rgba(255,255,255,0.55); font-size:1.05rem; max-width:30rem; margin-bottom:2.5rem; }
-    .hero-btns { display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:3.5rem; }
-    .btn-primary {
-      display:inline-flex; align-items:center; gap:0.5rem;
-      background:var(--sky); color:var(--navy); font-weight:700; font-size:0.9rem;
-      padding:0.8rem 1.8rem; border-radius:10px; text-decoration:none;
-      box-shadow:0 0 22px rgba(60,200,245,0.4); transition:all 0.25s;
-    }
-    .btn-primary:hover { box-shadow:0 0 36px rgba(60,200,245,0.65); transform:translateY(-2px); }
-    .btn-ghost {
-      display:inline-flex; align-items:center; gap:0.5rem;
-      border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.8);
-      font-weight:500; font-size:0.9rem; padding:0.8rem 1.8rem; border-radius:10px;
-      text-decoration:none; transition:all 0.25s;
-    }
-    .btn-ghost:hover { border-color:rgba(60,200,245,0.5); color:#fff; }
-    .hero-stats { display:flex; gap:2.5rem; }
-    .stat-val { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:#fff; }
-    .stat-label { font-size:0.8rem; color:rgba(255,255,255,0.45); margin-top:0.1rem; }
-
-    /* Hero visual */
-    .hero-right { display:flex; justify-content:center; align-items:center; }
-    .hero-visual {
-      position:relative; width:400px; height:400px;
-    }
-    .shield-wrap {
-      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    }
-    .shield-ring {
-      position:absolute; border-radius:50%; border: 1px solid rgba(60,200,245,0.12);
-      animation: pulse-ring 4s ease-in-out infinite;
-    }
-    .ring-1 { width:320px; height:320px; animation-delay:0s; }
-    .ring-2 { width:240px; height:240px; animation-delay:0.8s; border-color:rgba(60,200,245,0.18); }
-    .ring-3 { width:160px; height:160px; animation-delay:1.6s; border-color:rgba(60,200,245,0.28); }
-    @keyframes pulse-ring {
-      0%,100% { transform:scale(1); opacity:0.6; }
-      50% { transform:scale(1.05); opacity:1; }
-    }
-    .shield-center {
-      width:90px; height:90px; border-radius:20px; background:var(--sky);
-      display:flex; align-items:center; justify-content:center;
-      box-shadow: 0 0 50px rgba(60,200,245,0.5), 0 0 100px rgba(60,200,245,0.2);
-      position:relative; z-index:2;
-    }
-    .float-card {
-      position:absolute; background:rgba(13,26,49,0.85); border:1px solid rgba(60,200,245,0.2);
-      backdrop-filter:blur(12px); border-radius:12px; padding:0.75rem 1rem;
-      display:flex; align-items:center; gap:0.75rem; white-space:nowrap;
-    }
-    .fc-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .fc-title { font-size:0.78rem; font-weight:600; color:#fff; }
-    .fc-sub { font-size:0.68rem; color:rgba(255,255,255,0.45); }
-    .fc-1 { top:30px; right:-20px; animation: float-card 5s ease-in-out infinite; }
-    .fc-2 { bottom:50px; left:-30px; animation: float-card 6s ease-in-out infinite 1.5s; }
-    .fc-3 { top:160px; right:-50px; animation: float-card 4.5s ease-in-out infinite 0.75s; }
-    @keyframes float-card { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-
-    /* ─── SECTION HEADER ─── */
-    .section-header { text-align:center; margin-bottom:4rem; }
-    .section-header h2 { font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:800; margin-top:0.75rem; }
-    .section-header p { color:var(--text-body); max-width:44rem; margin:1rem auto 0; font-size:1rem; }
-
-    /* ─── SERVICES GRID ─── */
-    .services-grid {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem;
-    }
-    .svc-card {
-      background:#fff; border:1px solid #e8eef6; border-radius:var(--radius);
-      padding:2rem 1.75rem; transition:all 0.3s ease; position:relative; overflow:hidden;
-    }
-    .svc-card::before {
-      content:''; position:absolute; inset:0; border-radius:var(--radius);
-      background:linear-gradient(135deg, rgba(60,200,245,0.04), transparent 60%);
-      opacity:0; transition:opacity 0.3s;
-    }
-    .svc-card:hover { transform:translateY(-6px); box-shadow:0 20px 48px rgba(12,32,80,0.12); border-color:rgba(60,200,245,0.3); }
-    .svc-card:hover::before { opacity:1; }
-    .svc-icon {
-      width:52px; height:52px; border-radius:12px;
-      background:rgba(60,200,245,0.1); display:flex; align-items:center; justify-content:center;
-      margin-bottom:1.25rem; transition:background 0.3s;
-    }
-    .svc-card:hover .svc-icon { background:rgba(60,200,245,0.18); }
-    .svc-card h3 { font-size:1.05rem; font-weight:700; margin-bottom:0.5rem; }
-    .svc-card p { font-size:0.875rem; color:var(--text-body); }
-    .svc-card .arrow {
-      display:inline-flex; align-items:center; gap:0.35rem; font-size:0.78rem; font-weight:600;
-      color:var(--sky-2); margin-top:1.25rem; text-decoration:none; transition:gap 0.2s;
-    }
-    .svc-card:hover .arrow { gap:0.6rem; }
-
-    /* ─── TWO COL ─── */
-    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
-    .two-col.reverse .col-text { order:2; }
-    .two-col.reverse .col-visual { order:1; }
-
-    .col-text h2 { font-size:clamp(1.8rem,3vw,2.4rem); font-weight:800; margin-top:0.75rem; margin-bottom:1.25rem; }
-    .col-text p { color:var(--text-body); margin-bottom:2rem; }
-    .feature-list { display:flex; flex-direction:column; gap:1rem; }
-    .feature-item { display:flex; align-items:flex-start; gap:0.85rem; }
-    .feature-dot {
-      width:32px; height:32px; border-radius:8px; background:rgba(60,200,245,0.1);
-      display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px;
-    }
-    .feature-item h4 { font-size:0.92rem; font-weight:600; }
-    .feature-item p { font-size:0.83rem; color:var(--text-body); margin:0; }
-
-    /* ─── VISUAL PANELS ─── */
-    .col-visual { display:flex; justify-content:center; align-items:center; }
-    .visual-panel {
-      width:100%; max-width:420px; border-radius:1.5rem;
-      background:linear-gradient(145deg,var(--navy-2),var(--navy-3));
-      border:1px solid rgba(60,200,245,0.15); padding:2rem;
-      box-shadow:0 32px 80px rgba(7,14,28,0.18), 0 0 0 1px rgba(60,200,245,0.06);
-      position:relative; overflow:hidden;
-    }
-    .visual-panel::before {
-      content:''; position:absolute; top:-60px; right:-60px;
-      width:200px; height:200px; border-radius:50%;
-      background:radial-gradient(circle, rgba(60,200,245,0.12), transparent 70%);
-      pointer-events:none;
-    }
-
-    /* CCTV Panel */
-    .cctv-screen {
-      background:var(--navy); border-radius:10px; border:1px solid rgba(60,200,245,0.2);
-      overflow:hidden; margin-bottom:1rem;
-    }
-    .cctv-header {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0.6rem 0.9rem; background:rgba(60,200,245,0.07); border-bottom:1px solid rgba(60,200,245,0.1);
-    }
-    .cctv-header span { font-size:0.72rem; color:var(--sky); font-family:'DM Sans',sans-serif; font-weight:500; }
-    .rec-dot { width:7px; height:7px; border-radius:50%; background:#ef4444; animation:blink 1.5s ease-in-out infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    .cctv-feeds { display:grid; grid-template-columns:1fr 1fr; gap:3px; padding:6px; }
-    .cam-feed {
-      aspect-ratio:4/3; border-radius:4px; background:rgba(255,255,255,0.04);
-      display:flex; flex-direction:column; align-items:flex-end; justify-content:flex-end;
-      padding:4px; font-size:0.55rem; color:rgba(60,200,245,0.5); font-family:monospace;
-      border:1px solid rgba(60,200,245,0.08); overflow:hidden; position:relative;
-    }
-    .cam-feed svg { position:absolute; inset:0; width:100%; height:100%; opacity:0.25; }
-    .cctv-stats { display:flex; gap:0.75rem; }
-    .cstat {
-      flex:1; background:rgba(60,200,245,0.06); border:1px solid rgba(60,200,245,0.12);
-      border-radius:8px; padding:0.6rem 0.75rem;
-    }
-    .cstat-val { font-size:0.9rem; font-weight:700; color:#fff; font-family:'Syne',sans-serif; }
-    .cstat-label { font-size:0.65rem; color:rgba(255,255,255,0.4); }
-
-    /* Web Panel */
-    .browser-bar {
-      display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;
-    }
-    .browser-dots { display:flex; gap:4px; }
-    .browser-dots span { width:10px; height:10px; border-radius:50%; }
-    .bd-r { background:#ef4444; } .bd-y { background:#eab308; } .bd-g { background:#22c55e; }
-    .browser-url {
-      flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-      border-radius:6px; padding:0.3rem 0.7rem; font-size:0.7rem; color:rgba(255,255,255,0.4);
-      font-family:monospace;
-    }
-    .web-wireframe { background:rgba(0,0,0,0.2); border-radius:8px; overflow:hidden; }
-    .wf-hero { height:80px; background:linear-gradient(135deg,rgba(60,200,245,0.2),rgba(14,165,233,0.1)); display:flex; align-items:center; justify-content:center; }
-    .wf-hero-text { font-size:0.65rem; color:rgba(255,255,255,0.3); font-family:monospace; }
-    .wf-content { padding:0.75rem; display:flex; gap:0.5rem; }
-    .wf-col { flex:1; display:flex; flex-direction:column; gap:0.4rem; }
-    .wf-line { height:7px; border-radius:3px; background:rgba(255,255,255,0.08); }
-    .wf-line.sky { background:rgba(60,200,245,0.25); }
-    .wf-img { height:48px; border-radius:6px; background:rgba(60,200,245,0.1); border:1px solid rgba(60,200,245,0.15); }
-    .wf-btn { height:24px; border-radius:5px; background:rgba(60,200,245,0.3); width:60%; }
-    .web-metrics { display:flex; gap:0.75rem; margin-top:0.75rem; }
-    .wmetric {
-      flex:1; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
-      border-radius:8px; padding:0.6rem; text-align:center;
-    }
-    .wmetric-val { font-size:0.85rem; font-weight:700; color:var(--sky); font-family:'Syne',sans-serif; }
-    .wmetric-label { font-size:0.62rem; color:rgba(255,255,255,0.35); }
-
-    /* POS Panel */
-    .pos-screen {
-      background:var(--navy); border-radius:10px; border:1px solid rgba(60,200,245,0.2); overflow:hidden;
-    }
-    .pos-title-bar {
-      padding:0.6rem 0.9rem; background:rgba(60,200,245,0.08); border-bottom:1px solid rgba(60,200,245,0.12);
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .pos-title-bar span { font-size:0.72rem; color:var(--sky); font-weight:600; }
-    .pos-items { padding:0.75rem; display:flex; flex-direction:column; gap:0.4rem; }
-    .pos-item {
-      display:flex; justify-content:space-between; align-items:center;
-      padding:0.45rem 0.6rem; border-radius:6px; background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.06);
-    }
-    .pos-item-name { font-size:0.72rem; color:rgba(255,255,255,0.7); }
-    .pos-item-price { font-size:0.72rem; color:var(--sky); font-weight:600; font-family:monospace; }
-    .pos-total {
-      margin:0 0.75rem 0.75rem; padding:0.7rem 0.75rem; border-radius:8px;
-      background:rgba(60,200,245,0.12); border:1px solid rgba(60,200,245,0.2);
-      display:flex; justify-content:space-between; align-items:center;
-    }
-    .pos-total-label { font-size:0.78rem; font-weight:600; color:#fff; }
-    .pos-total-val { font-size:1rem; font-weight:800; color:var(--sky); font-family:'Syne',sans-serif; }
-    .pos-btn {
-      margin:0 0.75rem 0.75rem; background:var(--sky); border-radius:8px;
-      display:flex; align-items:center; justify-content:center; padding:0.6rem;
-      font-size:0.8rem; font-weight:700; color:var(--navy); font-family:'Syne',sans-serif;
-    }
-
-    /* Maint Panel */
-    .rack { background:rgba(0,0,0,0.25); border-radius:8px; overflow:hidden; padding:0.5rem; display:flex; flex-direction:column; gap:4px; }
-    .rack-unit {
-      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07);
-      border-radius:5px; padding:0.4rem 0.6rem; display:flex; align-items:center; gap:0.5rem;
-    }
-    .ru-led { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-    .ru-led.green { background:#22c55e; animation:blink 2s ease-in-out infinite; }
-    .ru-led.yellow { background:#eab308; animation:blink 2.5s ease-in-out infinite 0.5s; }
-    .ru-led.off { background:#334155; }
-    .ru-label { font-size:0.65rem; color:rgba(255,255,255,0.4); font-family:monospace; flex:1; }
-    .ru-status { font-size:0.6rem; color:rgba(255,255,255,0.3); }
-    .maint-stats { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.75rem; }
-    .mstat { background:rgba(60,200,245,0.06); border:1px solid rgba(60,200,245,0.12); border-radius:8px; padding:0.7rem; }
-    .mstat-val { font-size:1rem; font-weight:800; color:#fff; font-family:'Syne',sans-serif; }
-    .mstat-label { font-size:0.62rem; color:rgba(255,255,255,0.4); margin-top:1px; }
-
-    /* ─── BRANDS ─── */
-    .brands-row { display:flex; align-items:center; justify-content:center; gap:3rem; flex-wrap:wrap; margin-top:2.5rem; }
-    .brand-badge {
-      font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700;
-      color:#94a3b8; opacity:0.5; letter-spacing:0.05em; transition:all 0.25s;
-      cursor:default;
-    }
-    .brand-badge:hover { opacity:1; color:var(--sky); }
-
-    /* ─── CTA ─── */
-    .cta-section {
-      background:linear-gradient(145deg,var(--navy),var(--navy-3));
-      padding:6rem 0; position:relative; overflow:hidden;
-    }
-    .cta-section .hero-grid { opacity:0.6; }
-    .cta-inner { text-align:center; position:relative; z-index:5; }
-    .cta-inner h2 { font-size:clamp(1.8rem,4vw,3rem); font-weight:800; color:#fff; margin-bottom:1rem; }
-    .cta-inner p { color:rgba(255,255,255,0.5); margin-bottom:2.5rem; font-size:1rem; }
-    .cta-glow {
-      position:absolute; width:500px; height:500px; border-radius:50%;
-      background:radial-gradient(circle, rgba(60,200,245,0.1), transparent 70%);
-      top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;
-    }
-
-    /* ─── FOOTER ─── */
-    footer {
-      background:var(--navy); color:rgba(255,255,255,0.6); padding:4rem 0 2rem;
-      border-top:1px solid rgba(60,200,245,0.08);
-    }
-    .footer-grid {
-      display:grid; grid-template-columns:1.5fr 1fr 1fr 1.2fr; gap:3rem; margin-bottom:3rem;
-    }
-    footer h4 { font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; margin-bottom:1.25rem; letter-spacing:0.05em; text-transform:uppercase; }
-    footer a { color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.875rem; transition:color 0.2s; display:block; margin-bottom:0.6rem; }
-    footer a:hover { color:var(--sky); }
-    .footer-brand p { font-size:0.875rem; line-height:1.7; max-width:22rem; margin-top:0.75rem; }
-    .social-row { display:flex; gap:0.75rem; margin-top:1.25rem; }
-    .social-btn {
-      width:36px; height:36px; border-radius:8px;
-      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-      display:flex; align-items:center; justify-content:center; text-decoration:none;
-      transition:all 0.25s; color:rgba(255,255,255,0.5) !important; margin:0;
-    }
-    .social-btn:hover { background:rgba(60,200,245,0.15); border-color:rgba(60,200,245,0.3); color:var(--sky) !important; }
-    .contact-item { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.85rem; font-size:0.875rem; }
-    .contact-icon { width:28px; height:28px; border-radius:6px; background:rgba(60,200,245,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .footer-bottom {
-      border-top:1px solid rgba(255,255,255,0.07); padding-top:1.75rem;
-      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;
-    }
-    .footer-bottom p { font-size:0.8rem; }
-
-    /* ─── MAP ─── */
-    .map-box {
-      width:100%; border-radius:12px; overflow:hidden;
-      background:rgba(13,26,49,0.6); border:1px solid rgba(60,200,245,0.15);
-      height:140px; position:relative;
-    }
-    .map-box svg { width:100%; height:100%; }
-
-    /* ─── ANIMATIONS ─── */
-    .reveal {
-      opacity:0; transform:translateY(28px);
-      transition:opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal.visible { opacity:1; transform:translateY(0); }
-    .reveal-delay-1 { transition-delay:0.1s; }
-    .reveal-delay-2 { transition-delay:0.2s; }
-    .reveal-delay-3 { transition-delay:0.3s; }
-
-    /* ─── RESPONSIVE ─── */
-    @media(max-width:900px) {
-      .hero-inner { grid-template-columns:1fr; }
-      .hero-right { display:none; }
-      .two-col { grid-template-columns:1fr; gap:3rem; }
-      .two-col.reverse .col-text { order:1; }
-      .two-col.reverse .col-visual { order:2; }
-      .footer-grid { grid-template-columns:1fr 1fr; }
-      .nav-links { display:none; }
-      .hamburger { display:block; }
-    }
-    @media(max-width:600px) {
-      .footer-grid { grid-template-columns:1fr; }
-      .hero-stats { gap:1.5rem; }
-      .section { padding:4rem 0; }
-    }
-
-    /* SVG icons inline */
-    svg.icon { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  </style>
-<!-- ════════════════ NAV ════════════════ -->
-<nav id="nav">
-  <div class="nav-inner">
-    <a href="#inicio" class="logo">
-      <div class="logo-icon">
-        <svg class="icon" style="color:#0d1a31" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+<!-- ====== NAVBAR ====== -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 px-6 py-4" style="background:transparent;">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <div style="width:38px;height:38px;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(0,229,255,0.4);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#020C1B" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       </div>
-      <span class="logo-text">PROTEC</span>
-    </a>
-    <div class="nav-links">
-      <a href="#inicio">Inicio</a>
-      <a href="#seguridad">Seguridad</a>
-      <a href="#web">Web</a>
-      <a href="#pos">POS</a>
-      <a href="#mantenimiento">Mantenimiento</a>
-      <a href="#contacto" class="nav-cta">Cotizar</a>
+      <span style="font-family:'Orbitron',monospace;font-weight:700;font-size:1.2rem;color:#fff;letter-spacing:0.15em;" class="glow-text">PROTEC</span>
     </div>
-    <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')" aria-label="Menú">
-      <svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#inicio" class="nav-link text-gray-300 text-sm">Inicio</a>
+      <a href="#cctv" class="nav-link text-gray-300 text-sm">Seguridad & CCTV</a>
+      <a href="#pos" class="nav-link text-gray-300 text-sm">Sistemas POS</a>
+      <a href="#desarrollo" class="nav-link text-gray-300 text-sm">Desarrollo Web</a>
+      <a href="#mantenimiento" class="nav-link text-gray-300 text-sm">Mantenimiento</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <button onclick="openModal()" class="cta-btn hidden md:flex px-5 py-2 text-sm text-cyan-400 rounded-lg items-center gap-2">
+        <span>Cotizar</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:relative;z-index:1;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <!-- Hamburger -->
+      <button id="hamburger" class="hamburger md:hidden flex flex-col justify-center items-center w-10 h-10" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden hidden mt-4 p-4 glass rounded-xl">
+    <div class="flex flex-col gap-3">
+      <a href="#inicio" class="nav-link text-gray-300 py-2 border-b border-cyan-900/30" onclick="toggleMenu()">Inicio</a>
+      <a href="#cctv" class="nav-link text-gray-300 py-2 border-b border-cyan-900/30" onclick="toggleMenu()">Seguridad & CCTV</a>
+      <a href="#pos" class="nav-link text-gray-300 py-2 border-b border-cyan-900/30" onclick="toggleMenu()">Sistemas POS</a>
+      <a href="#desarrollo" class="nav-link text-gray-300 py-2 border-b border-cyan-900/30" onclick="toggleMenu()">Desarrollo Web</a>
+      <a href="#mantenimiento" class="nav-link text-gray-300 py-2" onclick="toggleMenu()">Mantenimiento</a>
+      <button onclick="openModal();toggleMenu();" class="cta-btn w-full px-5 py-3 text-sm text-cyan-400 rounded-lg mt-2"><span>Cotizar Ahora</span></button>
+    </div>
   </div>
 </nav>
 
-<div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-close" onclick="document.getElementById('mobileMenu').classList.remove('open')" aria-label="Cerrar">
-    <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  </button>
-  <a href="#inicio"  onclick="document.getElementById('mobileMenu').classList.remove('open')">Inicio</a>
-  <a href="#seguridad" onclick="document.getElementById('mobileMenu').classList.remove('open')">Seguridad</a>
-  <a href="#web" onclick="document.getElementById('mobileMenu').classList.remove('open')">Web</a>
-  <a href="#pos" onclick="document.getElementById('mobileMenu').classList.remove('open')">POS</a>
-  <a href="#mantenimiento" onclick="document.getElementById('mobileMenu').classList.remove('open')">Mantenimiento</a>
-  <a href="#contacto" onclick="document.getElementById('mobileMenu').classList.remove('open')">Contacto</a>
-</div>
+<!-- ====== HERO ====== -->
+<section id="inicio" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
 
-<!-- ════════════════ HERO ════════════════ -->
-<section id="inicio" class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow hero-glow-1"></div>
-  <div class="hero-glow hero-glow-2"></div>
-  <div class="container">
-    <div class="hero-inner">
-      <div class="hero-left">
-        <div class="hero-eyebrow"><span class="tag">Soluciones Tecnológicas</span></div>
-        <h1 class="hero-title">Seguridad que <span>protege</span>, sistemas que <span>impulsan</span></h1>
-        <p class="hero-sub">Soluciones integrales en videovigilancia, desarrollo web, sistemas de punto de venta y mantenimiento tecnológico para tu empresa.</p>
-        <div class="hero-btns">
-          <a href="#contacto" class="btn-primary">
-            <svg class="icon" style="width:17px;height:17px" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Cotizar Proyecto
-          </a>
-          <a href="#seguridad" class="btn-ghost">
-            Explorar Servicios
-            <svg class="icon" style="width:16px;height:16px" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-        </div>
-        <div class="hero-stats">
-          <div><div class="stat-val">500+</div><div class="stat-label">Proyectos</div></div>
-          <div><div class="stat-val">10+</div><div class="stat-label">Años</div></div>
-          <div><div class="stat-val">24/7</div><div class="stat-label">Soporte</div></div>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="hero-visual">
-          <div class="shield-wrap">
-            <div class="shield-ring ring-1"></div>
-            <div class="shield-ring ring-2"></div>
-            <div class="shield-ring ring-3"></div>
-            <div class="shield-center">
-              <svg class="icon" style="width:42px;height:42px;color:#0d1a31;stroke-width:2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-          </div>
-          <!-- Float cards -->
-          <div class="float-card fc-1">
-            <div class="fc-icon" style="background:rgba(34,197,94,0.15);">
-              <svg class="icon" style="width:16px;height:16px;color:#22c55e" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <div><div class="fc-title">Sistema Activo</div><div class="fc-sub">4 cámaras en línea</div></div>
-          </div>
-          <div class="float-card fc-2">
-            <div class="fc-icon" style="background:rgba(60,200,245,0.15);">
-              <svg class="icon" style="width:16px;height:16px;color:#3cc8f5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
-            <div><div class="fc-title">Web Live</div><div class="fc-sub">98/100 Performance</div></div>
-          </div>
-          <div class="float-card fc-3">
-            <div class="fc-icon" style="background:rgba(234,179,8,0.15);">
-              <svg class="icon" style="width:16px;height:16px;color:#eab308" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
-            <div><div class="fc-title">Venta Realizada</div><div class="fc-sub">$2,450 MXN</div></div>
-          </div>
-        </div>
-      </div>
+  <!-- Animated scan line -->
+  <div style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.4),transparent);animation:scanLine 4s linear infinite;pointer-events:none;z-index:1;"></div>
+
+  <!-- Orbiting elements -->
+  <div style="position:absolute;top:50%;left:50%;width:0;height:0;pointer-events:none;z-index:1;">
+    <div style="animation:orbit 12s linear infinite;position:absolute;">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;box-shadow:0 0 12px var(--accent-cyan);"></div>
+    </div>
+    <div style="animation:orbit 18s linear infinite reverse;position:absolute;">
+      <div style="width:4px;height:4px;background:var(--accent-blue);border-radius:50%;box-shadow:0 0 8px var(--accent-blue);"></div>
     </div>
   </div>
-  <!-- Wave -->
-  <div style="position:absolute;bottom:0;left:0;width:100%;pointer-events:none;">
-    <svg viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" style="width:100%;height:80px;display:block;">
-      <path d="M0,60 C360,20 720,80 1440,40 L1440,80 L0,80 Z" fill="#f4f7fb"/>
-    </svg>
-  </div>
-</section>
 
-<!-- ════════════════ SEGURIDAD ════════════════ -->
-<section id="seguridad" style="background:var(--silver-2); padding:6rem 0;">
-  <div class="container">
-    <div class="section-header reveal">
-      <span class="tag">Videovigilancia Profesional</span>
-      <h2>Seguridad Inteligente para tu Empresa</h2>
-      <div class="divider center"></div>
-      <p>Instalación, configuración y mantenimiento de sistemas CCTV con tecnología IP y Analógica de última generación para empresas de cualquier tamaño.</p>
+  <div class="relative z-10 max-w-6xl mx-auto px-6 text-center">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-full mb-8 reveal" style="transition-delay:0.1s">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;animation:pulseGlow 2s infinite;"></div>
+      <span style="font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.2em;color:var(--accent-cyan);">SISTEMA ACTIVO · IXMIQUILPAN · HIDALGO</span>
     </div>
-    <div class="two-col">
-      <div class="col-visual reveal">
-        <div class="visual-panel">
-          <div class="cctv-screen">
-            <div class="cctv-header">
-              <span>PROTEC · Monitor</span>
-              <div style="display:flex;align-items:center;gap:0.5rem;">
-                <span style="font-size:0.65rem;color:rgba(255,255,255,0.3);">REC</span>
-                <div class="rec-dot"></div>
-              </div>
-            </div>
-            <div class="cctv-feeds">
-              <div class="cam-feed">
-                <svg viewBox="0 0 80 60"><rect width="80" height="60" fill="#0f172a"/><line x1="0" y1="30" x2="80" y2="30" stroke="rgba(60,200,245,0.1)" stroke-width="0.5"/><line x1="40" y1="0" x2="40" y2="60" stroke="rgba(60,200,245,0.1)" stroke-width="0.5"/><rect x="28" y="20" width="24" height="20" rx="2" stroke="rgba(60,200,245,0.4)" stroke-width="0.8" fill="none"/></svg>
-                CAM1
-              </div>
-              <div class="cam-feed">
-                <svg viewBox="0 0 80 60"><rect width="80" height="60" fill="#0f172a"/><ellipse cx="40" cy="30" rx="20" ry="15" stroke="rgba(60,200,245,0.3)" stroke-width="0.5" fill="rgba(60,200,245,0.03)"/></svg>
-                CAM2
-              </div>
-              <div class="cam-feed">
-                <svg viewBox="0 0 80 60"><rect width="80" height="60" fill="#0f172a"/><path d="M10 50 Q40 10 70 50" stroke="rgba(60,200,245,0.25)" stroke-width="0.8" fill="none"/></svg>
-                CAM3
-              </div>
-              <div class="cam-feed">
-                <svg viewBox="0 0 80 60"><rect width="80" height="60" fill="#0f172a"/><rect x="20" y="15" width="40" height="30" rx="2" stroke="rgba(60,200,245,0.2)" stroke-width="0.5" fill="rgba(60,200,245,0.04)"/></svg>
-                CAM4
-              </div>
-            </div>
-          </div>
-          <div class="cctv-stats">
-            <div class="cstat"><div class="cstat-val">4/4</div><div class="cstat-label">Cámaras en línea</div></div>
-            <div class="cstat"><div class="cstat-val">30d</div><div class="cstat-label">Grabación</div></div>
-            <div class="cstat"><div class="cstat-val">4K</div><div class="cstat-label">Resolución</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="col-text reveal reveal-delay-1">
-        <span class="tag">CCTV · IP · Analógico</span>
-        <h2>Visibilidad Total, Control Total</h2>
-        <div class="divider"></div>
-        <p>Diseñamos e instalamos sistemas de vigilancia adaptados a tu espacio, con acceso remoto desde cualquier dispositivo y almacenamiento seguro en la nube o local.</p>
-        <div class="feature-list">
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-            </div>
-            <div><h4>Sistemas IP de Alta Resolución</h4><p>Cámaras 4K con análisis de video inteligente y alertas en tiempo real.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
-            <div><h4>Acceso Remoto 24/7</h4><p>Monitorea tu negocio desde el celular, tablet o computadora en cualquier momento.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-            </div>
-            <div><h4>Instalación Certificada</h4><p>Montaje profesional, cableado estructurado y configuración completa incluida.</p></div>
-          </div>
-        </div>
-        <div class="brands-row" style="justify-content:flex-start; margin-top:2rem;">
-          <span class="brand-badge">Hikvision</span>
-          <span class="brand-badge">Epcom</span>
-          <span class="brand-badge">Tiandy</span>
-          <span class="brand-badge">Dahua</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ════════════════ WEB ════════════════ -->
-<section id="web" style="background:#fff; padding:6rem 0;">
-  <div class="container">
-    <div class="two-col reverse">
-      <div class="col-text reveal">
-        <span class="tag">Desarrollo Web</span>
-        <h2>¿Deseas potenciar tu negocio?</h2>
-        <div class="divider"></div>
-        <p>Creamos sitios web a medida: modernos, rápidos y optimizados para convertir visitantes en clientes reales. Diseño responsivo que luce perfecto en cualquier pantalla.</p>
-        <div class="feature-list">
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-            <div><h4>Diseño Personalizado</h4><p>Interfaces únicas que reflejan la identidad y valores de tu marca.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-            </div>
-            <div><h4>100% Responsivo</h4><p>Tu sitio se ve y funciona perfecto en móvil, tablet y escritorio.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            </div>
-            <div><h4>Optimizado para Google</h4><p>SEO técnico incluido para que tus clientes te encuentren más fácil.</p></div>
-          </div>
-        </div>
-      </div>
-      <div class="col-visual reveal reveal-delay-1">
-        <div class="visual-panel">
-          <div class="browser-bar">
-            <div class="browser-dots"><span class="bd-r"></span><span class="bd-y"></span><span class="bd-g"></span></div>
-            <div class="browser-url">https://tuempresa.mx</div>
-          </div>
-          <div class="web-wireframe">
-            <div class="wf-hero">
-              <span class="wf-hero-text">— Tu sitio web personalizado —</span>
-            </div>
-            <div class="wf-content">
-              <div class="wf-col">
-                <div class="wf-line sky" style="width:70%"></div>
-                <div class="wf-line" style="width:100%"></div>
-                <div class="wf-line" style="width:85%"></div>
-                <div class="wf-line" style="width:60%"></div>
-                <div class="wf-btn"></div>
-              </div>
-              <div class="wf-col">
-                <div class="wf-img"></div>
-              </div>
-            </div>
-          </div>
-          <div class="web-metrics">
-            <div class="wmetric"><div class="wmetric-val">98</div><div class="wmetric-label">Performance</div></div>
-            <div class="wmetric"><div class="wmetric-val">100</div><div class="wmetric-label">Accesibilidad</div></div>
-            <div class="wmetric"><div class="wmetric-val">SEO</div><div class="wmetric-label">Optimizado</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <h1 class="hero-gradient font-black mb-6 reveal" style="font-family:'Orbitron',monospace;font-size:clamp(2.5rem,6vw,5rem);line-height:1.1;transition-delay:0.2s;">
+      PROTECCIÓN<br/>INTELIGENTE
+    </h1>
 
-<!-- ════════════════ POS ════════════════ -->
-<section id="pos" style="background:var(--silver-2); padding:6rem 0;">
-  <div class="container">
-    <div class="two-col">
-      <div class="col-visual reveal">
-        <div class="visual-panel">
-          <div class="pos-screen">
-            <div class="pos-title-bar">
-              <span>Punto de Venta · PROTEC</span>
-              <span style="font-size:0.65rem;color:rgba(34,197,94,0.8);">● En línea</span>
-            </div>
-            <div class="pos-items">
-              <div class="pos-item"><span class="pos-item-name">Producto Tipo A</span><span class="pos-item-price">$450.00</span></div>
-              <div class="pos-item"><span class="pos-item-name">Producto Tipo B</span><span class="pos-item-price">$320.00</span></div>
-              <div class="pos-item"><span class="pos-item-name">Producto Tipo C</span><span class="pos-item-price">$180.00</span></div>
-              <div class="pos-item" style="border-color:rgba(60,200,245,0.15)"><span class="pos-item-name">Servicio Extra</span><span class="pos-item-price">$250.00</span></div>
-            </div>
-            <div class="pos-total">
-              <span class="pos-total-label">Total a cobrar</span>
-              <span class="pos-total-val">$1,200.00</span>
-            </div>
-            <div class="pos-btn">Procesar Pago</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-text reveal reveal-delay-1">
-        <span class="tag">Puntos de Venta</span>
-        <h2>Sistemas POS Modernos e Intuitivos</h2>
-        <div class="divider"></div>
-        <p>Implementamos soluciones de punto de venta completas: hardware, software y capacitación. Tus ventas, controladas con precisión desde el primer día.</p>
-        <div class="feature-list">
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
-            <div><h4>Implementación Completa</h4><p>Hardware y software configurado y probado, listo para usar.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-            </div>
-            <div><h4>Capacitación del Personal</h4><p>Entrenamiento práctico y materiales de apoyo para tu equipo.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-dot">
-              <svg class="icon" style="width:15px;height:15px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <div><h4>Soporte Continuo</h4><p>Asistencia técnica cuando más la necesitas, sin tiempos de espera.</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <p class="text-gray-300 mb-4 reveal" style="font-size:clamp(1rem,2vw,1.3rem);max-width:600px;margin:0 auto 1rem;font-weight:500;transition-delay:0.3s;">
+      Soluciones de <span style="color:var(--accent-cyan)">seguridad</span>, sistemas POS y tecnología empresarial con el más alto estándar de calidad.
+    </p>
+    <p class="text-gray-500 mb-10 reveal" style="font-size:0.95rem;max-width:500px;margin:0 auto 2.5rem;transition-delay:0.35s;">
+      Servicio 24 horas — Ixmiquilpan & Pachuca, Hidalgo
+    </p>
 
-<!-- ════════════════ MANTENIMIENTO ════════════════ -->
-<section id="mantenimiento" style="background:#fff; padding:6rem 0;">
-  <div class="container">
-    <div class="two-col reverse">
-      <div class="col-text reveal">
-        <span class="tag">Soporte Técnico</span>
-        <h2>Mantenimiento Integral de Infraestructura</h2>
-        <div class="divider"></div>
-        <p>Mantén tu tecnología en óptimas condiciones. Desde redes y servidores hasta equipos de cómputo, garantizamos continuidad operativa para tu negocio.</p>
-        <div class="services-grid" style="margin-top:1.5rem;">
-          <div class="svc-card reveal reveal-delay-1">
-            <div class="svc-icon">
-              <svg class="icon" style="color:#3cc8f5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <h3>Preventivo</h3>
-            <p>Evita fallas costosas antes de que ocurran con revisiones periódicas.</p>
-          </div>
-          <div class="svc-card reveal reveal-delay-2">
-            <div class="svc-icon">
-              <svg class="icon" style="color:#3cc8f5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <h3>Correctivo</h3>
-            <p>Diagnóstico y solución rápida ante cualquier falla o incidente.</p>
-          </div>
-          <div class="svc-card reveal reveal-delay-3">
-            <div class="svc-icon">
-              <svg class="icon" style="color:#3cc8f5" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-            </div>
-            <h3>Redes</h3>
-            <p>Cableado estructurado, configuración de switches, routers y Wi-Fi.</p>
-          </div>
-          <div class="svc-card reveal reveal-delay-1">
-            <div class="svc-icon">
-              <svg class="icon" style="color:#3cc8f5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
-            <h3>Equipos</h3>
-            <p>PC, laptops, impresoras y periféricos con garantía de servicio.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-visual reveal reveal-delay-1">
-        <div class="visual-panel">
-          <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin-bottom:0.75rem;font-family:monospace;letter-spacing:0.05em;">RACK · INFRAESTRUCTURA</div>
-          <div class="rack">
-            <div class="rack-unit"><div class="ru-led green"></div><div class="ru-label">SWITCH-CORE-01</div><div class="ru-status">ACTIVO</div></div>
-            <div class="rack-unit"><div class="ru-led green"></div><div class="ru-label">FIREWALL-PF-01</div><div class="ru-status">ACTIVO</div></div>
-            <div class="rack-unit"><div class="ru-led yellow"></div><div class="ru-label">SERVER-WEB-02</div><div class="ru-status">ALERTA</div></div>
-            <div class="rack-unit"><div class="ru-led green"></div><div class="ru-label">NAS-BACKUP-01</div><div class="ru-status">ACTIVO</div></div>
-            <div class="rack-unit"><div class="ru-led off"></div><div class="ru-label">AP-WIFI-03</div><div class="ru-status">OFFLINE</div></div>
-            <div class="rack-unit"><div class="ru-led green"></div><div class="ru-label">UPS-MAIN-01</div><div class="ru-status">ACTIVO</div></div>
-          </div>
-          <div class="maint-stats">
-            <div class="mstat"><div class="mstat-val">99.2%</div><div class="mstat-label">Uptime promedio</div></div>
-            <div class="mstat"><div class="mstat-val">&lt;2h</div><div class="mstat-label">Tiempo de respuesta</div></div>
-            <div class="mstat"><div class="mstat-val">24/7</div><div class="mstat-label">Monitoreo</div></div>
-            <div class="mstat"><div class="mstat-val">+300</div><div class="mstat-label">Equipos atendidos</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════ CTA ════════════════ -->
-<section class="cta-section">
-  <div class="hero-grid"></div>
-  <div class="cta-glow"></div>
-  <div class="container">
-    <div class="cta-inner reveal">
-      <span class="tag" style="display:inline-flex;margin-bottom:1.5rem;">¿Tienes un proyecto en mente?</span>
-      <h2>¿Listo para transformar tu negocio?</h2>
-      <p>Contáctanos hoy y recibe una cotización personalizada sin costo ni compromiso.</p>
-      <a href="https://wa.me/527717485070?text=Hola,%20me%20gustaría%20solicitar%20una%20cotización" target="_blank" class="btn-primary" style="display:inline-flex;font-size:1rem;padding:0.9rem 2.2rem;">
-        <svg class="icon" style="width:18px;height:18px" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Solicitar Cotización
+    <div class="flex flex-wrap gap-4 justify-center reveal" style="transition-delay:0.4s;">
+      <button onclick="openModal()" class="cta-btn px-8 py-4 text-base text-cyan-400 rounded-xl">
+        <span class="flex items-center gap-2">
+          Solicitar Cotización
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </button>
+      <a href="#cctv" class="px-8 py-4 text-base text-gray-300 rounded-xl glass border border-gray-700 hover:border-cyan-500 transition-all duration-300 flex items-center gap-2" style="font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.05em;">
+        Ver Servicios
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
       </a>
     </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-6 max-w-2xl mx-auto mt-16 reveal" style="transition-delay:0.5s;">
+      <div class="glass rounded-2xl p-5 glow-border">
+        <div class="stat-number text-3xl font-black mb-1" data-target="500">0</div>
+        <div class="text-gray-400 text-sm font-medium">Clientes</div>
+      </div>
+      <div class="glass rounded-2xl p-5 glow-border">
+        <div class="stat-number text-3xl font-black mb-1" data-target="10">0</div>
+        <div class="text-gray-400 text-sm font-medium">Años de Exp.</div>
+      </div>
+      <div class="glass rounded-2xl p-5 glow-border">
+        <div class="stat-number text-3xl font-black mb-1" data-target="24">0</div>
+        <div class="text-gray-400 text-sm font-medium">Hrs Soporte</div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="mt-14 flex flex-col items-center gap-2 opacity-50 reveal" style="transition-delay:0.6s;">
+      <span style="font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.3em;color:var(--accent-cyan);">SCROLL</span>
+      <div style="width:1px;height:40px;background:linear-gradient(to bottom,var(--accent-cyan),transparent);"></div>
+    </div>
   </div>
 </section>
 
-<!-- ════════════════ FOOTER ════════════════ -->
-<footer id="contacto">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="#inicio" class="logo">
-          <div class="logo-icon"><svg class="icon" style="color:#0d1a31;stroke-width:2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <span class="logo-text">PROTEC</span>
-        </a>
-        <p>Seguridad que protege, sistemas que impulsan. Tu socio tecnológico de confianza en México.</p>
-        <div class="social-row">
-          <a href="#" class="social-btn" aria-label="Facebook">
-            <svg class="icon" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-          </a>
-          <a href="#" class="social-btn" aria-label="Instagram">
-            <svg class="icon" style="width:15px;height:15px" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-          </a>
-          <a href="#" class="social-btn" aria-label="WhatsApp">
-            <svg class="icon" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          </a>
+<!-- ====== MISIÓN & VISIÓN ====== -->
+<section class="relative z-10 py-20 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="neon-divider mb-16"></div>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="glass rounded-2xl p-8 reveal-left glow-border" style="transition-delay:0.1s;">
+        <div class="flex items-center gap-3 mb-5">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,191,255,0.1));border:1px solid rgba(0,229,255,0.3);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <span style="font-family:'Orbitron',monospace;font-size:0.8rem;letter-spacing:0.15em;color:var(--accent-cyan);">MISIÓN</span>
         </div>
+        <p class="text-gray-300 text-lg leading-relaxed">Brindar soluciones tecnológicas integrales de <strong style="color:#fff;">alta calidad</strong> en seguridad electrónica, sistemas POS y desarrollo web, garantizando la protección y eficiencia de nuestros clientes con un servicio <strong style="color:var(--accent-cyan)">excepcional y continuo</strong>.</p>
       </div>
-      <div>
-        <h4>Servicios</h4>
-        <a href="#seguridad">Videovigilancia CCTV</a>
-        <a href="#web">Desarrollo Web</a>
-        <a href="#pos">Sistemas POS</a>
-        <a href="#mantenimiento">Mantenimiento IT</a>
-        <a href="#contacto">Soporte Técnico</a>
-      </div>
-      <div>
-        <h4>Empresa</h4>
-        <a href="#inicio">Inicio</a>
-        <a href="#">Nosotros</a>
-        <a href="#">Casos de Éxito</a>
-        <a href="#">Aviso de Privacidad</a>
-        <a href="#">Términos y Condiciones</a>
-      </div>
-      <div>
-        <h4>Contacto</h4>
-        <div class="contact-item">
-          <div class="contact-icon"><svg class="icon" style="width:14px;height:14px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg></div>
-          <span>+52 771 748 5070</span>
+      <div class="glass rounded-2xl p-8 reveal-right glow-border" style="transition-delay:0.2s;">
+        <div class="flex items-center gap-3 mb-5">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,191,255,0.1));border:1px solid rgba(0,229,255,0.3);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <span style="font-family:'Orbitron',monospace;font-size:0.8rem;letter-spacing:0.15em;color:var(--accent-cyan);">VISIÓN</span>
         </div>
-         <div class="contact-item">
-          <div class="contact-icon"><svg class="icon" style="width:14px;height:14px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg></div>
-          <span>+52 772 115 5477</span>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon"><svg class="icon" style="width:14px;height:14px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-          <span>gilbertocova696@gmail.com</span>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon"><svg class="icon" style="width:14px;height:14px;color:#3cc8f5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-          <span>Ixmiquilpan y Pachuca Hgo</span>
-        </div>
-        <div class="contact-item">
-          <div class="contact-icon"><svg class="icon" style="width:14px;height:14px;color:#3cc8f5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <span>Las 24 hrs del día</span>
-        </div>
-        <!-- Map -->
-        <div class="map-box" style="margin-top:1.25rem;">
-          <svg viewBox="0 0 280 140" fill="none">
-            <rect width="280" height="140" fill="#0d1a31"/>
-            <line x1="0" y1="35" x2="280" y2="35" stroke="rgba(60,200,245,0.07)" stroke-width="1"/>
-            <line x1="0" y1="70" x2="280" y2="70" stroke="rgba(60,200,245,0.07)" stroke-width="1"/>
-            <line x1="0" y1="105" x2="280" y2="105" stroke="rgba(60,200,245,0.07)" stroke-width="1"/>
-            <line x1="56" y1="0" x2="56" y2="140" stroke="rgba(60,200,245,0.07)" stroke-width="1"/>
-            <line x1="112" y1="0" x2="112" y2="140" stroke="rgba(60,200,245,0.07)" stroke-width="1"/>
-            <line x1="168" y1="0" x2="168" y2="140" stroke="rgba(60,200,245,0.07)" stroke-width="1"/>
-            <line x1="224" y1="0" x2="224" y2="140" stroke="rgba(60,200,245,0.07)" stroke-width="1"/>
-            <path d="M20 90 Q80 50 140 70 Q200 90 260 60" stroke="rgba(60,200,245,0.2)" stroke-width="2" fill="none"/>
-            <path d="M40 110 Q100 80 160 90" stroke="rgba(60,200,245,0.12)" stroke-width="1.5" fill="none"/>
-            <circle cx="140" cy="70" r="16" fill="rgba(60,200,245,0.12)"/>
-            <circle cx="140" cy="70" r="7" fill="rgba(60,200,245,0.6)"/>
-            <circle cx="140" cy="70" r="3" fill="white"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2026 PROTEC. Todos los derechos reservados.</p>
-      <div style="display:flex;gap:1.5rem;">
-        <a href="#">Privacidad</a>
-        <a href="#">Términos</a>
-        <a href="#">Cookies</a>
+        <p class="text-gray-300 text-lg leading-relaxed">Ser la empresa líder en <strong style="color:#fff;">tecnología y seguridad</strong> en el estado de Hidalgo, reconocida por nuestra innovación constante, la confianza de nuestros clientes y nuestra capacidad de <strong style="color:var(--accent-cyan)">adaptación al futuro digital</strong>.</p>
       </div>
     </div>
   </div>
-  <section id="crud-admin" style="padding: 50px; background: #0a192f; color: white;">
-  <h3>Panel de Inventario PROTEC</h3>
-  <form id="form-inventario" style="display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
-    <input type="text" id="nombre" placeholder="Nombre del Equipo" required style="padding: 10px;">
-    <input type="text" id="marca" placeholder="Marca (Hikvision, etc.)" style="padding: 10px;">
-    <input type="number" id="precio" placeholder="Precio" style="padding: 10px;">
-    <button type="submit" style="background: #00d1a3; color: black; padding: 10px; cursor: pointer; border: none; font-weight: bold;">
-      Guardar en Inventario
-    </button>
-  </form>
 </section>
+
+<!-- ====== SECCIÓN CONVERSIÓN ====== -->
+<section class="relative z-10 py-24 px-6 text-center overflow-hidden">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 50%,rgba(0,229,255,0.04) 0%,transparent 70%);pointer-events:none;"></div>
+  <div class="max-w-3xl mx-auto reveal">
+    <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.3em;color:var(--accent-cyan);">PRÓXIMO NIVEL</span>
+    <h2 class="text-4xl md:text-5xl font-black mt-4 mb-6" style="font-family:'Orbitron',monospace;">
+      ¿Listo para<br/><span class="hero-gradient">transformar</span><br/>tu negocio?
+    </h2>
+    <p class="text-gray-400 text-lg mb-10">Únete a cientos de empresas en Hidalgo que ya confían en PROTEC para su seguridad y sistemas.</p>
+    <button onclick="openModal()" class="cta-btn px-10 py-5 text-lg text-cyan-400 rounded-2xl mx-auto" style="animation:pulseGlow 3s infinite;">
+      <span class="flex items-center gap-3">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Explorar Servicios
+      </span>
+    </button>
+  </div>
+</section>
+
+<!-- ====== MODAL CENTRO DE SERVICIOS ====== -->
+<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(2,12,27,0.85);backdrop-filter:blur(12px);">
+  <div id="modal-content" class="glass rounded-3xl p-8 max-w-4xl w-full glow-border relative">
+    <button onclick="closeModal()" class="absolute top-5 right-5 w-10 h-10 rounded-full glass flex items-center justify-center hover:border-red-500 transition-all border border-transparent">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="text-center mb-8">
+      <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.3em;color:var(--accent-cyan);">CENTRO DE SERVICIOS</span>
+      <h3 class="text-2xl font-black mt-2" style="font-family:'Orbitron',monospace;">¿Qué necesitas hoy?</h3>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="service-card glass rounded-2xl p-6 hover:border-cyan-400 transition-all text-center" onclick="closeModal();document.getElementById('cctv').scrollIntoView({behavior:'smooth'});">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,191,255,0.1));border:1px solid rgba(0,229,255,0.4);border-radius:14px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;transition:transform 0.3s;" class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <h4 class="font-bold text-white mb-1" style="font-family:'Orbitron',monospace;font-size:0.75rem;letter-spacing:0.1em;">CCTV</h4>
+        <p class="text-gray-400 text-xs">Seguridad & Videovigilancia</p>
+      </div>
+      <div class="service-card glass rounded-2xl p-6 hover:border-cyan-400 transition-all text-center" onclick="closeModal();document.getElementById('pos').scrollIntoView({behavior:'smooth'});">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,191,255,0.1));border:1px solid rgba(0,229,255,0.4);border-radius:14px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;" class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+        </div>
+        <h4 class="font-bold text-white mb-1" style="font-family:'Orbitron',monospace;font-size:0.75rem;letter-spacing:0.1em;">POS</h4>
+        <p class="text-gray-400 text-xs">Sistemas de Punto de Venta</p>
+      </div>
+      <div class="service-card glass rounded-2xl p-6 hover:border-cyan-400 transition-all text-center" onclick="closeModal();document.getElementById('desarrollo').scrollIntoView({behavior:'smooth'});">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,191,255,0.1));border:1px solid rgba(0,229,255,0.4);border-radius:14px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;" class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h4 class="font-bold text-white mb-1" style="font-family:'Orbitron',monospace;font-size:0.75rem;letter-spacing:0.1em;">WEB</h4>
+        <p class="text-gray-400 text-xs">Desarrollo de Software</p>
+      </div>
+      <div class="service-card glass rounded-2xl p-6 hover:border-cyan-400 transition-all text-center" onclick="closeModal();document.getElementById('mantenimiento').scrollIntoView({behavior:'smooth'});">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,191,255,0.1));border:1px solid rgba(0,229,255,0.4);border-radius:14px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;" class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <h4 class="font-bold text-white mb-1" style="font-family:'Orbitron',monospace;font-size:0.75rem;letter-spacing:0.1em;">SOPORTE</h4>
+        <p class="text-gray-400 text-xs">Mantenimiento Técnico</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SECCIÓN CCTV ====== -->
+<section id="cctv" class="relative z-10 py-24 px-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="grid md:grid-cols-2 gap-12 items-center mb-20">
+      <div class="reveal-left">
+        <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.3em;color:var(--accent-cyan);">SEGURIDAD AVANZADA</span>
+        <h2 class="text-4xl md:text-5xl font-black mt-3 mb-5" style="font-family:'Orbitron',monospace;line-height:1.1;">
+          CCTV &<br/><span class="hero-gradient">Videovigilancia</span>
+        </h2>
+        <p class="text-gray-400 text-lg mb-6">Instalamos y configuramos sistemas de cámaras de alta definición para proteger tu hogar o empresa. Soluciones analógicas, IP y de análisis inteligente con acceso remoto.</p>
+        <div class="flex flex-wrap gap-3">
+          <span class="px-3 py-1 glass rounded-full text-xs text-cyan-400 border border-cyan-900/50">Hikvision</span>
+          <span class="px-3 py-1 glass rounded-full text-xs text-cyan-400 border border-cyan-900/50">Dahua</span>
+          <span class="px-3 py-1 glass rounded-full text-xs text-cyan-400 border border-cyan-900/50">Bosch</span>
+          <span class="px-3 py-1 glass rounded-full text-xs text-cyan-400 border border-cyan-900/50">Reolink</span>
+          <span class="px-3 py-1 glass rounded-full text-xs text-cyan-400 border border-cyan-900/50">Axis</span>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="glass rounded-3xl p-6 glow-border" style="position:relative;overflow:hidden;">
+          <!-- Camera diagram -->
+          <svg width="100%" height="220" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Network lines -->
+            <line x1="200" y1="110" x2="80" y2="50" stroke="rgba(0,229,255,0.2)" stroke-width="1" stroke-dasharray="4 4"><animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite"/></line>
+            <line x1="200" y1="110" x2="320" y2="50" stroke="rgba(0,229,255,0.2)" stroke-width="1" stroke-dasharray="4 4"><animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="2.5s" repeatCount="indefinite"/></line>
+            <line x1="200" y1="110" x2="80" y2="170" stroke="rgba(0,229,255,0.2)" stroke-width="1" stroke-dasharray="4 4"><animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="3s" repeatCount="indefinite"/></line>
+            <line x1="200" y1="110" x2="320" y2="170" stroke="rgba(0,229,255,0.2)" stroke-width="1" stroke-dasharray="4 4"><animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="1.8s" repeatCount="indefinite"/></line>
+            <!-- Camera nodes -->
+            <circle cx="80" cy="50" r="18" fill="rgba(0,229,255,0.1)" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"/>
+            <circle cx="320" cy="50" r="18" fill="rgba(0,229,255,0.1)" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"/>
+            <circle cx="80" cy="170" r="18" fill="rgba(0,229,255,0.1)" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"/>
+            <circle cx="320" cy="170" r="18" fill="rgba(0,229,255,0.1)" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"/>
+            <!-- Camera icons simplified -->
+            <text x="80" y="55" text-anchor="middle" font-size="14" fill="rgba(0,229,255,0.8)">📷</text>
+            <text x="320" y="55" text-anchor="middle" font-size="14" fill="rgba(0,229,255,0.8)">📷</text>
+            <text x="80" y="175" text-anchor="middle" font-size="14" fill="rgba(0,229,255,0.8)">📷</text>
+            <text x="320" y="175" text-anchor="middle" font-size="14" fill="rgba(0,229,255,0.8)">📷</text>
+            <!-- Central NVR -->
+            <rect x="165" y="85" width="70" height="50" rx="8" fill="rgba(0,229,255,0.08)" stroke="rgba(0,229,255,0.5)" stroke-width="1.5"/>
+            <text x="200" y="115" text-anchor="middle" font-size="11" fill="rgba(0,229,255,0.9)" font-family="monospace">NVR</text>
+            <circle cx="200" cy="100" r="4" fill="rgba(0,229,255,0.5)"><animate attributeName="r" values="4;6;4" dur="1.5s" repeatCount="indefinite"/></circle>
+          </svg>
+          <div class="text-center mt-2">
+            <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);opacity:0.7;">RED DE VIGILANCIA ACTIVA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="flex flex-wrap gap-3 mb-8 reveal">
+      <button onclick="filterProducts('all')" class="filter-btn active-filter px-4 py-2 glass rounded-lg text-sm border border-cyan-800 hover:border-cyan-400 transition-all" data-brand="all">Todos</button>
+      <button onclick="filterProducts('Hikvision')" class="filter-btn px-4 py-2 glass rounded-lg text-sm border border-gray-700 hover:border-cyan-400 transition-all" data-brand="Hikvision">Hikvision</button>
+      <button onclick="filterProducts('Dahua')" class="filter-btn px-4 py-2 glass rounded-lg text-sm border border-gray-700 hover:border-cyan-400 transition-all" data-brand="Dahua">Dahua</button>
+      <button onclick="filterProducts('Bosch')" class="filter-btn px-4 py-2 glass rounded-lg text-sm border border-gray-700 hover:border-cyan-400 transition-all" data-brand="Bosch">Bosch</button>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 reveal"></div>
+  </div>
+</section>
+
+<!-- ====== SECCIÓN POS ====== -->
+<section id="pos" class="relative z-10 py-24 px-6" style="background:linear-gradient(180deg,transparent,rgba(0,229,255,0.02),transparent);">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="reveal-left order-2 md:order-1">
+        <div class="glass rounded-3xl p-6 glow-border overflow-hidden relative">
+          <!-- POS mockup -->
+          <div style="background:rgba(0,0,0,0.4);border-radius:16px;padding:16px;border:1px solid rgba(0,229,255,0.15);">
+            <div class="flex items-center justify-between mb-3">
+              <span style="font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.2em;color:var(--accent-cyan);">SISTEMA POS</span>
+              <div class="flex gap-1"><div style="width:6px;height:6px;background:#ef4444;border-radius:50%;"></div><div style="width:6px;height:6px;background:#f59e0b;border-radius:50%;"></div><div style="width:6px;height:6px;background:#22c55e;border-radius:50%;"></div></div>
+            </div>
+            <div style="background:rgba(0,229,255,0.04);border-radius:8px;padding:10px;margin-bottom:8px;">
+              <div style="height:8px;background:rgba(0,229,255,0.15);border-radius:4px;width:70%;margin-bottom:5px;"></div>
+              <div style="height:8px;background:rgba(0,229,255,0.08);border-radius:4px;width:50%;"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-3">
+              <div style="background:rgba(0,229,255,0.08);border-radius:6px;padding:8px;text-align:center;font-family:monospace;font-size:0.7rem;color:var(--accent-cyan);">$240</div>
+              <div style="background:rgba(0,229,255,0.08);border-radius:6px;padding:8px;text-align:center;font-family:monospace;font-size:0.7rem;color:var(--accent-cyan);">$180</div>
+              <div style="background:rgba(0,229,255,0.08);border-radius:6px;padding:8px;text-align:center;font-family:monospace;font-size:0.7rem;color:var(--accent-cyan);">$90</div>
+            </div>
+            <div style="background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,191,255,0.1));border-radius:8px;padding:8px;text-align:center;">
+              <span style="font-family:'Orbitron',monospace;font-size:0.7rem;color:#fff;letter-spacing:0.1em;">TOTAL: $510.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right order-1 md:order-2">
+        <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.3em;color:var(--accent-cyan);">CONTROL TOTAL</span>
+        <h2 class="text-4xl md:text-5xl font-black mt-3 mb-5" style="font-family:'Orbitron',monospace;line-height:1.1;">
+          Sistemas<br/><span class="hero-gradient">POS Pro</span>
+        </h2>
+        <p class="text-gray-400 text-lg mb-6">Administra tu negocio con precisión. Sistemas de punto de venta rápidos, confiables y conectados a la nube. Controla inventario, ventas y reportes en tiempo real.</p>
+        <div class="space-y-3 mb-8">
+          <div class="flex items-center gap-3"><div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div><span class="text-gray-300">Control de inventario en tiempo real</span></div>
+          <div class="flex items-center gap-3"><div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div><span class="text-gray-300">Reportes y análisis de ventas</span></div>
+          <div class="flex items-center gap-3"><div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div><span class="text-gray-300">Integración con facturación electrónica</span></div>
+          <div class="flex items-center gap-3"><div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div><span class="text-gray-300">Soporte técnico 24/7</span></div>
+        </div>
+        <button onclick="openModal()" class="cta-btn px-7 py-3.5 text-sm text-cyan-400 rounded-xl"><span>Cotizar Sistema POS</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECCIÓN DESARROLLO WEB ====== -->
+<section id="desarrollo" class="relative z-10 py-24 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="reveal-left">
+        <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.3em;color:var(--accent-cyan);">PRESENCIA DIGITAL</span>
+        <h2 class="text-4xl md:text-5xl font-black mt-3 mb-5" style="font-family:'Orbitron',monospace;line-height:1.1;">
+          Desarrollo<br/><span class="hero-gradient">Web & Apps</span>
+        </h2>
+        <p class="text-gray-400 text-lg mb-6">Creamos plataformas digitales que potencian tu negocio. Desde landing pages hasta sistemas web complejos, siempre con los más altos estándares de diseño y rendimiento.</p>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div class="glass rounded-xl p-4 border border-cyan-900/30 hover:border-cyan-500/50 transition-all">
+            <div class="text-2xl mb-2">🌐</div>
+            <h4 class="font-bold text-white text-sm mb-1">Sitios Web</h4>
+            <p class="text-gray-500 text-xs">Diseño profesional & responsive</p>
+          </div>
+          <div class="glass rounded-xl p-4 border border-cyan-900/30 hover:border-cyan-500/50 transition-all">
+            <div class="text-2xl mb-2">🛒</div>
+            <h4 class="font-bold text-white text-sm mb-1">E-Commerce</h4>
+            <p class="text-gray-500 text-xs">Tiendas en línea optimizadas</p>
+          </div>
+          <div class="glass rounded-xl p-4 border border-cyan-900/30 hover:border-cyan-500/50 transition-all">
+            <div class="text-2xl mb-2">📱</div>
+            <h4 class="font-bold text-white text-sm mb-1">Apps Móviles</h4>
+            <p class="text-gray-500 text-xs">iOS y Android nativas</p>
+          </div>
+          <div class="glass rounded-xl p-4 border border-cyan-900/30 hover:border-cyan-500/50 transition-all">
+            <div class="text-2xl mb-2">⚙️</div>
+            <h4 class="font-bold text-white text-sm mb-1">Sistemas</h4>
+            <p class="text-gray-500 text-xs">Software a la medida</p>
+          </div>
+        </div>
+        <button onclick="openModal()" class="cta-btn px-7 py-3.5 text-sm text-cyan-400 rounded-xl"><span>Iniciar Proyecto</span></button>
+      </div>
+      <div class="reveal-right">
+        <!-- Code editor mockup -->
+        <div class="glass rounded-3xl overflow-hidden glow-border">
+          <div style="background:rgba(0,0,0,0.5);padding:12px 16px;border-bottom:1px solid rgba(0,229,255,0.1);display:flex;align-items:center;justify-between;">
+            <div class="flex gap-2"><div style="width:10px;height:10px;background:#ef4444;border-radius:50%;"></div><div style="width:10px;height:10px;background:#f59e0b;border-radius:50%;"></div><div style="width:10px;height:10px;background:#22c55e;border-radius:50%;"></div></div>
+            <span style="font-family:monospace;font-size:0.7rem;color:rgba(0,229,255,0.5);">protec-app.js</span>
+          </div>
+          <div style="padding:20px;font-family:monospace;font-size:0.8rem;line-height:1.8;">
+            <div><span style="color:#569CD6;">const</span> <span style="color:#9CDCFE;">protec</span> <span style="color:#fff;">=</span> <span style="color:#DCDCAA;">createApp</span><span style="color:#ffd700;">(</span><span style="color:#CE9178;">'PROTEC'</span><span style="color:#ffd700;">)</span></div>
+            <div class="mt-1"><span style="color:#9CDCFE;">protec</span><span style="color:#fff;">.</span><span style="color:#DCDCAA;">configure</span><span style="color:#ffd700;">({</span></div>
+            <div style="padding-left:20px;"><span style="color:#9CDCFE;">security</span><span style="color:#fff;">:</span> <span style="color:#B5CEA8;">true</span><span style="color:#fff;">,</span></div>
+            <div style="padding-left:20px;"><span style="color:#9CDCFE;">monitoring</span><span style="color:#fff;">:</span> <span style="color:#CE9178;">'24/7'</span><span style="color:#fff;">,</span></div>
+            <div style="padding-left:20px;"><span style="color:#9CDCFE;">quality</span><span style="color:#fff;">:</span> <span style="color:#CE9178;">'enterprise'</span></div>
+            <div><span style="color:#ffd700;">})</span></div>
+            <div class="mt-1"><span style="color:#569CD6;">await</span> <span style="color:#9CDCFE;">protec</span><span style="color:#fff;">.</span><span style="color:#DCDCAA;">deploy</span><span style="color:#ffd700;">()</span> <span style="color:#6A9955;">// 🚀 Online</span></div>
+            <div class="mt-2 flex items-center gap-2">
+              <div style="width:8px;height:8px;background:#22c55e;border-radius:50%;animation:pulseGlow 2s infinite;"></div>
+              <span style="color:#22c55e;font-size:0.75rem;">Sistema desplegado correctamente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== MANTENIMIENTO / CONTACTO ====== -->
+<section id="mantenimiento" class="relative z-10 py-24 px-6">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.3em;color:var(--accent-cyan);">SOPORTE TÉCNICO</span>
+      <h2 class="text-4xl md:text-5xl font-black mt-3" style="font-family:'Orbitron',monospace;">
+        Mantenimiento<br/><span class="hero-gradient">& Soporte</span>
+      </h2>
+    </div>
+    <div class="glass rounded-3xl p-8 glow-border reveal">
+      <form id="contact-form" onsubmit="submitForm(event)" novalidate>
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-xs font-semibold mb-2" style="font-family:'Orbitron',monospace;letter-spacing:0.1em;color:var(--accent-cyan);">NOMBRE</label>
+            <input id="f-nombre" type="text" placeholder="Tu nombre completo" class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-gray-600 text-sm"/>
+            <span id="err-nombre" class="text-red-400 text-xs mt-1 hidden">Campo requerido</span>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-2" style="font-family:'Orbitron',monospace;letter-spacing:0.1em;color:var(--accent-cyan);">SERVICIO</label>
+            <select id="f-servicio" class="input-field w-full px-4 py-3 rounded-xl text-white text-sm" style="background:rgba(0,229,255,0.03);">
+              <option value="" style="background:#0A192F;">Selecciona un servicio</option>
+              <option value="CCTV" style="background:#0A192F;">CCTV & Seguridad</option>
+              <option value="POS" style="background:#0A192F;">Sistema POS</option>
+              <option value="Web" style="background:#0A192F;">Desarrollo Web</option>
+              <option value="Mantenimiento" style="background:#0A192F;">Mantenimiento General</option>
+            </select>
+            <span id="err-servicio" class="text-red-400 text-xs mt-1 hidden">Selecciona un servicio</span>
+          </div>
+        </div>
+        <div class="mb-6">
+          <label class="block text-xs font-semibold mb-2" style="font-family:'Orbitron',monospace;letter-spacing:0.1em;color:var(--accent-cyan);">MENSAJE</label>
+          <textarea id="f-mensaje" placeholder="Describe tu proyecto o problema técnico..." class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-gray-600 text-sm h-32 resize-none"></textarea>
+          <span id="err-mensaje" class="text-red-400 text-xs mt-1 hidden">Escribe tu mensaje</span>
+        </div>
+        <button id="submit-btn" type="submit" class="cta-btn w-full px-6 py-4 text-base text-cyan-400 rounded-xl">
+          <span id="btn-text" class="flex items-center justify-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Enviar Mensaje
+          </span>
+        </button>
+        <div id="form-success" class="hidden mt-4 p-4 rounded-xl text-center" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);">
+          <span class="text-green-400 font-semibold">✓ Mensaje enviado correctamente. Te contactaremos pronto.</span>
+        </div>
+        <div id="form-error" class="hidden mt-4 p-4 rounded-xl text-center" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);">
+          <span class="text-red-400 font-semibold">Error al enviar. Intenta de nuevo.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ====== FOOTER ====== -->
+<footer class="relative z-10 pt-20 pb-8 px-6" style="background:var(--bg-deep);">
+  <!-- Top neon line -->
+  <div class="neon-divider mb-16"></div>
+
+  <div class="max-w-7xl mx-auto">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
+      <!-- Col 1: Brand -->
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#020C1B" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:0.15em;">PROTEC</span>
+        </div>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
+        <div class="flex gap-3">
+          <a href="#" class="w-9 h-9 glass rounded-lg flex items-center justify-center hover:border-cyan-500 border border-transparent transition-all group">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-gray-500 group-hover:text-cyan-400 transition-colors"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 glass rounded-lg flex items-center justify-center hover:border-cyan-500 border border-transparent transition-all group">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-gray-500 group-hover:text-cyan-400 transition-colors"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://wa.me/5217711234567" class="w-9 h-9 glass rounded-lg flex items-center justify-center hover:border-cyan-500 border border-transparent transition-all group">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-gray-500 group-hover:text-cyan-400 transition-colors"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Servicios -->
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:16px;">SERVICIOS</h4>
+        <ul class="space-y-2.5">
+          <li><a href="#cctv" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Seguridad CCTV</a></li>
+          <li><a href="#cctv" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Control de Acceso</a></li>
+          <li><a href="#pos" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Sistemas POS</a></li>
+          <li><a href="#desarrollo" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Desarrollo Web</a></li>
+          <li><a href="#mantenimiento" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Mantenimiento</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Empresa -->
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:16px;">EMPRESA</h4>
+        <ul class="space-y-2.5">
+          <li><a href="#inicio" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Quiénes somos</a></li>
+          <li><a href="#inicio" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Misión & Visión</a></li>
+          <li><a href="#mantenimiento" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Contacto</a></li>
+          <li><a href="#" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Aviso de Privacidad</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Contacto -->
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:16px;">CONTACTO</h4>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <div class="text-gray-300 text-sm">771 123 4567</div>
+              <div class="text-gray-300 text-sm">771 987 6543</div>
+            </div>
+          </li>
+          <li class="flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="flex-shrink-0"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span class="text-gray-300 text-sm">contacto@protec.mx</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="text-gray-300 text-sm">Ixmiquilpan & Pachuca, Hidalgo</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="text-gray-300 text-sm">Servicio 24 horas, 365 días</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Wave animation footer -->
+    <div style="position:relative;height:60px;overflow:hidden;margin-bottom:16px;">
+      <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="60" style="position:absolute;bottom:0;opacity:0.15;">
+        <path fill="var(--accent-cyan)">
+          <animate attributeName="d" dur="4s" repeatCount="indefinite" values="
+            M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;
+            M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;
+            M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z
+          "/>
+        </path>
+      </svg>
+    </div>
+
+    <div class="neon-divider mb-6"></div>
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <span class="text-gray-600 text-xs" style="font-family:'Orbitron',monospace;letter-spacing:0.1em;">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
+      <div class="flex items-center gap-2">
+        <div style="width:6px;height:6px;background:#22c55e;border-radius:50%;animation:pulseGlow 2s infinite;"></div>
+        <span class="text-gray-600 text-xs" style="font-family:'Orbitron',monospace;letter-spacing:0.1em;">SISTEMAS OPERATIVOS</span>
+      </div>
+    </div>
+  </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Vercel inyecta estas variables automáticamente si usas un framework, 
-  // pero para HTML puro, usaremos las llaves directamente por ahora:
-  const supabaseUrl = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
-  const supabaseKey = 'TU_LLAVE_PUBLISHABLE_DE_SUPABASE'; // Copia la de image_cd4376.png
-  const _supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+// ==============================
+// SUPABASE INIT
+// ==============================
+// Reemplaza con tus credenciales de Supabase
+const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
+const SUPABASE_KEY = 'TU_ANON_KEY';
+let supabaseClient = null;
+try {
+  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch(e) {
+  console.warn('Supabase no inicializado. Usando datos demo.');
+}
 
-  const form = document.getElementById('form-inventario');
+// ==============================
+// DATOS DEMO (cuando no hay Supabase)
+// ==============================
+const DEMO_PRODUCTS = [
+  { nombre_equipo: 'Cámara Domo 4K', marca: 'Hikvision', modelo: 'DS-2CD2143G2-I', precio: 2800 },
+  { nombre_equipo: 'Cámara Bullet IR', marca: 'Hikvision', modelo: 'DS-2CD2347G2-L', precio: 3200 },
+  { nombre_equipo: 'NVR 8 Canales', marca: 'Hikvision', modelo: 'DS-7608NXI-K2', precio: 4500 },
+  { nombre_equipo: 'Cámara PTZ 360°', marca: 'Dahua', modelo: 'SD49425XB-HNR', precio: 8900 },
+  { nombre_equipo: 'Cámara Domo IP', marca: 'Dahua', modelo: 'IPC-HDW2831T-AS', precio: 2100 },
+  { nombre_equipo: 'DVR 16 Canales', marca: 'Dahua', modelo: 'XVR5116H-I3', precio: 3800 },
+  { nombre_equipo: 'Cámara Indoor HD', marca: 'Bosch', modelo: 'FLEXIDOME-5100i', precio: 5400 },
+  { nombre_equipo: 'Cámara Exterior PRO', marca: 'Bosch', modelo: 'DINION 5100i', precio: 6200 },
+];
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const nombre = document.getElementById('nombre').value;
-    const marca = document.getElementById('marca').value;
-    const precio = document.getElementById('precio').value;
+let allProducts = [];
+let currentFilter = 'all';
 
-    const { data, error } = await _supabase
-      .from('INVENTARIO') // Debe coincidir con el nombre en image_3b3636.png
-      .insert([{ nombre_equipo: nombre, marca: marca, precio: parseFloat(precio) }]);
+// ==============================
+// CURSOR PERSONALIZADO
+// ==============================
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', (e) => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  }, 80);
+});
+document.addEventListener('mousedown', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(0.5)';
+  ring.style.transform = 'translate(-50%,-50%) scale(1.5)';
+});
+document.addEventListener('mouseup', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+  ring.style.transform = 'translate(-50%,-50%) scale(1)';
+});
+document.querySelectorAll('a,button,.service-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '20px'; cursor.style.height = '20px';
+    ring.style.width = '60px'; ring.style.height = '60px';
+    ring.style.borderColor = 'rgba(0,229,255,0.8)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '12px'; cursor.style.height = '12px';
+    ring.style.width = '40px'; ring.style.height = '40px';
+    ring.style.borderColor = 'rgba(0,229,255,0.5)';
+  });
+});
 
-    if (error) {
-      alert("Error al guardar: " + error.message);
+// ==============================
+// NAVBAR SCROLL
+// ==============================
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ==============================
+// MOBILE MENU
+// ==============================
+function toggleMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('hamburger');
+  menu.classList.toggle('hidden');
+  btn.classList.toggle('open');
+}
+
+// ==============================
+// MODAL
+// ==============================
+function openModal() {
+  document.getElementById('modal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+// ==============================
+// PRODUCT 3D TILT
+// ==============================
+function applyTilt(card) {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotX = ((y - cy) / cy) * -12;
+    const rotY = ((x - cx) / cx) * 12;
+    const inner = card.querySelector('.card-inner');
+    if (inner) inner.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    // Glow follow cursor
+    const glowX = (x / rect.width) * 100;
+    const glowY = (y / rect.height) * 100;
+    card.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(0,229,255,0.08) 0%, rgba(255,255,255,0.04) 60%)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    const inner = card.querySelector('.card-inner');
+    if (inner) inner.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+    card.style.background = 'var(--glass)';
+  });
+}
+
+// ==============================
+// RENDER SKELETON
+// ==============================
+function renderSkeletons(count = 8) {
+  const grid = document.getElementById('products-grid');
+  grid.innerHTML = Array(count).fill('').map(() => `
+    <div class="glass rounded-2xl p-5 border border-cyan-900/20">
+      <div class="skeleton h-36 w-full mb-4" style="border-radius:12px;"></div>
+      <div class="skeleton h-4 w-3/4 mb-2"></div>
+      <div class="skeleton h-3 w-1/2 mb-3"></div>
+      <div class="skeleton h-4 w-1/3"></div>
+    </div>
+  `).join('');
+}
+
+// ==============================
+// RENDER PRODUCTS
+// ==============================
+function renderProducts(products) {
+  const grid = document.getElementById('products-grid');
+  if (!products.length) {
+    grid.innerHTML = `
+      <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
+        <div style="width:64px;height:64px;background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.2);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><line x1="12" y1="17" x2="12" y2="11"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+        </div>
+        <p style="font-family:'Orbitron',monospace;font-size:0.75rem;letter-spacing:0.15em;color:rgba(0,229,255,0.5);">SIN PRODUCTOS DISPONIBLES</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = products.map((p, i) => `
+    <div class="product-card glass rounded-2xl overflow-hidden border border-cyan-900/30 cursor-pointer"
+         style="animation:fadeInUp 0.5s ease forwards ${i * 0.07}s;opacity:0;">
+      <div class="card-inner">
+        <!-- Image placeholder with camera SVG -->
+        <div class="card-image p-6 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(0,229,255,0.05),rgba(0,191,255,0.02));border-bottom:1px solid rgba(0,229,255,0.1);height:140px;">
+          <div style="position:relative;">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(0,229,255,0.5)" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <div style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--accent-cyan);border-radius:50%;animation:pulseGlow 2s infinite;"></div>
+          </div>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center justify-between mb-1">
+            <span style="font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--accent-cyan);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:100px;">${p.marca}</span>
+          </div>
+          <h3 class="font-bold text-white mt-2 mb-1 text-sm leading-snug">${p.nombre_equipo}</h3>
+          <p class="text-gray-500 text-xs mb-3 font-mono">${p.modelo}</p>
+          <div class="flex items-center justify-between">
+            <span style="font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:700;color:#fff;">$${p.precio.toLocaleString()}</span>
+            <button onclick="openModal()" class="text-xs px-3 py-1.5 rounded-lg transition-all hover:bg-cyan-500 hover:text-slate-900"
+              style="border:1px solid rgba(0,229,255,0.3);color:var(--accent-cyan);font-family:'Rajdhani',sans-serif;font-weight:600;">
+              Cotizar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Apply 3D tilt to each card
+  document.querySelectorAll('.product-card').forEach(applyTilt);
+}
+
+// ==============================
+// FILTER PRODUCTS
+// ==============================
+function filterProducts(brand) {
+  currentFilter = brand;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    const isActive = btn.dataset.brand === brand;
+    btn.classList.toggle('active-filter', isActive);
+    btn.style.borderColor = isActive ? 'rgba(0,229,255,0.6)' : '';
+    btn.style.color = isActive ? 'var(--accent-cyan)' : '';
+    btn.style.boxShadow = isActive ? '0 0 10px rgba(0,229,255,0.2)' : '';
+  });
+  const filtered = brand === 'all' ? allProducts : allProducts.filter(p => p.marca === brand);
+  renderProducts(filtered);
+}
+
+// ==============================
+// LOAD PRODUCTS FROM SUPABASE OR DEMO
+// ==============================
+async function loadProducts() {
+  renderSkeletons();
+  if (supabaseClient && SUPABASE_URL !== 'https://TU_PROYECTO.supabase.co') {
+    try {
+      const { data, error } = await supabaseClient.from('INVENTARIO').select('nombre_equipo, marca, modelo, precio');
+      if (error) throw error;
+      allProducts = data || [];
+    } catch (e) {
+      console.warn('Error cargando desde Supabase, usando datos demo:', e);
+      allProducts = DEMO_PRODUCTS;
+    }
+  } else {
+    // Simulate async load
+    await new Promise(r => setTimeout(r, 900));
+    allProducts = DEMO_PRODUCTS;
+  }
+  renderProducts(allProducts);
+}
+
+// ==============================
+// FORM SUBMIT
+// ==============================
+async function submitForm(e) {
+  e.preventDefault();
+  const nombre = document.getElementById('f-nombre').value.trim();
+  const servicio = document.getElementById('f-servicio').value;
+  const mensaje = document.getElementById('f-mensaje').value.trim();
+  let valid = true;
+
+  document.getElementById('err-nombre').classList.toggle('hidden', !!nombre);
+  document.getElementById('err-servicio').classList.toggle('hidden', !!servicio);
+  document.getElementById('err-mensaje').classList.toggle('hidden', !!mensaje);
+  if (!nombre || !servicio || !mensaje) return;
+
+  const btn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+  btnText.innerHTML = '<svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Enviando...';
+  btn.disabled = true;
+
+  try {
+    // Auth check placeholder:
+    // const { data: { session } } = await supabaseClient.auth.getSession();
+    // if (!session) { throw new Error('Requiere autenticación'); }
+
+    if (supabaseClient && SUPABASE_URL !== 'https://TU_PROYECTO.supabase.co') {
+      const { error } = await supabaseClient.from('registros_contacto').insert([{ nombre, servicio, mensaje }]);
+      if (error) throw error;
     } else {
-      alert("¡Equipo registrado con éxito!");
-      form.reset();
+      await new Promise(r => setTimeout(r, 1200)); // Demo delay
+    }
+
+    document.getElementById('form-success').classList.remove('hidden');
+    document.getElementById('form-error').classList.add('hidden');
+    document.getElementById('contact-form').reset();
+  } catch (err) {
+    console.error('Error al enviar:', err);
+    document.getElementById('form-error').classList.remove('hidden');
+    document.getElementById('form-success').classList.add('hidden');
+  } finally {
+    btnText.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar Mensaje`;
+    btn.disabled = false;
+  }
+}
+
+// ==============================
+// SCROLL REVEAL
+// ==============================
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
     }
   });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
+
+// ==============================
+// COUNTER ANIMATION
+// ==============================
+function animateCounter(el, target) {
+  let start = 0;
+  const duration = 2000;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target) + (el.parentElement.querySelector('.text-gray-400')?.textContent === 'Hrs Soporte' ? '/7' : '+');
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target + (target === 24 ? '/7' : '+');
+  };
+  requestAnimationFrame(step);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.target);
+      animateCounter(el, target);
+      counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
+
+// ==============================
+// FADE IN UP KEYFRAME
+// ==============================
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(style);
+
+// ==============================
+// SERVICE CARD 3D HOVER
+// ==============================
+document.querySelectorAll('.service-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = `perspective(800px) rotateY(${x * 15}deg) rotateX(${-y * 15}deg) translateZ(10px)`;
+    const icon = card.querySelector('.card-icon');
+    if (icon) icon.style.transform = `translateZ(20px) scale(1.1)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+    const icon = card.querySelector('.card-icon');
+    if (icon) icon.style.transform = '';
+  });
+});
+
+// ==============================
+// INIT
+// ==============================
+loadProducts();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Usamos 'supabase' a secas, que es como lo carga la librería de arriba
+  // Usamos 'supabase' a secas, que es como lo carga la librería de arribaA
   const supabaseUrl = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
-  const supabaseKey = 'sb_publishable_UszbWvU6PAHV7NC6Dn51og_NQoGp...'; // <--- PEGA AQUÍ TU LLAVE REAL de la imagen image_cd4376.png
+  const supabaseKey = 'sb_publishable_UszbWvU6PAHV7NC6Dn51og_NQoGpOJD'; // <--- PEGA AQUÍ TU LLAVE REAL de la imagen image_cd4376.png
   
   const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
