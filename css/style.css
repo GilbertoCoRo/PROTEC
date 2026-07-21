@@ -160,3 +160,14 @@ label.lbl{display:block;font-family:'Orbitron',monospace;font-size:.6rem;letter-
 /* MOBILE MENU */
 #mob-menu{position:fixed;inset:72px 0 0 0;z-index:95;transform:translateX(-100%);transition:transform .35s ease;overflow-y:auto;}
 #mob-menu.open{transform:translateX(0);}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3), 0 0 40px rgba(0, 229, 255, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 45px rgba(0, 229, 255, 0.7), 0 0 90px rgba(0, 229, 255, 0.3);
+    transform: scale(1.03);
+  }
+}

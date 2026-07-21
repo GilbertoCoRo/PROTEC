@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTEC - Panel de Administración</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ESTILOS ESPECÍFICOS DEL ADMIN (Manteniendo tu diseño base) */
+        .admin-layout { display: flex; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-deep);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .sidebar a, .menu-item, .submenu-item {
+            display: block; padding: 0.8rem 1rem; color: var(--text-muted); 
+            text-decoration: none; margin-bottom: 0.2rem; border-radius: var(--radius); 
+            transition: 0.2s; cursor: pointer;
+        }
+        .sidebar a:hover, .menu-item:hover, .submenu-item:hover, .menu-item.active, .submenu-item.active {
+            background: var(--bg-hover); color: var(--accent);
+        }
+        .menu-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); padding: 1rem 1rem 0.5rem; font-weight: 600; letter-spacing: 1px; }
+        .submenu { display: none; padding-left: 1rem; border-left: 2px solid var(--border); margin-left: 1rem; margin-bottom: 0.5rem; }
+        .submenu.open { display: block; }
+        
+        /* Contenido Principal */
+        .main-content { flex: 1; margin-left: 280px; padding: 2rem; }
+        
+        /* Secciones y Tabs */
+        .admin-section { display: none; animation: fadeIn 0.3s ease; }
+        .admin-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .service-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .tab-btn { padding: 0.6rem 1.2rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-weight: 500; border-radius: 6px; }
+        .tab-btn.active { background: var(--bg-card); color: var(--accent); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Tarjetas de Planes */
+        .plan-edit-card { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 1rem; }
+        
+        /* Tablas Admin */
+        .admin-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: var(--radius); overflow: hidden; margin-top: 1rem; }
+        .admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .admin-table th { background: var(--bg-hover); color: var(--accent); font-size: 0.85rem; text-transform: uppercase; }
+        
+        /* Botones */
+        .btn-action { padding: 0.4rem 0.8rem; border-radius: 4px; border: none; cursor: pointer; font-size: 0.8rem; margin-right: 5px; }
+        .btn-edit { background: var(--accent); color: var(--bg-dark); }
+        .btn-delete { background: #ff5a5a; color: white; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--bg-card); padding: 2rem; border-radius: var(--radius); width: 90%; max-width: 600px; position: relative; border: 1px solid var(--accent); max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; color: var(--text-muted); }
+        .image-preview { width: 100%; max-height: 150px; object-fit: contain; margin: 10px 0; background: #000; border-radius: 4px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-layout">
+        <!-- BARRA LATERAL -->
+        <nav class="sidebar">
+            <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent); margin-bottom: 2rem; text-align:center;">PROTEC ADMIN</div>
+            
+            <a href="#" class="active" onclick="showGlobal('dashboard')">📊 Dashboard</a>
+            <a href="#" onclick="showGlobal('productos')">📷 Cámaras y Equipos</a>
+            <a href="#" onclick="showGlobal('kits')">📦 Kits de Instalación</a>
+            <a href="#" onclick="showGlobal('solicitudes')">📨 Solicitudes</a>
+            <a href="#" onclick="showGlobal('marcas')">🏷️ Gestión de Marcas</a>
+            
+            <div class="menu-title" style="margin-top: 2rem;">🗂️ Gestión por Servicio</div>
+            
+            <div class="menu-item" onclick="toggleSubmenu('cctv-menu')">📷 CCTV</div>
+            <div id="cctv-menu" class="submenu">
+                <div class="submenu-item" onclick="showService('cctv', 'planes')">💰 Planes</div>
+                <div class="submenu-item" onclick="showService('cctv', 'galeria')">🖼️ Galería</div>
+                <div class="submenu-item" onclick="showService('cctv', 'contenido')">📄 Contenido</div>
+            </div>
+
+            <div class="menu-item" onclick="toggleSubmenu('pos-menu')">💳 POS</div>
+            <div id="pos-menu" class="submenu">
+                <div class="submenu-item" onclick="showService('pos', 'planes')">💰 Planes</div>
+                <div class="submenu-item" onclick="showService('pos', 'galeria')">🖼️ Galería</div>
+                <div class="submenu-item" onclick="showService('pos', 'contenido')">📄 Contenido</div>
+            </div>
+
+            <div class="menu-item" onclick="toggleSubmenu('web-menu')">🌐 Web</div>
+            <div id="web-menu" class="submenu">
+                <div class="submenu-item" onclick="showService('web', 'planes')">💰 Planes</div>
+                <div class="submenu-item" onclick="showService('web', 'portafolio')">🖼️ Portafolio</div>
+                <div class="submenu-item" onclick="showService('web', 'contenido')">📄 Contenido</div>
+            </div>
+
+            <div class="menu-item" onclick="toggleSubmenu('mant-menu')">🔧 Mantenimiento</div>
+            <div id="mant-menu" class="submenu">
+                <div class="submenu-item" onclick="showService('mant', 'planes')">💰 Planes</div>
+                <div class="submenu-item" onclick="showService('mant', 'galeria')">🖼️ Galería</div>
+                <div class="submenu-item" onclick="showService('mant', 'contenido')">📄 Contenido</div>
+            </div>
+
+            <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                <a href="index.html" style="color: var(--text-primary);">🌐 Ver Sitio Web</a>
+            </div>
+            <!-- Separador y botón de logout -->
+            <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                <a href="#" onclick="cerrarSesion()" style="color: #ff5a5a; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;">
+                    🚪 Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- DASHBOARD -->
+            <div id="global-dashboard" class="admin-section active">
+                <h2>Resumen del Sistema</h2>
+                <div class="grid-3">
+                    <div class="card text-center"><h3 class="accent" id="countProductos">0</h3><p>PRODUCTOS</p></div>
+                    <div class="card text-center"><h3 class="accent" id="countKits">0</h3><p>KITS</p></div>
+                    <div class="card text-center"><h3 class="accent" id="countSolicitudes">3</h3><p>SOLICITUDES</p></div>
+                </div>
+            </div>
+
+            <!-- PRODUCTOS -->
+            <div id="global-productos" class="admin-section">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <h2>Inventario de Cámaras</h2>
+                    <button class="btn btn-primary" onclick="openModal('modalProducto')">+ Nuevo Producto</button>
+                </div>
+                <table class="admin-table">
+                    <thead><tr><th>Imagen</th><th>Nombre</th><th>Marca</th><th>Modelo</th><th>Precio</th><th>Acciones</th></tr></thead>
+                    <tbody id="tablaProductos"></tbody>
+                </table>
+            </div>
+
+            <!-- KITS -->
+            <div id="global-kits" class="admin-section">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <h2>Kits de Instalación</h2>
+                    <button class="btn btn-primary" onclick="openModal('modalKit')">+ Nuevo Kit</button>
+                </div>
+                <table class="admin-table">
+                    <thead><tr><th>Nombre</th><th>Marca</th><th>Precio</th><th>Acciones</th></tr></thead>
+                    <tbody id="tablaKits"></tbody>
+                </table>
+            </div>
+
+            <!-- SOLICITUDES -->
+            <div id="global-solicitudes" class="admin-section">
+                <h2>📨 Solicitudes Recibidas</h2>
+                <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="filter-btn active" onclick="filtrarSolicitudes('todos', this)">Todos</button>
+                    <button class="filter-btn" onclick="filtrarSolicitudes('CCTV', this)">CCTV</button>
+                    <button class="btn-filter" onclick="filtrarSolicitudes('POS', this)">POS</button>
+                    <button class="btn-filter" onclick="filtrarSolicitudes('Web', this)">Web</button>
+                    <button class="btn-filter" onclick="filtrarSolicitudes('Mantenimiento', this)">Mantenimiento</button>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Servicio</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Detalles</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSolicitudes"></tbody>
+                </table>
+            </div>
+
+            <!-- MARCAS -->
+            <div id="global-marcas" class="admin-section">
+                <h2>Gestión de Marcas</h2>
+                <form id="formMarca" style="display:flex;gap:10px;max-width:500px;margin-bottom:2rem;">
+                    <input type="text" id="inputMarca" class="form-control" required placeholder="Ej: Hikvision...">
+                    <button type="submit" class="btn btn-primary">Agregar</button>
+                </form>
+                <table class="admin-table"><thead><tr><th>Marca</th><th>Acciones</th></tr></thead><tbody id="tablaMarcas"></tbody></table>
+            </div>
+
+            <!-- SECCIONES POR SERVICIO (CCTV, POS, WEB, MANT) -->
+            <!-- CCTV -->
+            <div id="service-cctv" class="admin-section">
+                <h2>📷 Gestión CCTV</h2>
+                <div class="service-tabs">
+                    <button class="tab-btn active" onclick="switchTab('cctv', 'planes', this)">Planes</button>
+                    <button class="tab-btn" onclick="switchTab('cctv', 'galeria', this)">Galería</button>
+                    <button class="tab-btn" onclick="switchTab('cctv', 'contenido', this)">Contenido</button>
+                </div>
+                <div id="cctv-planes" class="tab-content active"><div id="plans-cctv-container" class="grid-2"></div></div>
+                <div id="cctv-galeria" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('cctv')">+ Foto</button><div id="galeria-cctv-container" class="grid-3" style="margin-top:1rem;"></div></div>
+                <div id="cctv-contenido" class="tab-content">
+                    <div class="card">
+                        <div class="form-group"><label>Título</label><input type="text" id="cctv-title"></div>
+                        <div class="form-group"><label>Descripción</label><textarea id="cctv-desc" rows="3"></textarea></div>
+                        <button class="btn btn-primary" onclick="saveContent('cctv')">Guardar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POS -->
+            <div id="service-pos" class="admin-section">
+                <h2>💳 Gestión POS</h2>
+                <div class="service-tabs">
+                    <button class="tab-btn active" onclick="switchTab('pos', 'planes', this)">Planes</button>
+                    <button class="tab-btn" onclick="switchTab('pos', 'galeria', this)">Galería</button>
+                    <button class="tab-btn" onclick="switchTab('pos', 'contenido', this)">Contenido</button>
+                </div>
+                <div id="pos-planes" class="tab-content active"><div id="plans-pos-container" class="grid-2"></div></div>
+                <div id="pos-galeria" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('pos')">+ Foto</button><div id="galeria-pos-container" class="grid-3" style="margin-top:1rem;"></div></div>
+                <div id="pos-contenido" class="tab-content">
+                    <div class="card">
+                        <div class="form-group"><label>Título</label><input type="text" id="pos-title"></div>
+                        <div class="form-group"><label>Descripción</label><textarea id="pos-desc" rows="3"></textarea></div>
+                        <button class="btn btn-primary" onclick="saveContent('pos')">Guardar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEB -->
+            <div id="service-web" class="admin-section">
+                <h2>🌐 Gestión Web</h2>
+                <div class="service-tabs">
+                    <button class="tab-btn active" onclick="switchTab('web', 'planes', this)">Planes</button>
+                    <button class="tab-btn" onclick="switchTab('web', 'portafolio', this)">Portafolio</button>
+                    <button class="tab-btn" onclick="switchTab('web', 'contenido', this)">Contenido</button>
+                </div>
+                <div id="web-planes" class="tab-content active"><div id="plans-web-container" class="grid-2"></div></div>
+                <div id="web-portafolio" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('web')">+ Proyecto</button><div id="galeria-web-container" class="grid-3" style="margin-top:1rem;"></div></div>
+                <div id="web-contenido" class="tab-content">
+                    <div class="card">
+                        <div class="form-group"><label>Título</label><input type="text" id="web-title"></div>
+                        <div class="form-group"><label>Descripción</label><textarea id="web-desc" rows="3"></textarea></div>
+                        <button class="btn btn-primary" onclick="saveContent('web')">Guardar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MANTENIMIENTO -->
+            <div id="service-mant" class="admin-section">
+                <h2>🔧 Gestión Mantenimiento</h2>
+                <div class="service-tabs">
+                    <button class="tab-btn active" onclick="switchTab('mant', 'planes', this)">Planes</button>
+                    <button class="tab-btn" onclick="switchTab('mant', 'galeria', this)">Galería</button>
+                    <button class="tab-btn" onclick="switchTab('mant', 'contenido', this)">Contenido</button>
+                </div>
+                <div id="mant-planes" class="tab-content active"><div id="plans-mant-container" class="grid-2"></div></div>
+                <div id="mant-galeria" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('mant')">+ Foto</button><div id="galeria-mant-container" class="grid-3" style="margin-top:1rem;"></div></div>
+                <div id="mant-contenido" class="tab-content">
+                    <div class="card">
+                        <div class="form-group"><label>Título</label><input type="text" id="mant-title"></div>
+                        <div class="form-group"><label>Descripción</label><textarea id="mant-desc" rows="3"></textarea></div>
+                        <button class="btn btn-primary" onclick="saveContent('mant')">Guardar</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODALES -->
+    <div id="modalProducto" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalProducto')">&times;</span>
+            <h3 id="titleProdModal">Agregar Producto</h3>
+            <form id="formProducto">
+                <input type="hidden" id="prodId">
+                <div class="form-group"><label>Nombre</label><input type="text" id="prodNombre" required></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div class="form-group"><label>Marca</label><select id="prodMarca" class="form-control dynamic-brand-select" required></select></div>
+                    <div class="form-group"><label>Tipo</label><select id="prodTipo"><option value="equipo">Equipo</option><option value="kit">Kit</option></select></div>
+                </div>
+                <div class="form-group"><label>Modelo</label><input type="text" id="prodModelo"></div>
+                <div class="form-group"><label>Precio</label><input type="number" id="prodPrecio" required></div>
+                <div class="form-group"><label>Imagen</label><input type="file" id="prodImagen" accept="image/*" onchange="previewImage(this, 'previewProd')"><img id="previewProd" class="image-preview"><input type="hidden" id="prodImagenBase64"></div>
+                <div class="form-group" style="background:var(--bg-hover);padding:10px;border-radius:5px;"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" id="prodEnOferta" style="width:20px;height:20px;"> ¿Oferta?</label></div>
+                <div class="form-group" id="groupPrecioOferta" style="display:none;"><label style="color:#ff5a5a;">Precio Oferta</label><input type="number" id="prodPrecioOferta"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalKit" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalKit')">&times;</span>
+            <h3>Agregar Kit</h3>
+            <form id="formKit">
+                <input type="hidden" id="kitId">
+                <div class="form-group"><label>Nombre</label><input type="text" id="kitNombre" required></div>
+                <div class="form-group"><label>Marca</label><select id="kitMarca" class="form-control dynamic-brand-select" required></select></div>
+                <div class="form-group"><label>Descripción</label><textarea id="kitDesc" rows="3"></textarea></div>
+                <div class="form-group"><label>Precio</label><input type="number" id="kitPrecio" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalGaleria" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalGaleria')">&times;</span>
+            <h3>Agregar Imagen/Proyecto</h3>
+            <form id="formGaleria">
+                <input type="hidden" id="galeriaServicio">
+                <div class="form-group"><label>Título</label><input type="text" id="galeriaTitulo" required></div>
+                <div class="form-group"><label>Descripción</label><textarea id="galeriaDesc" rows="2"></textarea></div>
+                <div class="form-group"><label>Imagen</label><input type="file" id="galeriaImagen" accept="image/*" required onchange="previewImage(this, 'previewGaleria')"><img id="previewGaleria" class="image-preview"><input type="hidden" id="galeriaImagenBase64"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // =========================================
+// GESTIÓN DE SOLICITUDES
+// =========================================
+function renderSolicitudes(filtro = 'todos') {
+    const tbody = document.getElementById('tablaSolicitudes');
+    if(!tbody) return;
+    
+    let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
+    
+    // Filtrar por servicio si es necesario
+    if(filtro !== 'todos') {
+        solicitudes = solicitudes.filter(s => s.servicio === filtro);
+    }
+    
+    if(solicitudes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 2rem;">No hay solicitudes registradas</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = solicitudes.map(s => `
+        <tr>
+            <td>${s.fecha}</td>
+            <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
+            <td>${s.nombre}</td>
+            <td>${s.telefono}</td>
+            <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
+            <td>
+                <button class="btn-action btn-edit" onclick="verDetalleSolicitud(${s.id})">Ver</button>
+                <button class="btn-action btn-delete" onclick="eliminarSolicitud(${s.id})">Eliminar</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filtrarSolicitudes(servicio, btn) {
+    document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderSolicitudes(servicio);
+}
+
+function verDetalleSolicitud(id) {
+    const solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
+    solicitudes = solicitudes.filter(s => s.id != id);
+    if(!s) return;
+    
+    let detalles = `📋 SOLICITUD #${s.id}\n`;
+    detalles += `📅 Fecha: ${s.fecha}\n`;
+    detalles += `🔧 Servicio: ${s.servicio}\n`;
+    detalles += `👤 Nombre: ${s.nombre}\n`;
+    detalles += `📞 Teléfono: ${s.telefono}\n`;
+    
+    // Agregar campos dinámicos
+    Object.keys(s).forEach(key => {
+        if(!['id','fecha','servicio','nombre','telefono','mensaje'].includes(key) && s[key]) {
+            detalles += `\n📌 ${key}: ${s[key]}`;
+        }
+    });
+    
+    if(s.mensaje) detalles += `\n\n💬 Mensaje:\n${s.mensaje}`;
+    
+    alert(detalles);
+}
+
+function eliminarSolicitud(id) {
+    if(confirm('¿Eliminar esta solicitud?')) {
+        let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
+        solicitudes = solicitudes.filter(s => s.id !== id);
+        localStorage.setItem('protec_solicitudes', JSON.stringify(solicitudes));
+        renderSolicitudes();
+    }
+}
+// =========================================
+// ACTIVAR SOLICITUDES AL HACER CLIC
+// =========================================
+// Buscamos el enlace "Solicitudes" en el sidebar y le agregamos el evento
+document.addEventListener('DOMContentLoaded', () => {
+    const linkSolicitudes = Array.from(document.querySelectorAll('.sidebar a'))
+        .find(a => a.textContent.includes('Solicitudes'));
+    
+    if(linkSolicitudes) {
+        linkSolicitudes.addEventListener('click', () => {
+            // Pequeño retraso para asegurar que la sección ya es visible
+            setTimeout(() => {
+                renderSolicitudes();
+            }, 100);
+        });
+    }
+});
+
+// Cargar solicitudes al abrir la sección
+
+
+    // Verificación al inicio de admin.html
+    (function verificarSesion() {
+        // Usar la MISMA clave: 'protec_auth'
+        const auth = localStorage.getItem('protec_auth');
+        if(auth !== 'true') {
+            window.location.replace('login.html');
+            return false;
+        }
+        return true;
+    })();
+
+    // Luego en DOMContentLoaded...
+    document.addEventListener('DOMContentLoaded', () => {
+        // Doble verificación
+        if(localStorage.getItem('protec_auth') !== 'true') {
+            window.location.replace('login.html');
+            return;
+        }
+        
+        // Cargar admin normal...
+        renderProductos(); 
+        renderKits(); 
+        // ... etc
+    });
+// Función para cerrar sesión
+function cerrarSesion() {
+    localStorage.removeItem('protec_auth');
+    window.location.href = 'login.html';
+}
+    // =========================================
+    // 1. DATOS Y VARIABLES
+    // =========================================
+    let productos = JSON.parse(localStorage.getItem('protec_productos')) || [];
+    let marcas = JSON.parse(localStorage.getItem('protec_marcas')) || [];
+    let galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
+    
+    // Inicializar contenido si no existe
+    let contenido = JSON.parse(localStorage.getItem('protec_contenido')) || {};
+    if(!contenido.cctv) contenido.cctv = { title: 'Sistemas de Videovigilancia', desc: 'Instalaciones profesionales con cámaras HD/IP, NVR/DVR y acceso remoto.' };
+    if(!contenido.pos) contenido.pos = { title: 'Sistemas POS', desc: 'Control total de tu negocio desde un solo sistema. Ventas, inventario y reportes en una interfaz intuitiva.' };
+    if(!contenido.web) contenido.web = { title: 'Desarrollo Web & Apps', desc: 'Creamos plataformas digitales que generan resultados reales. Desde landing pages hasta sistemas empresariales complejos.' };
+    if(!contenido.mant) contenido.mant = { title: 'Mantenimiento & Soporte', desc: 'Atención técnica especializada disponible las 24 horas. Mantenemos tus sistemas operativos y seguros.' };
+    localStorage.setItem('protec_contenido', JSON.stringify(contenido));
+    
+    // Inicializar planes si no existen
+    let planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
+    if(!planes.cctv) planes.cctv = [
+        { nombre: 'BÁSICO', precio: '8500', caracteristicas: ['4 Cámaras HD 1080p','DVR 4 canales','Disco 1TB','App móvil'], activo: true },
+        { nombre: 'PRO ⭐', precio: '18000', caracteristicas: ['8 Cámaras 4K','NVR 8 canales IP','Disco 4TB','Visión nocturna 60m','Detección movimiento IA'], activo: true },
+        { nombre: 'ENTERPRISE', precio: '45000', caracteristicas: ['16-64 Cámaras','NVR dedicado','RAID + Respaldo nube','Análisis inteligente IA','Soporte prioritario 24/7'], activo: true }
+    ];
+    if(!planes.pos) planes.pos = [
+        { nombre: 'STARTER', precio: '5500', caracteristicas: ['1 Terminal','Inventario básico','Reportes diarios'], activo: true },
+        { nombre: 'BUSINESS ⭐', precio: '12000', caracteristicas: ['3 Terminales','CFDI 4.0','Multi-almacén','CRM básico'], activo: true },
+        { nombre: 'ENTERPRISE', precio: '0', caracteristicas: ['Terminales ilimitadas','Multi-sucursal','API + integraciones','Soporte dedicado'], activo: true }
+    ];
+    if(!planes.web) planes.web = [
+        { nombre: 'LANDING', precio: '8000', caracteristicas: ['Diseño a medida','Responsive','SEO básico','Formulario'], activo: true },
+        { nombre: 'WEB PRO ⭐', precio: '22000', caracteristicas: ['CMS personalizado','Blog/E-Commerce','Panel admin','SEO avanzado'], activo: true },
+        { nombre: 'SISTEMA', precio: '45000', caracteristicas: ['Software a medida','App móvil','API REST','Mantenimiento 1 año'], activo: true }
+    ];
+    if(!planes.mant) planes.mant = [
+        { nombre: 'BÁSICO', precio: '800', caracteristicas: ['1 visita mensual','Soporte remoto','Hasta 8 cámaras'], activo: true },
+        { nombre: 'PLUS ⭐', precio: '1800', caracteristicas: ['2 visitas mensuales','Prioridad','Hasta 24 cámaras + POS','Respaldo nube'], activo: true },
+        { nombre: 'TOTAL', precio: '3500', caracteristicas: ['Visitas ilimitadas','Técnico dedicado','Equipos sin límite','Monitoreo 24/7'], activo: true }
+    ];
+    localStorage.setItem('protec_planes', JSON.stringify(planes));
+
+    // =========================================
+    // 2. NAVEGACIÓN
+    // =========================================
+    function toggleSubmenu(id) {
+        // Cerrar todos los submenús excepto el clickeado
+        document.querySelectorAll('.submenu').forEach(s => { 
+            if(s.id !== id) s.classList.remove('open'); 
+        });
+        // Toggle del submenú actual
+        const submenu = document.getElementById(id);
+        if(submenu) submenu.classList.toggle('open');
+    }
+
+    function showGlobal(section) {
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+        
+        const el = document.getElementById('global-' + section);
+        if(el) {
+            el.classList.add('active');
+            if(section === 'productos') renderProductos();
+            if(section === 'kits') renderKits();
+            if(section === 'marcas') renderMarcas();
+        }
+        
+        if(window.event && window.event.target && window.event.target.classList) {
+            window.event.target.classList.add('active');
+        }
+    }
+
+    function showService(servicio, tab) {
+        // Ocultar todas las secciones
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        
+        // Mostrar sección del servicio
+        const el = document.getElementById('service-' + servicio);
+        if(el) el.classList.add('active');
+        
+        // Actualizar título según el servicio
+        const titulos = {
+            'cctv': '📷 Gestión CCTV',
+            'pos': '💳 Gestión POS',
+            'web': '🌐 Gestión Web',
+            'mant': '🔧 Gestión Mantenimiento'
+        };
+        const tituloEl = document.querySelector('.admin-section.active h2');
+        if(tituloEl && titulos[servicio]) {
+            tituloEl.textContent = titulos[servicio];
+        }
+        
+        // Activar tab por defecto
+        const tabBtn = document.querySelector(`#service-${servicio} .service-tabs .tab-btn`);
+        if(tabBtn) switchTab(servicio, tab, tabBtn);
+        else loadServiceContent(servicio, tab);
+        
+        // Marcar menú activo
+        if(window.event && window.event.target && window.event.target.classList) {
+            window.event.target.classList.add('active');
+        }
+    }
+
+    function switchTab(servicio, tab, btnElement) {
+        // Ocultar todos los tabs del servicio
+        document.querySelectorAll(`#service-${servicio} .tab-content`).forEach(c => c.classList.remove('active'));
+        document.querySelectorAll(`#service-${servicio} .tab-btn`).forEach(b => b.classList.remove('active'));
+        
+        // Mostrar tab activo
+        const content = document.getElementById(`${servicio}-${tab}`);
+        if(content) content.classList.add('active');
+        if(btnElement && btnElement.classList) btnElement.classList.add('active');
+        
+        // Cargar contenido
+        loadServiceContent(servicio, tab);
+    }
+
+    function loadServiceContent(servicio, tab) {
+        if(tab === 'planes') renderPlanes(servicio);
+        if(tab === 'galeria' || tab === 'portafolio') renderGaleria(servicio);
+        if(tab === 'contenido') cargarContenido(servicio);
+    }
+
+    // =========================================
+    // 3. MARCAS
+    // =========================================
+    function renderMarcas() {
+        const tbody = document.getElementById('tablaMarcas'); 
+        if(!tbody) return;
+        tbody.innerHTML = marcas.map((m,i) => `<tr><td>${m}</td><td><button class="btn-action btn-delete" onclick="deleteMarca(${i})">Eliminar</button></td></tr>`).join('') || '<tr><td colspan="2" style="text-align:center">Sin marcas</td></tr>';
+    }
+    
+    document.getElementById('formMarca')?.addEventListener('submit', e => {
+        e.preventDefault();
+        const nombre = document.getElementById('inputMarca').value.trim();
+        if(!nombre || marcas.some(m => m.toLowerCase()===nombre.toLowerCase())) return alert('Inválida o duplicada');
+        marcas.push(nombre); 
+        localStorage.setItem('protec_marcas', JSON.stringify(marcas));
+        renderMarcas(); 
+        actualizarSelectores(); 
+        e.target.reset();
+    });
+    
+    function deleteMarca(i) { 
+        marcas.splice(i,1); 
+        localStorage.setItem('protec_marcas', JSON.stringify(marcas)); 
+        renderMarcas(); 
+        actualizarSelectores(); 
+    }
+    
+    function actualizarSelectores() {
+        document.querySelectorAll('.dynamic-brand-select').forEach(sel => {
+            sel.innerHTML = '<option value="">Seleccionar...</option>';
+            marcas.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+        });
+    }
+
+    // =========================================
+    // 4. PRODUCTOS Y KITS
+    // =========================================
+    function renderProductos() {
+        const tbody = document.getElementById('tablaProductos'); 
+        if(!tbody) return;
+        const items = productos.filter(p => p.tipo !== 'kit');
+        tbody.innerHTML = items.map(p => {
+            const idx = productos.indexOf(p);
+            return `<tr><td>${p.imagen ? `<img src="${p.imagen}" style="width:40px;height:40px;object-fit:cover">` : '📷'}</td><td>${p.nombre}</td><td>${p.marca}</td><td>${p.modelo}</td><td>$${p.precio}</td><td><button class="btn-action btn-delete" onclick="deleteProd(${idx})">Eliminar</button></td></tr>`;
+        }).join('') || '<tr><td colspan="6" style="text-align:center">Sin productos</td></tr>';
+        document.getElementById('countProductos').innerText = items.length;
+    }
+    
+    function renderKits() {
+        const tbody = document.getElementById('tablaKits'); 
+        if(!tbody) return;
+        const items = productos.filter(p => p.tipo === 'kit');
+        tbody.innerHTML = items.map(p => {
+            const idx = productos.indexOf(p);
+            return `<tr><td>${p.nombre}</td><td>${p.marca}</td><td>$${p.precio}</td><td><button class="btn-action btn-delete" onclick="deleteProd(${idx})">Eliminar</button></td></tr>`;
+        }).join('') || '<tr><td colspan="4" style="text-align:center">Sin kits</td></tr>';
+        document.getElementById('countKits').innerText = items.length;
+    }
+    
+    document.getElementById('formProducto').addEventListener('submit', e => {
+        e.preventDefault();
+        const id = document.getElementById('prodId').value;
+        const nuevo = {
+            nombre: document.getElementById('prodNombre').value, 
+            marca: document.getElementById('prodMarca').value,
+            modelo: document.getElementById('prodModelo').value, 
+            tipo: document.getElementById('prodTipo').value,
+            precio: document.getElementById('prodPrecio').value, 
+            imagen: document.getElementById('prodImagenBase64').value,
+            enOferta: document.getElementById('prodEnOferta').checked, 
+            precioOferta: document.getElementById('prodPrecioOferta').value
+        };
+        if(id) productos[id] = nuevo; 
+        else productos.push(nuevo);
+        localStorage.setItem('protec_productos', JSON.stringify(productos));
+        closeModal('modalProducto'); 
+        renderProductos(); 
+        renderKits();
+    });
+    
+    function deleteProd(i) { 
+        if(confirm('¿Eliminar?')) { 
+            productos.splice(i,1); 
+            localStorage.setItem('protec_productos', JSON.stringify(productos)); 
+            renderProductos(); 
+            renderKits(); 
+        } 
+    }
+    
+    document.getElementById('formKit').addEventListener('submit', e => {
+        e.preventDefault();
+        productos.push({ 
+            nombre: document.getElementById('kitNombre').value, 
+            marca: document.getElementById('kitMarca').value, 
+            tipo: 'kit', 
+            descripcion: document.getElementById('kitDesc').value, 
+            precio: document.getElementById('kitPrecio').value 
+        });
+        localStorage.setItem('protec_productos', JSON.stringify(productos));
+        closeModal('modalKit'); 
+        renderKits();
+    });
+
+    // =========================================
+    // 5. PLANES (CORREGIDO - Separado por servicio)
+    // =========================================
+    function renderPlanes(servicio) {
+        const container = document.getElementById(`plans-${servicio}-container`); 
+        if(!container) return;
+        
+        // Asegurar que el array de planes exista
+        if(!planes[servicio]) planes[servicio] = [];
+        
+        if(planes[servicio].length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted)">No hay planes configurados. Agrega planes desde el código o localStorage.</p>';
+            return;
+        }
+        
+        container.innerHTML = planes[servicio].map((plan, idx) => `
+            <div class="plan-edit-card">
+                <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
+                    <input type="text" value="${plan.nombre}" onchange="updatePlan('${servicio}', ${idx}, 'nombre', this.value)" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--accent);font-size:1.2rem;font-weight:bold;width:70%;">
+                    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" ${plan.activo?'checked':''} onchange="updatePlan('${servicio}', ${idx}, 'activo', this.checked)"> Activo</label>
+                </div>
+                <div class="form-group"><label>Precio</label><input type="number" value="${plan.precio}" onchange="updatePlan('${servicio}', ${idx}, 'precio', this.value)"></div>
+                <div class="form-group"><label>Características (una por línea)</label><textarea rows="4" onchange="updatePlan('${servicio}', ${idx}, 'caracteristicas', this.value.split('\\n').filter(x=>x.trim()))">${(plan.caracteristicas || []).join('\n')}</textarea></div>
+            </div>
+        `).join('');
+    }
+    
+    function updatePlan(servicio, idx, campo, valor) {
+        if(!planes[servicio]) planes[servicio] = [];
+        planes[servicio][idx][campo] = valor;
+        localStorage.setItem('protec_planes', JSON.stringify(planes));
+    }
+
+    // =========================================
+    // 6. GALERÍA (CORREGIDO - Separado por servicio)
+    // =========================================
+    function renderGaleria(servicio) {
+        const container = document.getElementById(`galeria-${servicio}-container`); 
+        if(!container) return;
+        
+        // Filtrar SOLO las imágenes del servicio actual
+        const items = galeria.filter(i => i.servicio === servicio);
+        
+        if(items.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted)">No hay imágenes para este servicio. Agrega una nueva.</p>';
+            return;
+        }
+        
+        container.innerHTML = items.map((item) => {
+            const realIdx = galeria.indexOf(item);
+            return `<div class="card" style="position:relative;">
+                ${item.imagen ? `<img src="${item.imagen}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;margin-bottom:1rem;">` : ''}
+                <h4>${item.titulo}</h4>
+                <p style="font-size:0.85rem;color:var(--text-muted)">${item.descripcion||''}</p>
+                <button class="btn-action btn-delete" style="position:absolute;top:5px;right:5px;" onclick="deleteGaleria(${realIdx}, '${servicio}')">X</button>
+            </div>`;
+        }).join('');
+    }
+    
+    function openGalleryModal(servicio) {
+        document.getElementById('galeriaServicio').value = servicio;
+        openModal('modalGaleria');
+    }
+    
+    document.getElementById('formGaleria').addEventListener('submit', e => {
+        e.preventDefault();
+        const servicio = document.getElementById('galeriaServicio').value;
+        galeria.push({ 
+            titulo: document.getElementById('galeriaTitulo').value, 
+            servicio: servicio, // Guardar el servicio correcto
+            descripcion: document.getElementById('galeriaDesc').value, 
+            imagen: document.getElementById('galeriaImagenBase64').value 
+        });
+        localStorage.setItem('protec_galeria', JSON.stringify(galeria));
+        closeModal('modalGaleria'); 
+        renderGaleria(servicio); // Renderizar solo el servicio actual
+        e.target.reset();
+    });
+    
+    function deleteGaleria(idx, servicio) { 
+        galeria.splice(idx,1); 
+        localStorage.setItem('protec_galeria', JSON.stringify(galeria)); 
+        renderGaleria(servicio); 
+    }
+
+    // =========================================
+    // 7. CONTENIDO
+    // =========================================
+    function cargarContenido(servicio) {
+        const c = contenido[servicio]; 
+        if(!c) return;
+        const t = document.getElementById(`${servicio}-title`);
+        const d = document.getElementById(`${servicio}-desc`);
+        if(t) t.value = c.title;
+        if(d) d.value = c.desc;
+    }
+    
+    function saveContent(servicio) {
+        contenido[servicio] = { 
+            title: document.getElementById(`${servicio}-title`).value, 
+            desc: document.getElementById(`${servicio}-desc`).value 
+        };
+        localStorage.setItem('protec_contenido', JSON.stringify(contenido));
+        alert('✅ Contenido guardado correctamente');
+    }
+
+    // =========================================
+    // UTILIDADES
+    // =========================================
+    function openModal(id) { 
+        document.getElementById(id).style.display = 'flex'; 
+        if(id==='modalProducto') actualizarSelectores();
+    }
+    
+    function closeModal(id) { 
+        document.getElementById(id).style.display = 'none'; 
+        document.getElementById(id).querySelector('form')?.reset();
+        document.getElementById('groupPrecioOferta')?.style.setProperty('display','none');
+        document.getElementById('prodId').value = '';
+        document.getElementById('kitId').value = '';
+        document.getElementById('galeriaServicio').value = '';
+    }
+    
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => { 
+                preview.src = e.target.result; 
+                preview.style.display = 'block'; 
+                const hiddenInput = input.closest('form').querySelector('input[type="hidden"][id$="Base64"]');
+                if(hiddenInput) hiddenInput.value = e.target.result; 
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
+        document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
+    });
+
+    // INICIALIZACIÓN
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProductos(); 
+        renderKits(); 
+        renderMarcas(); 
+        actualizarSelectores();
+        // Cargar primera sección por defecto
+        showService('cctv', 'planes');
+    });
+    // =========================================
+    // CERRAR SESIÓN
+    // =========================================
+    function cerrarSesion() {
+        // Eliminar flag de autenticación
+        localStorage.removeItem('protec_auth');
+        
+        // Opcional: limpiar datos sensibles si los hubiera
+        // localStorage.removeItem('protec_user');
+        
+        // Redirigir al login o al home
+        window.location.href = 'login.html'; // o 'index.html' si no tienes login.html
+    }
+</script>
+
+</body>
+</html>
