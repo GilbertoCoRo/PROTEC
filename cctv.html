@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTEC - CCTV</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos para secciones dinámicas */
+        .section-nav { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        .section-btn { padding: 0.6rem 1.2rem; background: var(--bg-card); border: none; border-radius: 6px; color: var(--text-muted); cursor: pointer; font-weight: 500; transition: 0.3s; }
+        .section-btn.active { background: var(--accent); color: var(--bg-dark); }
+        .section-content { display: none; }
+        .section-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Galería */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .gallery-item { background: var(--bg-card); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+        .gallery-img { width: 100%; height: 200px; object-fit: cover; }
+        .gallery-info { padding: 1rem; }
+        .gallery-info h4 { margin: 0 0 0.5rem 0; color: var(--text-primary); }
+        .gallery-info p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+        
+        /* Planes */
+        .plan-card { background: var(--bg-card); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border); text-align: center; position: relative; }
+        .plan-card.featured { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 245, 255, 0.1); }
+        .plan-name { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+        .plan-price { font-size: 2rem; font-weight: bold; color: var(--accent); margin: 1rem 0; }
+        .plan-price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+        .plan-features { list-style: none; padding: 0; margin: 1.5rem 0; text-align: left; }
+        .plan-features li { padding: 0.5rem 0; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        .plan-features li:last-child { border-bottom: none; }
+        .plan-features li::before { content: '✓'; color: var(--accent); margin-right: 8px; font-weight: bold; }
+        
+        /* Contacto */
+        .contact-form { max-width: 600px; margin: 0 auto; background: var(--bg-card); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .section-nav { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR (Igual que antes) -->
+<nav class="cyber-nav" style="position:sticky;top:0;z-index:1000;background:rgba(1,8,20,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 0;transition:all 0.3s;">
+  <div class="container" style="max-width:1200px;margin:0 auto;padding:0 1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
+        <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(0,245,255,0.4);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#020C1B" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:0.2em;font-size:1.2rem;text-shadow:0 0 10px rgba(0,245,255,0.5);">PROTEC</span>
+      </a>
+      <ul class="nav-links" style="display:flex;gap:1.5rem;align-items:center;list-style:none;margin:0;padding:0;">
+        <li><a href="index.html" class="nav-link" style="color:var(--text-primary);font-size:0.9rem;font-weight:500;position:relative;padding:0.5rem 0;transition:color 0.3s;">Inicio</a></li>
+        <li><a href="cctv.html" class="nav-link accent" style="color:var(--text-primary);font-size:0.9rem;font-weight:500;position:relative;padding:0.5rem 0;transition:color 0.3s;">CCTV</a></li>
+        <li><a href="pos.html" class="nav-link" style="color:var(--text-primary);font-size:0.9rem;font-weight:500;position:relative;padding:0.5rem 0;transition:color 0.3s;">POS</a></li>
+        <li><a href="web.html" class="nav-link" style="color:var(--text-primary);font-size:0.9rem;font-weight:500;position:relative;padding:0.5rem 0;transition:color 0.3s;">Web</a></li>
+        <li><a href="mantenimiento.html" class="nav-link" style="color:var(--text-primary);font-size:0.9rem;font-weight:500;position:relative;padding:0.5rem 0;transition:color 0.3s;">Mantenimiento</a></li>
+        <li><a href="login.html" class="nav-link" style="color:var(--accent-cyan);font-size:0.9rem;font-weight:600;">Admin</a></li>
+        <li><a href="#" onclick="openModal('modalCotizar')" class="cyber-btn" style="background:transparent;color:var(--accent-cyan);border:1px solid var(--accent-cyan);padding:0.6rem 1.2rem;border-radius:6px;font-weight:600;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.3s;position:relative;overflow:hidden;"><span style="position:relative;z-index:2;">Cotizar</span><span style="position:absolute;inset:0;background:var(--accent-cyan);opacity:0;transition:opacity 0.3s;z-index:1;"></span></a></li>
+      </ul>
+      <button class="mobile-toggle" onclick="toggleMobileMenu()" style="display:none;background:none;border:none;color:var(--accent-cyan);font-size:1.5rem;cursor:pointer;padding:0.5rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="neon-divider" style="height:1px;background:linear-gradient(90deg,transparent,var(--accent-cyan),var(--accent-blue),var(--accent-cyan),transparent);position:relative;box-shadow:0 0 8px var(--accent-cyan);"></div>
+  <ul class="mobile-menu" id="mobileMenu" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-deep);border-bottom:1px solid var(--border);padding:1rem 1.5rem;flex-direction:column;gap:1rem;z-index:999;">
+    <li><a href="index.html" class="nav-link" style="color:var(--text-primary);padding:0.8rem 0;border-bottom:1px solid var(--border);">Inicio</a></li>
+    <li><a href="cctv.html" class="nav-link accent" style="color:var(--text-primary);padding:0.8rem 0;border-bottom:1px solid var(--border);">CCTV</a></li>
+    <li><a href="pos.html" class="nav-link" style="color:var(--text-primary);padding:0.8rem 0;border-bottom:1px solid var(--border);">POS</a></li>
+    <li><a href="web.html" class="nav-link" style="color:var(--text-primary);padding:0.8rem 0;border-bottom:1px solid var(--border);">Web</a></li>
+    <li><a href="mantenimiento.html" class="nav-link" style="color:var(--text-primary);padding:0.8rem 0;border-bottom:1px solid var(--border);">Mantenimiento</a></li>
+    <li><a href="login.html" class="nav-link" style="color:var(--accent-cyan);padding:0.8rem 0;border-bottom:1px solid var(--border);font-weight:600;">Admin</a></li>
+    <li><a href="#" onclick="openModal('modalCotizar');toggleMobileMenu()" class="cyber-btn" style="display:block;text-align:center;background:transparent;color:var(--accent-cyan);border:1px solid var(--accent-cyan);padding:0.8rem;border-radius:6px;font-weight:600;margin-top:0.5rem;">Cotizar Ahora</a></li>
+  </ul>
+</nav>
+
+<!-- CONTENIDO PRINCIPAL -->
+<section class="section container">
+    <p class="accent" style="margin-bottom: 10px;">INICIO / SEGURIDAD CCTV</p>
+    
+    <!-- TÍTULO Y DESCRIPCIÓN DINÁMICOS -->
+    <h1 id="cctv-titulo" style="font-size: 2.5rem; margin-bottom: 20px;">Sistemas de Videovigilancia</h1>
+    <p id="cctv-descripcion" style="max-width: 600px; margin-bottom: 30px;">Instalaciones profesionales con cámaras HD/IP, NVR/DVR y acceso remoto.</p>
+
+    <!-- MENÚ LATERAL DE SECCIONES -->
+    <div class="section-nav">
+        <button class="section-btn active" onclick="switchSection('catalogo')">📦 Catálogo</button>
+        <button class="section-btn" onclick="switchSection('galeria')">🖼️ Galería</button>
+        <button class="section-btn" onclick="switchSection('precios')">💰 Precios</button>
+        <button class="section-btn" onclick="switchSection('contacto')">📞 Contacto</button>
+    </div>
+
+    <!-- SECCIÓN: CATÁLOGO -->
+    <div id="section-catalogo" class="section-content active">
+        <!-- Filtros de dos niveles -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="margin-bottom: 2rem;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">¿Qué buscas?</p>
+                <div style="display: inline-flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="filter-btn type-btn active" data-type="todos" onclick="filtrarPorTipo('todos')">Todos</button>
+                    <button class="filter-btn type-btn" data-type="equipos" onclick="filtrarPorTipo('equipos')">📷 Equipos</button>
+                    <button class="filter-btn type-btn" data-type="kits" onclick="filtrarPorTipo('kits')">📦 Kits</button>
+                </div>
+            </div>
+            <div id="filtroMarcas" style="display: none;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Filtrar por marca:</p>
+                <div id="contenedorMarcas" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;"></div>
+            </div>
+        </div>
+        <!-- Grid de productos -->
+        <div id="gridCatalogo" class="grid-3"></div>
+    </div>
+
+    <!-- SECCIÓN: GALERÍA -->
+    <div id="section-galeria" class="section-content">
+        <h2 style="margin-bottom: 2rem;">Instalaciones Realizadas</h2>
+        <div id="galleryGrid" class="gallery-grid"></div>
+    </div>
+
+    <!-- SECCIÓN: PRECIOS -->
+    <div id="section-precios" class="section-content">
+        <h2 style="margin-bottom: 1rem; text-align: center;">Planes de Instalación</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 3rem;">Precios de referencia. Cotización final según visita técnica.</p>
+        <div id="planesContainer" class="grid-3"></div>
+    </div>
+
+    <!-- SECCIÓN: CONTACTO -->
+    <form class="contact-form" onsubmit="enviarCotizacionCCTV(event)">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre *</label><input type="text" id="cctv-nombre" required></div>
+            <div class="form-group"><label>Teléfono *</label><input type="tel" id="cctv-telefono" required pattern="[0-9\s\-]{10,}"></div>
+        </div>
+        <div class="form-group">
+            <label>Tipo de Instalación</label>
+            <select id="cctv-tipo">
+                <option>Residencial</option>
+                <option>Comercial</option>
+                <option>Industrial</option>
+                <option>Otro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Número de Cámaras (aprox.)</label>
+            <input type="number" id="cctv-camaras" min="1" placeholder="Ej: 4">
+        </div>
+        <div class="form-group">
+            <label>Presupuesto Estimado (opcional)</label>
+            <input type="number" id="cctv-presupuesto" placeholder="Ej: 15000">
+        </div>
+        <div class="form-group">
+            <label>Mensaje / Detalles</label>
+            <textarea id="cctv-mensaje" rows="4" placeholder="Describe lo que necesitas..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">ENVIAR SOLICITUD</button>
+    </form>
+
+    <script>
+    function enviarCotizacionCCTV(e) {
+        e.preventDefault();
+        
+        const datos = {
+            nombre: document.getElementById('cctv-nombre').value,
+            telefono: document.getElementById('cctv-telefono').value,
+            tipo: document.getElementById('cctv-tipo').value,
+            camaras: document.getElementById('cctv-camaras').value,
+            presupuesto: document.getElementById('cctv-presupuesto').value,
+            mensaje: document.getElementById('cctv-mensaje').value
+        };
+        
+        if(guardarSolicitud('CCTV', datos)) {
+            alert('✅ Solicitud recibida. Te contactaremos en menos de 2 horas.');
+            e.target.reset();
+        }
+    }
+</script>
+</section>
+
+<!-- FOOTER (Igual que antes) -->
+<footer class="relative z-10 pt-20 pb-8 px-6" style="background:var(--bg-deep);">
+  <div class="neon-divider mb-16"></div>
+  <div class="container" style="max-width:1200px;margin:0 auto;">
+    <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2.5rem; margin-bottom: 3rem;">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#020C1B" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:0.15em;font-size:1.1rem;">PROTEC</span>
+        </div>
+        <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.6;margin-bottom:1.2rem;">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
+        <div style="display:flex;gap:10px;">
+          <a href="#" class="glass" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all 0.3s;border:1px solid transparent;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-muted);transition:color 0.3s;"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+          <a href="#" class="glass" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all 0.3s;border:1px solid transparent;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-muted);transition:color 0.3s;"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+          <a href="https://wa.me/5217711234567" class="glass" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all 0.3s;border:1px solid transparent;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-muted);transition:color 0.3s;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:1rem;text-transform:uppercase;">SERVICIOS</h4>
+        <ul style="display:flex;flex-direction:column;gap:10px;">
+          <li><a href="cctv.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Seguridad CCTV</a></li>
+          <li><a href="cctv.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Control de Acceso</a></li>
+          <li><a href="pos.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Sistemas POS</a></li>
+          <li><a href="web.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Desarrollo Web</a></li>
+          <li><a href="mantenimiento.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Mantenimiento</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:1rem;text-transform:uppercase;">EMPRESA</h4>
+        <ul style="display:flex;flex-direction:column;gap:10px;">
+          <li><a href="index.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Quiénes somos</a></li>
+          <li><a href="index.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Misión & Visión</a></li>
+          <li><a href="mantenimiento.html" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Contacto</a></li>
+          <li><a href="#" style="color:var(--text-muted);font-size:0.9rem;transition:color 0.3s;">Aviso de Privacidad</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:1rem;text-transform:uppercase;">CONTACTO</h4>
+        <ul style="display:flex;flex-direction:column;gap:12px;">
+          <li style="display:flex;align-items:flex-start;gap:10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div><div style="color:var(--text-primary);font-size:0.9rem;">771 123 4567</div><div style="color:var(--text-primary);font-size:0.9rem;">771 987 6543</div></div>
+          </li>
+          <li style="display:flex;align-items:center;gap:10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span style="color:var(--text-primary);font-size:0.9rem;">contacto@protec.mx</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style="color:var(--text-primary);font-size:0.9rem;">Ixmiquilpan & Pachuca, Hidalgo</span>
+          </li>
+          <li style="display:flex;align-items:center;gap:10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span style="color:var(--text-primary);font-size:0.9rem;">Servicio 24 horas, 365 días</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div style="position:relative;height:60px;overflow:hidden;margin-bottom:1.5rem;">
+      <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="60" style="position:absolute;bottom:0;opacity:0.15;">
+        <path fill="var(--accent-cyan)"><animate attributeName="d" dur="4s" repeatCount="indefinite" values="M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z; M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z; M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z"/></path>
+      </svg>
+    </div>
+    <div class="neon-divider" style="margin-bottom:1.5rem;"></div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;">
+      <span style="color:var(--text-muted);font-size:0.75rem;font-family:'Orbitron',monospace;letter-spacing:0.1em;text-transform:uppercase;">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
+      <div style="display:flex;align-items:center;gap:8px;"><div style="width:6px;height:6px;background:#22c55e;border-radius:50%;animation:pulseGlow 2s infinite;"></div><span style="color:var(--text-muted);font-size:0.75rem;font-family:'Orbitron',monospace;letter-spacing:0.1em;text-transform:uppercase;">SISTEMAS OPERATIVOS</span></div>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL COTIZAR (igual que antes) -->
+<div id="modalCotizar" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2000;justify-content:center;align-items:center;">
+  <div class="modal-content" style="background:var(--bg-card);padding:2rem;border-radius:var(--radius);width:90%;max-width:500px;position:relative;border:1px solid var(--accent);">
+    <span class="close-modal" onclick="closeModal('modalCotizar')" style="position:absolute;top:1rem;right:1rem;cursor:pointer;font-size:1.5rem;color:var(--text-muted);">&times;</span>
+    <h3 style="color:var(--accent);margin-bottom:1rem;">Solicitar Cotización</h3>
+    <form onsubmit="event.preventDefault(); alert('✅ Solicitud enviada'); closeModal('modalCotizar');">
+      <div class="form-group"><label>Nombre</label><input type="text" class="form-control" required></div>
+      <div class="form-group"><label>Teléfono</label><input type="tel" class="form-control" required></div>
+      <div class="form-group"><label>Servicio</label><select class="form-control"><option>CCTV</option><option>POS</option><option>Web</option><option>Mantenimiento</option></select></div>
+      <div class="form-group"><label>Mensaje</label><textarea class="form-control" rows="3"></textarea></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">ENVIAR</button>
+    </form>
+  </div>
+</div>
+
+<script>
+// =========================================
+// 1. NAVEGACIÓN ENTRE SECCIONES
+// =========================================
+function switchSection(id) {
+    document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-'+id).classList.add('active');
+    event.target.classList.add('active');
+    
+    // Cargar contenido dinámico según sección
+    if(id === 'galeria') renderizarGaleria();
+    if(id === 'precios') renderizarPlanes();
+}
+
+// =========================================
+// 2. CATÁLOGO (con imágenes)
+// =========================================
+let filtroTipoActual = 'todos';
+let filtroMarcaActual = 'todas';
+
+function renderizarBotonesMarcas() {
+    const contenedor = document.getElementById('contenedorMarcas');
+    if(!contenedor) return;
+    const marcas = JSON.parse(localStorage.getItem('protec_marcas')) || [];
+    contenedor.innerHTML = `<button class="filter-btn brand-btn active" onclick="filtrarPorMarca('todas')">Todas</button>`;
+    marcas.forEach(m => contenedor.innerHTML += `<button class="filter-btn brand-btn" onclick="filtrarPorMarca('${m.nombre}')">${m.nombre}</button>`);
+}
+
+function renderizarCatalogo() {
+    const contenedor = document.getElementById('gridCatalogo');
+    const seccionMarcas = document.getElementById('filtroMarcas');
+    if(!contenedor) return;
+    contenedor.innerHTML = '';
+    
+    const productos = JSON.parse(localStorage.getItem('protec_productos')) || [];
+    let filtrados = productos;
+    
+    if(filtroTipoActual === 'equipos') filtrados = productos.filter(p => p.tipo === 'equipo');
+    if(filtroTipoActual === 'kits') filtrados = productos.filter(p => p.tipo === 'kit');
+    if(filtroMarcaActual !== 'todas') filtrados = filtrados.filter(p => p.marca === filtroMarcaActual);
+    
+    seccionMarcas.style.display = filtroTipoActual === 'todos' ? 'none' : 'block';
+    
+    if(filtrados.length === 0) {
+        contenedor.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">No hay productos en esta categoría.</div>`;
+        return;
+    }
+    
+    filtrados.forEach(prod => {
+        const esKit = prod.tipo === 'kit';
+        const etiqueta = esKit ? '📦 KIT' : '📷 EQUIPO';
+        let precioHTML = '', badge = '';
+        
+        if(prod.enOferta && prod.precioOferta) {
+            precioHTML = `<div style="margin:15px 0;"><span style="text-decoration:line-through;color:#ff5a5a;font-size:0.9rem;">$${parseFloat(prod.precio).toLocaleString()}</span><div style="font-size:1.8rem;font-weight:bold;color:var(--accent);">$${parseFloat(prod.precioOferta).toLocaleString()}</div></div>`;
+            badge = '<span style="position:absolute;top:10px;right:10px;background:#ff5a5a;color:white;padding:4px 8px;font-size:0.7rem;border-radius:4px;font-weight:bold;">OFERTA</span>';
+        } else {
+            precioHTML = `<div style="font-size:1.8rem;font-weight:bold;color:var(--accent);margin:15px 0;">$${parseFloat(prod.precio).toLocaleString()}</div>`;
+        }
+        
+        // Imagen del producto
+        const imagenHTML = prod.imagen 
+            ? `<img src="${prod.imagen}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;margin-bottom:1rem;">` 
+            : '<div style="width:100%;height:150px;background:var(--bg-hover);border-radius:4px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;color:var(--text-muted);">📷 Sin imagen</div>';
+        
+        contenedor.innerHTML += `
+            <div class="card" style="position:relative;display:flex;flex-direction:column;min-height:320px;">
+                ${badge}
+                ${imagenHTML}
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <span style="color:var(--accent);font-size:0.75rem;font-weight:600;">${prod.marca}</span>
+                    <span style="background:var(--bg-hover);padding:2px 8px;font-size:0.7rem;border-radius:4px;">${etiqueta}</span>
+                </div>
+                <h3 style="margin:0;font-size:1.1rem;color:var(--text-primary);">${prod.nombre}</h3>
+                ${prod.descripcion && esKit ? `<p style="font-size:0.85rem;color:var(--text-muted);margin:10px 0;">${prod.descripcion}</p>` : ''}
+                ${precioHTML}
+                <button class="btn btn-outline" style="width:100%;margin-top:auto;padding:10px;">COTIZAR</button>
+            </div>
+        `;
+    });
+}
+
+function filtrarPorTipo(tipo) {
+    filtroTipoActual = tipo;
+    filtroMarcaActual = 'todas';
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.brand-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.brand-btn')?.classList.add('active');
+    renderizarCatalogo();
+}
+
+function filtrarPorMarca(marca) {
+    filtroMarcaActual = marca;
+    document.querySelectorAll('.brand-btn').forEach(b => {
+        b.classList.remove('active');
+        if((marca === 'todas' && b.textContent === 'Todas') || b.textContent === marca) b.classList.add('active');
+    });
+    renderizarCatalogo();
+}
+
+// =========================================
+// 3. GALERÍA DINÁMICA
+// =========================================
+function renderizarGaleria() {
+    const grid = document.getElementById('galleryGrid');
+    if(!grid) return;
+    
+    const galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
+    const cctvItems = galeria.filter(item => item.servicio === 'cctv');
+    
+    if(cctvItems.length === 0) {
+        grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">No hay instalaciones mostradas aún.</p>';
+        return;
+    }
+    
+    grid.innerHTML = cctvItems.map(item => `
+        <div class="gallery-item">
+            ${item.imagen ? `<img src="${item.imagen}" class="gallery-img" alt="${item.titulo}">` : ''}
+            <div class="gallery-info">
+                <h4>${item.titulo}</h4>
+                <p>${item.descripcion || ''}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+// =========================================
+// 4. PLANES DINÁMICOS
+// =========================================
+function renderizarPlanes() {
+    const container = document.getElementById('planesContainer');
+    if(!container) return;
+    
+    const planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
+    const cctvPlanes = planes.cctv || [];
+    
+    container.innerHTML = cctvPlanes.filter(p => p.activo !== false).map((plan, idx) => `
+        <div class="plan-card ${plan.nombre.includes('PRO') ? 'featured' : ''}">
+            ${plan.nombre.includes('PRO') ? '<span style="position:absolute;top:-10px;right:20px;background:var(--accent);color:var(--bg-dark);padding:2px 10px;font-size:0.7rem;font-weight:bold;border-radius:20px;">RECOMENDADO</span>' : ''}
+            <div class="plan-name">${plan.nombre}</div>
+            <div class="plan-price">$${parseFloat(plan.precio).toLocaleString()} <span>MXN + instalación</span></div>
+            <ul class="plan-features">
+                ${plan.caracteristicas?.map(c => `<li>${c}</li>`).join('') || ''}
+            </ul>
+            <button class="btn ${plan.nombre.includes('PRO') ? 'btn-primary' : 'btn-outline'}" style="width:100%;">COTIZAR</button>
+        </div>
+    `).join('');
+}
+
+// =========================================
+// 5. CONTACTO
+// =========================================
+function enviarCotizacion(e) {
+    e.preventDefault();
+    alert('✅ Solicitud recibida. Te contactaremos en menos de 2 horas.');
+    e.target.reset();
+}
+
+// =========================================
+// 6. CONTENIDO DINÁMICO DE PÁGINA
+// =========================================
+function cargarContenidoPagina() {
+    const contenido = JSON.parse(localStorage.getItem('protec_contenido')) || {};
+    const cctv = contenido.cctv || {};
+    
+    if(cctv.titulo) document.getElementById('cctv-titulo').textContent = cctv.titulo;
+    if(cctv.descripcion) document.getElementById('cctv-descripcion').textContent = cctv.descripcion;
+}
+
+// =========================================
+// 7. INICIALIZACIÓN
+// =========================================
+document.addEventListener('DOMContentLoaded', function() {
+    renderizarBotonesMarcas();
+    renderizarCatalogo();
+    cargarContenidoPagina();
+});
+
+// Refrescar si cambian datos en admin (otra pestaña)
+window.addEventListener('storage', (e) => {
+    if(['protec_productos','protec_marcas','protec_galeria','protec_planes','protec_contenido'].includes(e.key)) {
+        renderizarBotonesMarcas();
+        renderizarCatalogo();
+        renderizarGaleria();
+        renderizarPlanes();
+        cargarContenidoPagina();
+    }
+});
+
+// Modal
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+}
+// =========================================
+// GUARDAR SOLICITUD DE CONTACTO
+// =========================================
+function guardarSolicitud(servicio, datos) {
+    // Obtener solicitudes existentes
+    let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
+    
+    // Agregar nueva solicitud con fecha
+    solicitudes.unshift({
+        id: Date.now(),
+        servicio: servicio,
+        fecha: new Date().toLocaleDateString('es-MX'),
+        ...datos
+    });
+    
+    // Guardar en localStorage
+    localStorage.setItem('protec_solicitudes', JSON.stringify(solicitudes));
+    
+    // Mostrar mensaje de éxito
+    return true;
+}
+</script>
+</body>
+</html>

@@ -40,12 +40,6 @@
     </div>
 
     <div class="hidden md:flex items-center gap-3">
-      <div id="nav-user" style="display:none;align-items:center;gap:8px;padding:6px 12px;border-radius:10px;background:rgba(200,200,200,.06);border:1px solid rgba(200,200,200,.12);">
-        <div style="width:7px;height:7px;border-radius:50%;background:#22c55e;"></div>
-        <span id="nav-user-email" style="font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:.08em;color:var(--c1);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-        <button onclick="doLogout()" title="Cerrar sesión" style="color:var(--muted);font-size:.85rem;cursor:pointer;background:none;border:none;margin-left:2px;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='var(--muted)'">✕</button>
-      </div>
-      <button id="nav-login-btn" onclick="openLogin()" class="btn-ghost px-4 py-2.5 rounded-lg"><span style="font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:.1em;">ACCEDER</span></button>
       <button onclick="openQuote()" class="btn-cta px-5 py-2.5 rounded-lg"><span>COTIZAR</span></button>
     </div>
 
@@ -62,8 +56,7 @@
     <button onclick="navigate('web');toggleMob();" class="nav-link text-left py-3 border-b border-white/5">DESARROLLO WEB</button>
     <button onclick="navigate('mantenimiento');toggleMob();" class="nav-link text-left py-3 border-b border-white/5">MANTENIMIENTO</button>
     <button onclick="navigate('admin');toggleMob();" class="nav-link text-left py-3 border-b border-white/5">ADMINISTRACIÓN</button>
-    <button onclick="openLogin();toggleMob();" class="btn-ghost px-5 py-3 rounded-lg mt-2 w-full text-center" style="font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:.1em;"><span>ACCEDER</span></button>
-    <button onclick="openQuote();toggleMob();" class="btn-cta px-5 py-3 rounded-lg mt-2 w-full text-center"><span>COTIZAR</span></button>
+    <button onclick="openQuote();toggleMob();" class="btn-cta px-5 py-3 rounded-lg mt-4 w-full text-center"><span>COTIZAR</span></button>
   </div>
 </div>
 
@@ -77,14 +70,14 @@
       <div style="animation:orbit 15s linear infinite;position:absolute;"><div style="width:5px;height:5px;background:var(--c1);border-radius:50%;box-shadow:0 0 10px var(--c1);"></div></div>
       <div style="animation:orbit 22s linear infinite reverse;position:absolute;width:0;height:0;--r:110px;"><div style="animation:orbit 22s linear infinite reverse;position:absolute;width:0;height:0;"><div style="width:3px;height:3px;background:var(--c2);border-radius:50%;box-shadow:0 0 8px var(--c2);"></div></div></div>
     </div>
-
-    <div class="relative z-10 max-w-5xl mx-auto text-center">
-      <div class="fade-up inline-flex items-center gap-2 badge badge-cyan mb-8">
+    <!--class="cta-btn px-10 py-5 text-lg text-cyan-400 rounded-2xl mx-auto" style="animation:pulseGlow 3s infinite;" -->
+    <div class="relative z-10 max-w-5xl mx-auto text-center ">
+      <div class="fade-up inline-flex items-center gap-2 badge badge-cyan mb-8" >
         <div style="width:5px;height:5px;border-radius:50%;background:var(--c1);animation:pulse-dot 2s infinite;"></div>
         IXMIQUILPAN · PACHUCA · HIDALGO
       </div>
 
-      <h1 class="h-display grad-anim fade-up-1 mb-5" style="font-size:clamp(3rem,8vw,6.5rem);">
+      <h1 class="h-display grad-anim fade-up-1 mb-5" style="font-size:clamp(3rem,8vw,6.5rem); "style="animation:pulseGlow 3s infinite;">
         PROTEC
       </h1>
       <p class="fade-up-2 text-xl md:text-2xl font-light mb-3" style="color:rgba(255,255,255,.7);font-family:'Rajdhani',sans-serif;font-weight:500;">
@@ -92,7 +85,21 @@
       </p>
       <p class="fade-up-3 text-base mb-12" style="color:var(--muted);max-width:520px;margin:0 auto 3rem;">
         Más de 10 años transformando empresas en Hidalgo con tecnología de primer nivel y soporte 24/7.
-      </p>
+      
+      <!-- ====== SECCIÓN CONVERSIÓN ====== -->
+      <section class="relative z-10 py-24 px-6 text-center overflow-hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 50%,rgba(0,229,255,0.04) 0%,transparent 70%);pointer-events:none;"></div>
+        <div class="max-w-3xl mx-auto reveal">
+          <span style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.3em;color:var(--accent-cyan);">PRÓXIMO NIVEL</span>
+          <h2 class="text-4xl md:text-5xl font-black mt-4 mb-6" style="font-family:'Orbitron',monospace;">
+            ¿Listo para<br/><span class="hero-gradient">transformar</span><br/>tu negocio?
+          </h2>
+          <p class="text-gray-400 text-lg mb-10">Únete a cientos de empresas en Hidalgo que ya confían en PROTEC para su seguridad y sistemas.</p>
+          
+          </button>
+        </div>
+      </section>
+
 
       <!-- Service Cards -->
       <div class="fade-up-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
@@ -138,108 +145,18 @@
       </div>
     </div>
   </section>
+  
 
-
-  <!-- MISIÓN & VISIÓN -->
-  <section style="position:relative;z-index:10;padding:72px 24px;background:linear-gradient(180deg,transparent,rgba(200,200,200,.02),transparent);">
-    <div style="max-width:1000px;margin:0 auto;">
-      <div style="text-align:center;margin-bottom:40px;">
-        <span style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.25em;color:var(--c1);">QUIÉNES SOMOS</span>
-        <h2 style="font-family:'Orbitron',monospace;font-weight:700;font-size:clamp(1.6rem,3.5vw,2.5rem);background:linear-gradient(135deg,#fff,#C8C8C8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px;">Misión &amp; Visión</h2>
-      </div>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div style="background:rgba(200,200,200,.03);border:1px solid rgba(200,200,200,.1);border-radius:20px;padding:32px;position:relative;overflow:hidden;">
-          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);"></div>
-          <div style="width:46px;height:46px;background:rgba(200,200,200,.07);border:1px solid rgba(200,200,200,.18);border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.7)" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-          </div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:10px;">MISIÓN</div>
-          <p style="color:rgba(255,255,255,.72);line-height:1.8;font-size:.98rem;">Brindar soluciones tecnológicas integrales de <strong style="color:#fff;">alta calidad</strong> en seguridad electrónica, sistemas POS y desarrollo web, garantizando la protección y eficiencia operativa de nuestros clientes con servicio <strong style="color:var(--c1);">excepcional y disponible las 24 horas</strong>.</p>
-        </div>
-        <div style="background:rgba(200,200,200,.03);border:1px solid rgba(200,200,200,.1);border-radius:20px;padding:32px;position:relative;overflow:hidden;">
-          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);"></div>
-          <div style="width:46px;height:46px;background:rgba(200,200,200,.07);border:1px solid rgba(200,200,200,.18);border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.7)" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:10px;">VISIÓN</div>
-          <p style="color:rgba(255,255,255,.72);line-height:1.8;font-size:.98rem;">Ser la empresa líder en <strong style="color:#fff;">tecnología y seguridad</strong> en el estado de Hidalgo, reconocida por innovación constante, la confianza de nuestros clientes y nuestra capacidad de <strong style="color:var(--c1);">adaptación al futuro digital</strong>.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ¿LISTO PARA TRANSFORMAR? -->
-  <section style="position:relative;z-index:10;padding:80px 24px;text-align:center;overflow:hidden;">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(200,200,200,.04) 0%,transparent 70%);pointer-events:none;"></div>
-    <div style="max-width:680px;margin:0 auto;position:relative;z-index:1;">
-      <span style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.3em;color:var(--c1);">PRÓXIMO PASO</span>
-      <h2 style="font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(1.8rem,4.5vw,3.2rem);line-height:1.1;margin:14px 0 18px;background:linear-gradient(135deg,#fff,#D0D0D0,#A0A0A0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">¿Listo para transformar<br/>tu negocio?</h2>
-      <p style="color:var(--muted);font-size:1.05rem;line-height:1.7;margin-bottom:36px;max-width:500px;margin-left:auto;margin-right:auto;margin-bottom:36px;">Únete a cientos de empresas en Hidalgo que ya confían en PROTEC para su seguridad, sistemas y presencia digital.</p>
-      <button onclick="openServicesModal()" class="btn-cta" style="padding:18px 40px;border-radius:16px;font-size:1rem;display:inline-flex;align-items:center;gap:12px;cursor:pointer;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:relative;z-index:1;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        <span>Explorar Servicios</span>
-      </button>
-    </div>
-  </section>
-
-  <!-- FOOTER FULL -->
-  <footer style="position:relative;z-index:10;padding:60px 24px 0;background:rgba(5,5,5,.97);border-top:1px solid rgba(200,200,200,.08);">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);margin-bottom:48px;"></div>
-    <div style="max-width:1280px;margin:0 auto;">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10" style="margin-bottom:48px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <div style="width:34px;height:34px;background:linear-gradient(135deg,#C8C8C8,#787878);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:.15em;">PROTEC</span>
-          </div>
-          <p style="color:rgba(255,255,255,.4);font-size:.84rem;line-height:1.7;margin-bottom:16px;">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
-          <div style="display:flex;gap:8px;">
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-            <a href="https://wa.me/5217711234567" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">SERVICIOS</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Seguridad CCTV</button>
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Control de Acceso</button>
-            <button onclick="navigate('pos')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Sistemas POS</button>
-            <button onclick="navigate('web')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Desarrollo Web</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Mantenimiento</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">EMPRESA</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Quiénes somos</button>
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Misión &amp; Visión</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Contacto</button>
-            <button onclick="navigate('admin')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Panel Admin</button>
-            <span style="color:rgba(255,255,255,.42);font-size:.88rem;">Aviso de Privacidad</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">CONTACTO</div>
-          <div style="display:flex;flex-direction:column;gap:11px;">
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 123 4567</div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 987 6543</div></div></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">contacto@protec.mx</span></div>
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Ixmiquilpan &amp; Pachuca, Hidalgo</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Servicio 24 horas, 365 días</span></div>
-          </div>
-        </div>
-      </div>
-      <div style="position:relative;height:48px;overflow:hidden;margin-bottom:14px;">
-        <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="48" style="position:absolute;bottom:0;opacity:.1;">
-          <path fill="rgba(200,200,200,1)"><animate attributeName="d" dur="5s" repeatCount="indefinite" values="M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z"/></path>
-        </svg>
-      </div>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.2),transparent);margin-bottom:18px;"></div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-bottom:24px;">
-        <span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.28);">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse-dot 2s infinite;"></div><span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.14em;color:rgba(255,255,255,.28);">SISTEMAS OPERATIVOS</span></div>
+  <!-- FOOTER HOME -->
+  <footer class="relative z-10 py-10 px-6 border-t border-white/5">
+    <div class="max-w-screen-xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <span style="font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--muted);">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
+      <div class="flex items-center gap-3" style="color:var(--muted);font-size:.82rem;">
+        <span>📍 Ixmiquilpan & Pachuca, Hidalgo</span>
+        <span>·</span>
+        <span>771 123 4567</span>
+        <span>·</span>
+        <span>contacto@protec.mx</span>
       </div>
     </div>
   </footer>
@@ -297,6 +214,7 @@
     <div id="cctv-galeria" class="p-8 hidden">
       <h2 class="h2-display text-xl mb-6 grad">Instalaciones Realizadas</h2>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        
         <div class="gallery-img" onclick="openLightbox(this)" data-title="Instalación Comercial · Ixmiquilpan">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.25)" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </div>
@@ -384,67 +302,6 @@
       </div>
     </div>
   </div>
-  <!-- FOOTER FULL -->
-  <footer style="position:relative;z-index:10;padding:60px 24px 0;background:rgba(5,5,5,.97);border-top:1px solid rgba(200,200,200,.08);">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);margin-bottom:48px;"></div>
-    <div style="max-width:1280px;margin:0 auto;">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10" style="margin-bottom:48px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <div style="width:34px;height:34px;background:linear-gradient(135deg,#C8C8C8,#787878);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:.15em;">PROTEC</span>
-          </div>
-          <p style="color:rgba(255,255,255,.4);font-size:.84rem;line-height:1.7;margin-bottom:16px;">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
-          <div style="display:flex;gap:8px;">
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-            <a href="https://wa.me/5217711234567" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">SERVICIOS</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Seguridad CCTV</button>
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Control de Acceso</button>
-            <button onclick="navigate('pos')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Sistemas POS</button>
-            <button onclick="navigate('web')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Desarrollo Web</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Mantenimiento</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">EMPRESA</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Quiénes somos</button>
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Misión &amp; Visión</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Contacto</button>
-            <button onclick="navigate('admin')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Panel Admin</button>
-            <span style="color:rgba(255,255,255,.42);font-size:.88rem;">Aviso de Privacidad</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">CONTACTO</div>
-          <div style="display:flex;flex-direction:column;gap:11px;">
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 123 4567</div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 987 6543</div></div></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">contacto@protec.mx</span></div>
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Ixmiquilpan &amp; Pachuca, Hidalgo</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Servicio 24 horas, 365 días</span></div>
-          </div>
-        </div>
-      </div>
-      <div style="position:relative;height:48px;overflow:hidden;margin-bottom:14px;">
-        <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="48" style="position:absolute;bottom:0;opacity:.1;">
-          <path fill="rgba(200,200,200,1)"><animate attributeName="d" dur="5s" repeatCount="indefinite" values="M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z"/></path>
-        </svg>
-      </div>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.2),transparent);margin-bottom:18px;"></div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-bottom:24px;">
-        <span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.28);">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse-dot 2s infinite;"></div><span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.14em;color:rgba(255,255,255,.28);">SISTEMAS OPERATIVOS</span></div>
-      </div>
-    </div>
-  </footer>
 </div>
 
 <!-- =====================================================================
@@ -561,67 +418,6 @@
       </div>
     </div>
   </div>
-  <!-- FOOTER FULL -->
-  <footer style="position:relative;z-index:10;padding:60px 24px 0;background:rgba(5,5,5,.97);border-top:1px solid rgba(200,200,200,.08);">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);margin-bottom:48px;"></div>
-    <div style="max-width:1280px;margin:0 auto;">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10" style="margin-bottom:48px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <div style="width:34px;height:34px;background:linear-gradient(135deg,#C8C8C8,#787878);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:.15em;">PROTEC</span>
-          </div>
-          <p style="color:rgba(255,255,255,.4);font-size:.84rem;line-height:1.7;margin-bottom:16px;">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
-          <div style="display:flex;gap:8px;">
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-            <a href="https://wa.me/5217711234567" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">SERVICIOS</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Seguridad CCTV</button>
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Control de Acceso</button>
-            <button onclick="navigate('pos')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Sistemas POS</button>
-            <button onclick="navigate('web')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Desarrollo Web</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Mantenimiento</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">EMPRESA</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Quiénes somos</button>
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Misión &amp; Visión</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Contacto</button>
-            <button onclick="navigate('admin')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Panel Admin</button>
-            <span style="color:rgba(255,255,255,.42);font-size:.88rem;">Aviso de Privacidad</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">CONTACTO</div>
-          <div style="display:flex;flex-direction:column;gap:11px;">
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 123 4567</div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 987 6543</div></div></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">contacto@protec.mx</span></div>
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Ixmiquilpan &amp; Pachuca, Hidalgo</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Servicio 24 horas, 365 días</span></div>
-          </div>
-        </div>
-      </div>
-      <div style="position:relative;height:48px;overflow:hidden;margin-bottom:14px;">
-        <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="48" style="position:absolute;bottom:0;opacity:.1;">
-          <path fill="rgba(200,200,200,1)"><animate attributeName="d" dur="5s" repeatCount="indefinite" values="M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z"/></path>
-        </svg>
-      </div>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.2),transparent);margin-bottom:18px;"></div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-bottom:24px;">
-        <span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.28);">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse-dot 2s infinite;"></div><span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.14em;color:rgba(255,255,255,.28);">SISTEMAS OPERATIVOS</span></div>
-      </div>
-    </div>
-  </footer>
 </div>
 
 <!-- =====================================================================
@@ -703,67 +499,6 @@
       </div>
     </div>
   </div>
-  <!-- FOOTER FULL -->
-  <footer style="position:relative;z-index:10;padding:60px 24px 0;background:rgba(5,5,5,.97);border-top:1px solid rgba(200,200,200,.08);">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);margin-bottom:48px;"></div>
-    <div style="max-width:1280px;margin:0 auto;">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10" style="margin-bottom:48px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <div style="width:34px;height:34px;background:linear-gradient(135deg,#C8C8C8,#787878);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:.15em;">PROTEC</span>
-          </div>
-          <p style="color:rgba(255,255,255,.4);font-size:.84rem;line-height:1.7;margin-bottom:16px;">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
-          <div style="display:flex;gap:8px;">
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-            <a href="https://wa.me/5217711234567" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">SERVICIOS</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Seguridad CCTV</button>
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Control de Acceso</button>
-            <button onclick="navigate('pos')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Sistemas POS</button>
-            <button onclick="navigate('web')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Desarrollo Web</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Mantenimiento</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">EMPRESA</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Quiénes somos</button>
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Misión &amp; Visión</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Contacto</button>
-            <button onclick="navigate('admin')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Panel Admin</button>
-            <span style="color:rgba(255,255,255,.42);font-size:.88rem;">Aviso de Privacidad</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">CONTACTO</div>
-          <div style="display:flex;flex-direction:column;gap:11px;">
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 123 4567</div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 987 6543</div></div></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">contacto@protec.mx</span></div>
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Ixmiquilpan &amp; Pachuca, Hidalgo</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Servicio 24 horas, 365 días</span></div>
-          </div>
-        </div>
-      </div>
-      <div style="position:relative;height:48px;overflow:hidden;margin-bottom:14px;">
-        <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="48" style="position:absolute;bottom:0;opacity:.1;">
-          <path fill="rgba(200,200,200,1)"><animate attributeName="d" dur="5s" repeatCount="indefinite" values="M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z"/></path>
-        </svg>
-      </div>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.2),transparent);margin-bottom:18px;"></div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-bottom:24px;">
-        <span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.28);">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse-dot 2s infinite;"></div><span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.14em;color:rgba(255,255,255,.28);">SISTEMAS OPERATIVOS</span></div>
-      </div>
-    </div>
-  </footer>
 </div>
 
 <!-- =====================================================================
@@ -844,67 +579,6 @@
       </div>
     </div>
   </div>
-  <!-- FOOTER FULL -->
-  <footer style="position:relative;z-index:10;padding:60px 24px 0;background:rgba(5,5,5,.97);border-top:1px solid rgba(200,200,200,.08);">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);margin-bottom:48px;"></div>
-    <div style="max-width:1280px;margin:0 auto;">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10" style="margin-bottom:48px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <div style="width:34px;height:34px;background:linear-gradient(135deg,#C8C8C8,#787878);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:.15em;">PROTEC</span>
-          </div>
-          <p style="color:rgba(255,255,255,.4);font-size:.84rem;line-height:1.7;margin-bottom:16px;">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
-          <div style="display:flex;gap:8px;">
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-            <a href="https://wa.me/5217711234567" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">SERVICIOS</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Seguridad CCTV</button>
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Control de Acceso</button>
-            <button onclick="navigate('pos')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Sistemas POS</button>
-            <button onclick="navigate('web')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Desarrollo Web</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Mantenimiento</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">EMPRESA</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Quiénes somos</button>
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Misión &amp; Visión</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Contacto</button>
-            <button onclick="navigate('admin')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Panel Admin</button>
-            <span style="color:rgba(255,255,255,.42);font-size:.88rem;">Aviso de Privacidad</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">CONTACTO</div>
-          <div style="display:flex;flex-direction:column;gap:11px;">
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 123 4567</div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 987 6543</div></div></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">contacto@protec.mx</span></div>
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Ixmiquilpan &amp; Pachuca, Hidalgo</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Servicio 24 horas, 365 días</span></div>
-          </div>
-        </div>
-      </div>
-      <div style="position:relative;height:48px;overflow:hidden;margin-bottom:14px;">
-        <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="48" style="position:absolute;bottom:0;opacity:.1;">
-          <path fill="rgba(200,200,200,1)"><animate attributeName="d" dur="5s" repeatCount="indefinite" values="M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z"/></path>
-        </svg>
-      </div>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.2),transparent);margin-bottom:18px;"></div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-bottom:24px;">
-        <span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.28);">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse-dot 2s infinite;"></div><span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.14em;color:rgba(255,255,255,.28);">SISTEMAS OPERATIVOS</span></div>
-      </div>
-    </div>
-  </footer>
 </div>
 
 <!-- =====================================================================
@@ -995,182 +669,148 @@
       </div>
     </div>
   </div>
-  <!-- FOOTER FULL -->
-  <footer style="position:relative;z-index:10;padding:60px 24px 0;background:rgba(5,5,5,.97);border-top:1px solid rgba(200,200,200,.08);">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.4),transparent);margin-bottom:48px;"></div>
-    <div style="max-width:1280px;margin:0 auto;">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10" style="margin-bottom:48px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <div style="width:34px;height:34px;background:linear-gradient(135deg,#C8C8C8,#787878);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:.15em;">PROTEC</span>
-          </div>
-          <p style="color:rgba(255,255,255,.4);font-size:.84rem;line-height:1.7;margin-bottom:16px;">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
-          <div style="display:flex;gap:8px;">
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-            <a href="#" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-            <a href="https://wa.me/5217711234567" style="width:32px;height:32px;background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,200,200,.4)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,200,.55)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">SERVICIOS</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Seguridad CCTV</button>
-            <button onclick="navigate('cctv')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Control de Acceso</button>
-            <button onclick="navigate('pos')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Sistemas POS</button>
-            <button onclick="navigate('web')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Desarrollo Web</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Mantenimiento</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">EMPRESA</div>
-          <div style="display:flex;flex-direction:column;gap:9px;">
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Quiénes somos</button>
-            <button onclick="navigate('home')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Misión &amp; Visión</button>
-            <button onclick="navigate('mantenimiento')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Contacto</button>
-            <button onclick="navigate('admin')" style="color:rgba(255,255,255,.42);font-size:.88rem;text-align:left;cursor:pointer;background:none;border:none;transition:color .3s;" onmouseover="this.style.color='rgba(200,200,200,.85)'" onmouseout="this.style.color='rgba(255,255,255,.42)'">Panel Admin</button>
-            <span style="color:rgba(255,255,255,.42);font-size:.88rem;">Aviso de Privacidad</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--c1);margin-bottom:14px;">CONTACTO</div>
-          <div style="display:flex;flex-direction:column;gap:11px;">
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 123 4567</div><div style="color:rgba(255,255,255,.62);font-size:.88rem;">771 987 6543</div></div></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">contacto@protec.mx</span></div>
-            <div style="display:flex;align-items:flex-start;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="margin-top:3px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Ixmiquilpan &amp; Pachuca, Hidalgo</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.45)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="color:rgba(255,255,255,.62);font-size:.88rem;">Servicio 24 horas, 365 días</span></div>
-          </div>
-        </div>
-      </div>
-      <div style="position:relative;height:48px;overflow:hidden;margin-bottom:14px;">
-        <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="48" style="position:absolute;bottom:0;opacity:.1;">
-          <path fill="rgba(200,200,200,1)"><animate attributeName="d" dur="5s" repeatCount="indefinite" values="M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z"/></path>
-        </svg>
-      </div>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(200,200,200,.2),transparent);margin-bottom:18px;"></div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-bottom:24px;">
-        <span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.28);">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse-dot 2s infinite;"></div><span style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.14em;color:rgba(255,255,255,.28);">SISTEMAS OPERATIVOS</span></div>
-      </div>
-    </div>
-  </footer>
 </div>
 
 <!-- =====================================================================
      MODAL: COTIZACIÓN
 ===================================================================== -->
-
-<!-- MODAL: SERVICIOS -->
-<div id="services-modal" class="modal-wrap" onclick="if(event.target===this)closeServicesModal()">
-  <div class="modal-box glass rounded-3xl p-8 max-w-2xl w-full mx-4 glow-border relative">
-    <button onclick="closeServicesModal()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;background:rgba(255,255,255,.06);border:1px solid rgba(200,200,200,.12);border-radius:8px;cursor:pointer;color:var(--muted);font-size:17px;display:flex;align-items:center;justify-content:center;">×</button>
-    <div style="font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--c1);margin-bottom:5px;">PROTEC</div>
-    <h3 style="font-family:'Orbitron',monospace;font-weight:700;font-size:1.25rem;background:linear-gradient(135deg,#fff,#C8C8C8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">¿Qué necesitas hoy?</h3>
-    <p style="color:var(--muted);font-size:.86rem;margin-bottom:22px;">Selecciona el servicio que necesitas y te llevaremos directamente.</p>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <button onclick="closeServicesModal();navigate('cctv');" style="background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .3s;width:100%;" onmouseover="this.style.borderColor='rgba(200,200,200,.38)';this.style.background='rgba(200,200,200,.07)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)';this.style.background='rgba(200,200,200,.04)'">
-        <div style="width:38px;height:38px;background:rgba(200,200,200,.07);border:1px solid rgba(200,200,200,.16);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.7)" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-        <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.1em;color:#fff;margin-bottom:4px;">CCTV</div>
-        <div style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">Videovigilancia HD y control de acceso</div>
-        <div style="color:var(--c1);font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.1em;">VER PÁGINA →</div>
-      </button>
-      <button onclick="closeServicesModal();navigate('pos');" style="background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .3s;width:100%;" onmouseover="this.style.borderColor='rgba(200,200,200,.38)';this.style.background='rgba(200,200,200,.07)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)';this.style.background='rgba(200,200,200,.04)'">
-        <div style="width:38px;height:38px;background:rgba(200,200,200,.07);border:1px solid rgba(200,200,200,.16);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.7)" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
-        <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.1em;color:#fff;margin-bottom:4px;">SISTEMAS POS</div>
-        <div style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">Punto de venta, inventario y nube</div>
-        <div style="color:var(--c1);font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.1em;">VER PÁGINA →</div>
-      </button>
-      <button onclick="closeServicesModal();navigate('web');" style="background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .3s;width:100%;" onmouseover="this.style.borderColor='rgba(200,200,200,.38)';this.style.background='rgba(200,200,200,.07)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)';this.style.background='rgba(200,200,200,.04)'">
-        <div style="width:38px;height:38px;background:rgba(200,200,200,.07);border:1px solid rgba(200,200,200,.16);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.7)" stroke-width="1.8"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
-        <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.1em;color:#fff;margin-bottom:4px;">DESARROLLO WEB</div>
-        <div style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">Sitios, apps y sistemas a la medida</div>
-        <div style="color:var(--c1);font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.1em;">VER PÁGINA →</div>
-      </button>
-      <button onclick="closeServicesModal();navigate('mantenimiento');" style="background:rgba(200,200,200,.04);border:1px solid rgba(200,200,200,.1);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .3s;width:100%;" onmouseover="this.style.borderColor='rgba(200,200,200,.38)';this.style.background='rgba(200,200,200,.07)'" onmouseout="this.style.borderColor='rgba(200,200,200,.1)';this.style.background='rgba(200,200,200,.04)'">
-        <div style="width:38px;height:38px;background:rgba(200,200,200,.07);border:1px solid rgba(200,200,200,.16);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,200,.7)" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-        <div style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.1em;color:#fff;margin-bottom:4px;">MANTENIMIENTO</div>
-        <div style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">Soporte técnico 24/7</div>
-        <div style="color:var(--c1);font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.1em;">VER PÁGINA →</div>
-      </button>
-    </div>
-    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(200,200,200,.08);text-align:center;">
-      <button onclick="closeServicesModal();openQuote();" class="btn-cta" style="padding:12px 28px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;"><span>O SOLICITAR COTIZACIÓN DIRECTA</span></button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: LOGIN -->
-<div id="login-modal" class="modal-wrap" onclick="if(event.target===this)closeLogin()">
-  <div class="modal-box glass rounded-3xl p-8 max-w-md w-full mx-4 glow-border relative">
-    <button onclick="closeLogin()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;background:rgba(255,255,255,.06);border:1px solid rgba(200,200,200,.12);border-radius:8px;cursor:pointer;color:var(--muted);font-size:17px;display:flex;align-items:center;justify-content:center;">×</button>
-    <div id="login-form-view">
-      <div style="font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--c1);margin-bottom:5px;">PROTEC SYSTEM</div>
-      <h3 style="font-family:'Orbitron',monospace;font-weight:700;font-size:1.2rem;background:linear-gradient(135deg,#fff,#C8C8C8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">Acceso al Panel</h3>
-      <p style="color:var(--muted);font-size:.84rem;margin-bottom:22px;">Ingresa tus credenciales de Supabase para continuar.</p>
-      <form onsubmit="doLogin(event)" style="display:flex;flex-direction:column;gap:14px;">
-        <div><label class="lbl">CORREO ELECTRÓNICO</label><input type="email" id="login-email" class="inp" placeholder="usuario@correo.com"/></div>
-        <div>
-          <label class="lbl">CONTRASEÑA</label>
-          <div style="position:relative;">
-            <input type="password" id="login-pass" class="inp" placeholder="••••••••" style="padding-right:42px;"/>
-            <button type="button" onclick="togglePassVis()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);cursor:pointer;background:none;border:none;padding:0;"><svg id="eye-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          </div>
-        </div>
-        <div id="login-error" class="hidden" style="padding:9px 13px;border-radius:9px;font-size:.83rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;"></div>
-        <button type="submit" class="btn-cta w-full" style="padding:13px;border-radius:11px;cursor:pointer;"><span id="login-btn-text">INICIAR SESIÓN</span></button>
-      </form>
-      <div style="margin-top:14px;text-align:center;"><button onclick="showRegister()" style="color:var(--muted);font-size:.83rem;cursor:pointer;background:none;border:none;">¿No tienes cuenta? <span style="color:var(--c1);">Registrarse</span></button></div>
-    </div>
-    <div id="register-form-view" class="hidden">
-      <div style="font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--c1);margin-bottom:5px;">PROTEC SYSTEM</div>
-      <h3 style="font-family:'Orbitron',monospace;font-weight:700;font-size:1.2rem;background:linear-gradient(135deg,#fff,#C8C8C8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">Crear Cuenta</h3>
-      <p style="color:var(--muted);font-size:.84rem;margin-bottom:22px;">Regístrate para acceder al panel de administración.</p>
-      <form onsubmit="doRegister(event)" style="display:flex;flex-direction:column;gap:14px;">
-        <div><label class="lbl">CORREO ELECTRÓNICO</label><input type="email" id="reg-email" class="inp" placeholder="usuario@correo.com"/></div>
-        <div><label class="lbl">CONTRASEÑA</label><input type="password" id="reg-pass" class="inp" placeholder="Mínimo 6 caracteres"/></div>
-        <div id="reg-error" class="hidden" style="padding:9px 13px;border-radius:9px;font-size:.83rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;"></div>
-        <div id="reg-ok" class="hidden" style="padding:9px 13px;border-radius:9px;font-size:.83rem;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#4ade80;"></div>
-        <button type="submit" class="btn-cta w-full" style="padding:13px;border-radius:11px;cursor:pointer;"><span id="reg-btn-text">CREAR CUENTA</span></button>
-      </form>
-      <div style="margin-top:14px;text-align:center;"><button onclick="showLogin()" style="color:var(--muted);font-size:.83rem;cursor:pointer;background:none;border:none;">¿Ya tienes cuenta? <span style="color:var(--c1);">Iniciar sesión</span></button></div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: COTIZACIÓN -->
 <div id="quote-modal" class="modal-wrap" onclick="if(event.target===this)closeQuote()">
   <div class="modal-box glass rounded-3xl p-8 max-w-lg w-full mx-4 glow-border relative">
-    <button onclick="closeQuote()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;background:rgba(255,255,255,.06);border:1px solid rgba(200,200,200,.12);border-radius:8px;cursor:pointer;color:var(--muted);font-size:17px;display:flex;align-items:center;justify-content:center;">×</button>
-    <div style="font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--c1);margin-bottom:5px;">PROTEC</div>
-    <h3 style="font-family:'Orbitron',monospace;font-weight:700;font-size:1.2rem;background:linear-gradient(135deg,#fff,#C8C8C8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:22px;">Solicitar Cotización</h3>
-    <form onsubmit="submitQuote(event)" style="display:flex;flex-direction:column;gap:14px;">
+    <button onclick="closeQuote()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;">×</button>
+    <div style="font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--c1);margin-bottom:6px;">PROTEC</div>
+    <h3 class="h2-display text-xl mb-6 grad">Solicitar Cotización</h3>
+    <form onsubmit="submitQuote(event)" class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div><label class="lbl">NOMBRE</label><input class="inp" placeholder="Tu nombre" id="q-nombre"/></div>
         <div><label class="lbl">TELÉFONO</label><input class="inp" placeholder="771 000 0000" id="q-tel" type="tel"/></div>
       </div>
       <div><label class="lbl">SERVICIO DE INTERÉS</label>
-        <select class="inp" id="q-servicio"><option value="">Selecciona...</option><option>Seguridad CCTV</option><option>Sistema POS</option><option>Desarrollo Web</option><option>Mantenimiento</option><option>Varios servicios</option></select>
+        <select class="inp" id="q-servicio">
+          <option value="">Selecciona...</option>
+          <option>Seguridad CCTV</option><option>Sistema POS</option><option>Desarrollo Web</option><option>Mantenimiento</option><option>Varios servicios</option>
+        </select>
       </div>
-      <div><label class="lbl">MENSAJE</label><textarea class="inp resize-none" style="height:90px;" placeholder="Cuéntanos sobre tu proyecto..." id="q-msg"></textarea></div>
-      <button type="submit" class="btn-cta w-full" style="padding:13px;border-radius:11px;cursor:pointer;"><span id="q-btn">ENVIAR COTIZACIÓN</span></button>
-      <div id="q-ok" class="hidden" style="padding:11px;border-radius:10px;text-align:center;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.08em;">✓ SOLICITUD ENVIADA — TE CONTACTAMOS PRONTO</div>
+      <div><label class="lbl">MENSAJE</label><textarea class="inp h-24 resize-none" placeholder="Cuéntanos sobre tu proyecto..." id="q-msg"></textarea></div>
+      <button type="submit" class="btn-cta w-full py-3.5 rounded-xl"><span id="q-btn">ENVIAR COTIZACIÓN</span></button>
+      <div id="q-ok" class="hidden text-center py-3 rounded-xl" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#4ade80;font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:.1em;">✓ SOLICITUD ENVIADA — TE CONTACTAMOS PRONTO</div>
     </form>
   </div>
 </div>
 
 <!-- Notification Toast -->
 <div id="notif" class="notif glass rounded-2xl px-5 py-4 glow-border" style="min-width:280px;">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div id="notif-icon" style="font-size:1.1rem;">✓</div>
-    <div><div id="notif-title" style="font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.1em;color:#fff;"></div><div id="notif-msg" style="font-size:.78rem;color:var(--muted);margin-top:2px;"></div></div>
+  <div class="flex items-center gap-3">
+    <div id="notif-icon" style="font-size:1.2rem;">✓</div>
+    <div><div id="notif-title" style="font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:.1em;color:#fff;"></div><div id="notif-msg" style="font-size:.78rem;color:var(--muted);margin-top:2px;"></div></div>
   </div>
 </div>
+<!-- ====== FOOTER ====== -->
+<footer class="relative z-10 pt-20 pb-8 px-6" style="background:var(--bg-deep);">
+  <!-- Top neon line -->
+  <div class="neon-divider mb-16"></div>
+
+  <div class="max-w-7xl mx-auto">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
+      <!-- Col 1: Brand -->
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#020C1B" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <span style="font-family:'Orbitron',monospace;font-weight:700;color:#fff;letter-spacing:0.15em;">PROTEC</span>
+        </div>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">Empresa líder en seguridad electrónica y sistemas tecnológicos en Hidalgo. Tu seguridad, nuestra misión.</p>
+        <div class="flex gap-3">
+          <a href="#" class="w-9 h-9 glass rounded-lg flex items-center justify-center hover:border-cyan-500 border border-transparent transition-all group">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-gray-500 group-hover:text-cyan-400 transition-colors"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 glass rounded-lg flex items-center justify-center hover:border-cyan-500 border border-transparent transition-all group">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-gray-500 group-hover:text-cyan-400 transition-colors"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://wa.me/5217711234567" class="w-9 h-9 glass rounded-lg flex items-center justify-center hover:border-cyan-500 border border-transparent transition-all group">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-gray-500 group-hover:text-cyan-400 transition-colors"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Servicios -->
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:16px;">SERVICIOS</h4>
+        <ul class="space-y-2.5">
+          <li><a href="#cctv" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Seguridad CCTV</a></li>
+          <li><a href="#cctv" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Control de Acceso</a></li>
+          <li><a href="#pos" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Sistemas POS</a></li>
+          <li><a href="#desarrollo" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Desarrollo Web</a></li>
+          <li><a href="#mantenimiento" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Mantenimiento</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Empresa -->
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:16px;">EMPRESA</h4>
+        <ul class="space-y-2.5">
+          <li><a href="#inicio" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Quiénes somos</a></li>
+          <li><a href="#inicio" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Misión & Visión</a></li>
+          <li><a href="#mantenimiento" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Contacto</a></li>
+          <li><a href="#" class="text-gray-400 text-sm hover:text-cyan-400 transition-colors">Aviso de Privacidad</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Contacto -->
+      <div>
+        <h4 style="font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:16px;">CONTACTO</h4>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3.04a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.91 6.91l.82-.82a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <div class="text-gray-300 text-sm">771 123 4567</div>
+              <div class="text-gray-300 text-sm">771 987 6543</div>
+            </div>
+          </li>
+          <li class="flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="flex-shrink-0"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span class="text-gray-300 text-sm">contacto@protec.mx</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="text-gray-300 text-sm">Ixmiquilpan & Pachuca, Hidalgo</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="text-gray-300 text-sm">Servicio 24 horas, 365 días</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Wave animation footer -->
+    <div style="position:relative;height:60px;overflow:hidden;margin-bottom:16px;">
+      <svg viewBox="0 0 300 80" preserveAspectRatio="none" width="100%" height="60" style="position:absolute;bottom:0;opacity:0.15;">
+        <path fill="var(--accent-cyan)">
+          <animate attributeName="d" dur="4s" repeatCount="indefinite" values="
+            M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z;
+            M0,40 Q75,70 150,40 Q225,10 300,40 L300,80 L0,80 Z;
+            M0,40 Q75,10 150,40 Q225,70 300,40 L300,80 L0,80 Z
+          "/>
+        </path>
+      </svg>
+    </div>
+
+    <div class="neon-divider mb-6"></div>
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <span class="text-gray-600 text-xs" style="font-family:'Orbitron',monospace;letter-spacing:0.1em;">© 2025 PROTEC — TODOS LOS DERECHOS RESERVADOS</span>
+      <div class="flex items-center gap-2">
+        <div style="width:6px;height:6px;background:#22c55e;border-radius:50%;animation:pulseGlow 2s infinite;"></div>
+        <span class="text-gray-600 text-xs" style="font-family:'Orbitron',monospace;letter-spacing:0.1em;">SISTEMAS OPERATIVOS</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script>
 // ======= SUPABASE =======
-const SB_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
-const SB_KEY = 'sb_publishable_UszbWvU6PAHV7NC6Dn51og_NQoGpOJD';
+const SB_URL = 'https://TU_PROYECTO.supabase.co';
+const SB_KEY = 'TU_ANON_KEY';
 let sb = null;
 try { sb = supabase.createClient(SB_URL, SB_KEY); } catch(e){}
 
@@ -1502,120 +1142,6 @@ window.addEventListener('scroll', () => {
 
 // ======= INIT =======
 initReveals();
-
-// ═══════════════════════════════
-// SUPABASE AUTH — FUNCIONAL
-// ═══════════════════════════════
-let currentUser = null;
-
-async function checkSession() {
-  if(!sb) return;
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if(session) setLoggedIn(session.user);
-  } catch(e){ console.warn('checkSession:', e); }
-}
-
-function setLoggedIn(user) {
-  currentUser = user;
-  const email = user.email || 'usuario';
-  document.getElementById('nav-user-email').textContent = email;
-  const navUser = document.getElementById('nav-user');
-  if(navUser){ navUser.style.display = 'flex'; }
-  const loginBtn = document.getElementById('nav-login-btn');
-  if(loginBtn) loginBtn.style.display = 'none';
-  showNotif('✓', 'Sesión iniciada', email, 'green');
-}
-
-function setLoggedOut() {
-  currentUser = null;
-  const navUser = document.getElementById('nav-user');
-  if(navUser) navUser.style.display = 'none';
-  const loginBtn = document.getElementById('nav-login-btn');
-  if(loginBtn) loginBtn.style.display = '';
-  showNotif('→', 'Sesión cerrada', 'Hasta pronto', 'cyan');
-}
-
-async function doLogin(e) {
-  e.preventDefault();
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  const errEl = document.getElementById('login-error');
-  const btn   = document.getElementById('login-btn-text');
-  errEl.classList.add('hidden');
-  if(!email || !pass){ errEl.textContent='Completa todos los campos.'; errEl.classList.remove('hidden'); return; }
-  const origText = btn.textContent;
-  btn.textContent = 'VERIFICANDO...';
-  try {
-    if(!sb) throw new Error('Supabase no conectado');
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if(error) throw error;
-    setLoggedIn(data.user);
-    closeLogin();
-  } catch(err) {
-    const msg = err.message;
-    errEl.textContent = (msg === 'Invalid login credentials')
-      ? 'Correo o contraseña incorrectos.'
-      : (msg || 'Error al iniciar sesión.');
-    errEl.classList.remove('hidden');
-  } finally { btn.textContent = origText; }
-}
-
-async function doRegister(e) {
-  e.preventDefault();
-  const email = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-pass').value;
-  const errEl = document.getElementById('reg-error');
-  const okEl  = document.getElementById('reg-ok');
-  const btn   = document.getElementById('reg-btn-text');
-  errEl.classList.add('hidden'); okEl.classList.add('hidden');
-  if(!email || !pass){ errEl.textContent='Completa todos los campos.'; errEl.classList.remove('hidden'); return; }
-  if(pass.length < 6){ errEl.textContent='La contraseña debe tener al menos 6 caracteres.'; errEl.classList.remove('hidden'); return; }
-  const origText = btn.textContent;
-  btn.textContent = 'REGISTRANDO...';
-  try {
-    if(!sb) throw new Error('Supabase no conectado');
-    const { data, error } = await sb.auth.signUp({ email, password: pass });
-    if(error) throw error;
-    okEl.textContent = '¡Cuenta creada! Revisa tu correo para confirmar.';
-    okEl.classList.remove('hidden');
-    setTimeout(() => showLogin(), 3000);
-  } catch(err) {
-    errEl.textContent = err.message || 'Error al registrarse.';
-    errEl.classList.remove('hidden');
-  } finally { btn.textContent = origText; }
-}
-
-async function doLogout() {
-  if(!sb) return;
-  try { await sb.auth.signOut(); } catch(e){}
-  setLoggedOut();
-}
-
-// Modal helpers
-function openLogin()  { document.getElementById('login-modal').classList.add('open'); document.body.style.overflow='hidden'; showLogin(); document.getElementById('login-error').classList.add('hidden'); }
-function closeLogin() { document.getElementById('login-modal').classList.remove('open'); document.body.style.overflow=''; }
-function showLogin()    { document.getElementById('login-form-view').classList.remove('hidden'); document.getElementById('register-form-view').classList.add('hidden'); }
-function showRegister() { document.getElementById('register-form-view').classList.remove('hidden'); document.getElementById('login-form-view').classList.add('hidden'); document.getElementById('reg-error').classList.add('hidden'); document.getElementById('reg-ok').classList.add('hidden'); }
-
-function togglePassVis() {
-  const inp = document.getElementById('login-pass');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-
-function openServicesModal()  { document.getElementById('services-modal').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeServicesModal() { document.getElementById('services-modal').classList.remove('open'); document.body.style.overflow=''; }
-
-// Listen for auth state changes
-if(sb) {
-  sb.auth.onAuthStateChange((event, session) => {
-    if(event === 'SIGNED_IN'  && session) setLoggedIn(session.user);
-    if(event === 'SIGNED_OUT')            setLoggedOut();
-  });
-}
-
-checkSession();
-
 </script>
 </body>
 </html>

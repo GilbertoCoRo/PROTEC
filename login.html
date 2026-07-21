@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTEC - Login Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; position: relative;">
+
+    <!-- BOTÓN REGRESAR AL INDEX -->
+    <a href="index.html" style="position: absolute; top: 20px; left: 20px; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 10px 15px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border); transition: all 0.3s;">
+        ← Volver al Inicio
+    </a>
+
+    <div class="card" style="max-width: 450px; width: 90%;">
+        <div class="text-center" style="margin-bottom: 2rem;">
+            <h1 class="accent" style="font-size: 2rem;">🛡️ PROTEC</h1>
+            <p>Panel de Administración</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>CORREO ELECTRÓNICO</label>
+                <input type="email" id="email" placeholder="admin@protec.mx" required autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label>CONTRASEÑA</label>
+                <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+            
+            <!-- ALERTA DE ERROR -->
+            <div id="errorMsg" style="background: rgba(255, 107, 107, 0.1); border: 1px solid #ff6b6b; color: #ff6b6b; padding: 12px; border-radius: 6px; margin-bottom: 1rem; display: none; text-align: center; font-size: 0.9rem;"></div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">INICIAR SESIÓN</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+            Demo: admin@protec.mx / admin123
+        </p>
+    </div>
+
+    <script>
+        // =========================================
+        // VERIFICAR SESIÓN AL CARGAR LOGIN
+        // =========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const auth = localStorage.getItem('protec_auth');
+            if(auth === 'true') {
+                // Ya está logueado, ir al admin
+                window.location.replace('admin.html');
+                return;
+            }
+        });
+
+        // =========================================
+        // FUNCIÓN DE LOGIN
+        // =========================================
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            // Credenciales
+            if(email === 'admin@protec.mx' && password === 'admin123') {
+                // Guardar sesión con la MISMA clave que usa admin.html
+                localStorage.setItem('protec_auth', 'true');
+                localStorage.setItem('protec_user', email);
+                
+                // Redirigir al admin
+                window.location.replace('admin.html');
+            } else {
+                // Mostrar alerta de error
+                errorMsg.textContent = '❌ Credenciales incorrectas. Intenta de nuevo.';
+                errorMsg.style.display = 'block';
+                
+                // Efecto de shake en el formulario
+                const form = document.querySelector('.card');
+                form.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    form.style.animation = '';
+                }, 500);
+                
+                // Ocultar mensaje después de 4 segundos
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 4000);
+            }
+        });
+
+        // =========================================
+        // ANIMACIÓN SHAKE (opcional, agregar en CSS)
+        // =========================================
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
