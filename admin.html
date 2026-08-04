@@ -69,11 +69,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- 2. Inicializar la conexión -->
+<!-- Importar Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
-  // ⚠️ REEMPLAZA ESTO CON TU CLAVE 'anon public' QUE COPIASTE ARRIBA
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'; 
-
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'; // Tu clave completa
   window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
 </head>
@@ -921,6 +921,68 @@ function cerrarSesion() {
         // 4. INICIAR CARGA
         cargarMarcas();
     });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Cargar marcas desde Supabase
+    async function cargarMarcas() {
+        const { data, error } = await window.supabaseClient
+            .from('marcas')
+            .select('*');
+
+        if (error) {
+            console.error('Error:', error);
+            return;
+        }
+
+        const tbody = document.getElementById('tablaMarcas');
+        if (tbody) {
+            tbody.innerHTML = '';
+            if (data) {
+                data.forEach(marca => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${marca.nombre}</td>
+                            <td><button class="btn-action btn-delete" onclick="eliminarMarca('${marca.id}')">Eliminar</button></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+    }
+
+    // Guardar marca
+    const formMarca = document.getElementById('formMarca');
+    if(formMarca) {
+        formMarca.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('inputMarca');
+            
+            const { error } = await window.supabaseClient
+                .from('marcas')
+                .insert([{ nombre: input.value.trim() }]);
+
+            if (!error) {
+                input.value = '';
+                cargarMarcas();
+                alert('✅ Guardado en Supabase');
+            } else {
+                alert('Error: ' + error.message);
+            }
+        });
+    }
+
+    // Eliminar marca
+    window.eliminarMarca = async (id) => {
+        if(confirm('¿Eliminar?')) {
+            await window.supabaseClient.from('marcas').delete().eq('id', id);
+            cargarMarcas();
+        }
+    };
+
+    cargarMarcas();
+});
 </script>
 </body>
 </html>
