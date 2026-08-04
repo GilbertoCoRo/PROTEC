@@ -6,19 +6,10 @@
     <title>PROTEC - Panel de Administración</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ESTILOS ESPECÍFICOS DEL ADMIN (Manteniendo tu diseño base) */
         .admin-layout { display: flex; min-height: 100vh; }
-        
-        /* Sidebar */
         .sidebar {
-            width: 280px;
-            background: var(--bg-deep);
-            border-right: 1px solid var(--border);
-            padding: 1.5rem;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 100;
+            width: 280px; background: var(--bg-deep); border-right: 1px solid var(--border);
+            padding: 1.5rem; position: fixed; height: 100vh; overflow-y: auto; z-index: 100;
         }
         .sidebar a, .menu-item, .submenu-item {
             display: block; padding: 0.8rem 1rem; color: var(--text-muted); 
@@ -31,51 +22,35 @@
         .menu-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); padding: 1rem 1rem 0.5rem; font-weight: 600; letter-spacing: 1px; }
         .submenu { display: none; padding-left: 1rem; border-left: 2px solid var(--border); margin-left: 1rem; margin-bottom: 0.5rem; }
         .submenu.open { display: block; }
-        
-        /* Contenido Principal */
         .main-content { flex: 1; margin-left: 280px; padding: 2rem; }
-        
-        /* Secciones y Tabs */
         .admin-section { display: none; animation: fadeIn 0.3s ease; }
         .admin-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
         .service-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
         .tab-btn { padding: 0.6rem 1.2rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-weight: 500; border-radius: 6px; }
         .tab-btn.active { background: var(--bg-card); color: var(--accent); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
-        /* Tarjetas de Planes */
         .plan-edit-card { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 1rem; }
-        
-        /* Tablas Admin */
         .admin-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: var(--radius); overflow: hidden; margin-top: 1rem; }
         .admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
         .admin-table th { background: var(--bg-hover); color: var(--accent); font-size: 0.85rem; text-transform: uppercase; }
-        
-        /* Botones */
         .btn-action { padding: 0.4rem 0.8rem; border-radius: 4px; border: none; cursor: pointer; font-size: 0.8rem; margin-right: 5px; }
         .btn-edit { background: var(--accent); color: var(--bg-dark); }
         .btn-delete { background: #ff5a5a; color: white; }
-
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: var(--bg-card); padding: 2rem; border-radius: var(--radius); width: 90%; max-width: 600px; position: relative; border: 1px solid var(--accent); max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; color: var(--text-muted); }
         .image-preview { width: 100%; max-height: 150px; object-fit: contain; margin: 10px 0; background: #000; border-radius: 4px; display: none; }
     </style>
-    <!-- 1. Importar la librería de Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2. Inicializar la conexión -->
-<!-- Importar Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'; // Tu clave completa
-  window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4';
+      window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
 </head>
 <body>
 
@@ -123,7 +98,6 @@
             <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
                 <a href="index.html" style="color: var(--text-primary);">🌐 Ver Sitio Web</a>
             </div>
-            <!-- Separador y botón de logout -->
             <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
                 <a href="#" onclick="cerrarSesion()" style="color: #ff5a5a; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;">
                     🚪 Cerrar Sesión
@@ -133,8 +107,6 @@
 
         <!-- CONTENIDO PRINCIPAL -->
         <main class="main-content">
-            
-            <!-- DASHBOARD -->
             <div id="global-dashboard" class="admin-section active">
                 <h2>Resumen del Sistema</h2>
                 <div class="grid-3">
@@ -144,7 +116,6 @@
                 </div>
             </div>
 
-            <!-- PRODUCTOS -->
             <div id="global-productos" class="admin-section">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
                     <h2>Inventario de Cámaras</h2>
@@ -156,7 +127,6 @@
                 </table>
             </div>
 
-            <!-- KITS -->
             <div id="global-kits" class="admin-section">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
                     <h2>Kits de Instalación</h2>
@@ -168,7 +138,6 @@
                 </table>
             </div>
 
-            <!-- SOLICITUDES -->
             <div id="global-solicitudes" class="admin-section">
                 <h2>📨 Solicitudes Recibidas</h2>
                 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -181,12 +150,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Fecha</th>
-                            <th>Servicio</th>
-                            <th>Nombre</th>
-                            <th>Teléfono</th>
-                            <th>Detalles</th>
-                            <th>Acciones</th>
+                            <th>Fecha</th><th>Servicio</th><th>Nombre</th><th>Teléfono</th><th>Detalles</th><th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaSolicitudes"></tbody>
@@ -198,13 +162,15 @@
                 <h2>Gestión de Marcas</h2>
                 <form id="formMarca" style="display:flex;gap:10px;max-width:500px;margin-bottom:2rem;">
                     <input type="text" id="inputMarca" class="form-control" required placeholder="Ej: Hikvision...">
-                    <button type="submit" class="btn btn-primary">Agregar</button>
+                    <button type="submit" id="btnGuardarMarca" class="btn btn-primary">Agregar</button>
                 </form>
-                <table class="admin-table"><thead><tr><th>Marca</th><th>Acciones</th></tr></thead><tbody id="tablaMarcas"></tbody></table>
+                <table class="admin-table">
+                    <thead><tr><th>Marca</th><th>Acciones</th></tr></thead>
+                    <tbody id="tablaMarcas"></tbody>
+                </table>
             </div>
 
-            <!-- SECCIONES POR SERVICIO (CCTV, POS, WEB, MANT) -->
-            <!-- CCTV -->
+            <!-- SECCIONES POR SERVICIO -->
             <div id="service-cctv" class="admin-section">
                 <h2>📷 Gestión CCTV</h2>
                 <div class="service-tabs">
@@ -223,7 +189,6 @@
                 </div>
             </div>
 
-            <!-- POS -->
             <div id="service-pos" class="admin-section">
                 <h2>💳 Gestión POS</h2>
                 <div class="service-tabs">
@@ -242,7 +207,6 @@
                 </div>
             </div>
 
-            <!-- WEB -->
             <div id="service-web" class="admin-section">
                 <h2>🌐 Gestión Web</h2>
                 <div class="service-tabs">
@@ -261,7 +225,6 @@
                 </div>
             </div>
 
-            <!-- MANTENIMIENTO -->
             <div id="service-mant" class="admin-section">
                 <h2>🔧 Gestión Mantenimiento</h2>
                 <div class="service-tabs">
@@ -279,7 +242,6 @@
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
 
@@ -334,239 +296,58 @@
         </div>
     </div>
 
+    <!-- SCRIPT UNIFICADO -->
     <script>
-        // =========================================
-// GESTIÓN DE SOLICITUDES
-// =========================================
-function renderSolicitudes(filtro = 'todos') {
-    const tbody = document.getElementById('tablaSolicitudes');
-    if(!tbody) return;
-    
-    let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
-    
-    // Filtrar por servicio si es necesario
-    if(filtro !== 'todos') {
-        solicitudes = solicitudes.filter(s => s.servicio === filtro);
-    }
-    
-    if(solicitudes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 2rem;">No hay solicitudes registradas</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = solicitudes.map(s => `
-        <tr>
-            <td>${s.fecha}</td>
-            <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
-            <td>${s.nombre}</td>
-            <td>${s.telefono}</td>
-            <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
-            <td>
-                <button class="btn-action btn-edit" onclick="verDetalleSolicitud(${s.id})">Ver</button>
-                <button class="btn-action btn-delete" onclick="eliminarSolicitud(${s.id})">Eliminar</button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-function filtrarSolicitudes(servicio, btn) {
-    document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderSolicitudes(servicio);
-}
-
-function verDetalleSolicitud(id) {
-    const solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
-    solicitudes = solicitudes.filter(s => s.id != id);
-    if(!s) return;
-    
-    let detalles = `📋 SOLICITUD #${s.id}\n`;
-    detalles += `📅 Fecha: ${s.fecha}\n`;
-    detalles += `🔧 Servicio: ${s.servicio}\n`;
-    detalles += `👤 Nombre: ${s.nombre}\n`;
-    detalles += `📞 Teléfono: ${s.telefono}\n`;
-    
-    // Agregar campos dinámicos
-    Object.keys(s).forEach(key => {
-        if(!['id','fecha','servicio','nombre','telefono','mensaje'].includes(key) && s[key]) {
-            detalles += `\n📌 ${key}: ${s[key]}`;
-        }
-    });
-    
-    if(s.mensaje) detalles += `\n\n💬 Mensaje:\n${s.mensaje}`;
-    
-    alert(detalles);
-}
-
-function eliminarSolicitud(id) {
-    if(confirm('¿Eliminar esta solicitud?')) {
-        let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
-        solicitudes = solicitudes.filter(s => s.id !== id);
-        localStorage.setItem('protec_solicitudes', JSON.stringify(solicitudes));
-        renderSolicitudes();
-    }
-}
-// =========================================
-// ACTIVAR SOLICITUDES AL HACER CLIC
-// =========================================
-// Buscamos el enlace "Solicitudes" en el sidebar y le agregamos el evento
-document.addEventListener('DOMContentLoaded', () => {
-    const linkSolicitudes = Array.from(document.querySelectorAll('.sidebar a'))
-        .find(a => a.textContent.includes('Solicitudes'));
-    
-    if(linkSolicitudes) {
-        linkSolicitudes.addEventListener('click', () => {
-            // Pequeño retraso para asegurar que la sección ya es visible
-            setTimeout(() => {
-                renderSolicitudes();
-            }, 100);
-        });
-    }
-});
-
-// Cargar solicitudes al abrir la sección
-
-
-    // Verificación al inicio de admin.html
+    // SESIÓN Y SEGURIDAD
     (function verificarSesion() {
-        // Usar la MISMA clave: 'protec_auth'
-        const auth = localStorage.getItem('protec_auth');
-        if(auth !== 'true') {
-            window.location.replace('login.html');
-            return false;
-        }
-        return true;
-    })();
-
-    // Luego en DOMContentLoaded...
-    document.addEventListener('DOMContentLoaded', () => {
-        // Doble verificación
         if(localStorage.getItem('protec_auth') !== 'true') {
             window.location.replace('login.html');
-            return;
         }
-        
-        // Cargar admin normal...
-        renderProductos(); 
-        renderKits(); 
-        // ... etc
-    });
-// Función para cerrar sesión
-function cerrarSesion() {
-    localStorage.removeItem('protec_auth');
-    window.location.href = 'login.html';
-}
-    // =========================================
-    // 1. DATOS Y VARIABLES
-    // =========================================
-    let productos = JSON.parse(localStorage.getItem('protec_productos')) || [];
-    let marcas = JSON.parse(localStorage.getItem('protec_marcas')) || [];
-    let galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
-    
-    // Inicializar contenido si no existe
-    let contenido = JSON.parse(localStorage.getItem('protec_contenido')) || {};
-    if(!contenido.cctv) contenido.cctv = { title: 'Sistemas de Videovigilancia', desc: 'Instalaciones profesionales con cámaras HD/IP, NVR/DVR y acceso remoto.' };
-    if(!contenido.pos) contenido.pos = { title: 'Sistemas POS', desc: 'Control total de tu negocio desde un solo sistema. Ventas, inventario y reportes en una interfaz intuitiva.' };
-    if(!contenido.web) contenido.web = { title: 'Desarrollo Web & Apps', desc: 'Creamos plataformas digitales que generan resultados reales. Desde landing pages hasta sistemas empresariales complejos.' };
-    if(!contenido.mant) contenido.mant = { title: 'Mantenimiento & Soporte', desc: 'Atención técnica especializada disponible las 24 horas. Mantenemos tus sistemas operativos y seguros.' };
-    localStorage.setItem('protec_contenido', JSON.stringify(contenido));
-    
-    // Inicializar planes si no existen
-    let planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
-    if(!planes.cctv) planes.cctv = [
-        { nombre: 'BÁSICO', precio: '8500', caracteristicas: ['4 Cámaras HD 1080p','DVR 4 canales','Disco 1TB','App móvil'], activo: true },
-        { nombre: 'PRO ⭐', precio: '18000', caracteristicas: ['8 Cámaras 4K','NVR 8 canales IP','Disco 4TB','Visión nocturna 60m','Detección movimiento IA'], activo: true },
-        { nombre: 'ENTERPRISE', precio: '45000', caracteristicas: ['16-64 Cámaras','NVR dedicado','RAID + Respaldo nube','Análisis inteligente IA','Soporte prioritario 24/7'], activo: true }
-    ];
-    if(!planes.pos) planes.pos = [
-        { nombre: 'STARTER', precio: '5500', caracteristicas: ['1 Terminal','Inventario básico','Reportes diarios'], activo: true },
-        { nombre: 'BUSINESS ⭐', precio: '12000', caracteristicas: ['3 Terminales','CFDI 4.0','Multi-almacén','CRM básico'], activo: true },
-        { nombre: 'ENTERPRISE', precio: '0', caracteristicas: ['Terminales ilimitadas','Multi-sucursal','API + integraciones','Soporte dedicado'], activo: true }
-    ];
-    if(!planes.web) planes.web = [
-        { nombre: 'LANDING', precio: '8000', caracteristicas: ['Diseño a medida','Responsive','SEO básico','Formulario'], activo: true },
-        { nombre: 'WEB PRO ⭐', precio: '22000', caracteristicas: ['CMS personalizado','Blog/E-Commerce','Panel admin','SEO avanzado'], activo: true },
-        { nombre: 'SISTEMA', precio: '45000', caracteristicas: ['Software a medida','App móvil','API REST','Mantenimiento 1 año'], activo: true }
-    ];
-    if(!planes.mant) planes.mant = [
-        { nombre: 'BÁSICO', precio: '800', caracteristicas: ['1 visita mensual','Soporte remoto','Hasta 8 cámaras'], activo: true },
-        { nombre: 'PLUS ⭐', precio: '1800', caracteristicas: ['2 visitas mensuales','Prioridad','Hasta 24 cámaras + POS','Respaldo nube'], activo: true },
-        { nombre: 'TOTAL', precio: '3500', caracteristicas: ['Visitas ilimitadas','Técnico dedicado','Equipos sin límite','Monitoreo 24/7'], activo: true }
-    ];
-    localStorage.setItem('protec_planes', JSON.stringify(planes));
+    })();
 
-    // =========================================
-    // 2. NAVEGACIÓN
-    // =========================================
+    function cerrarSesion() {
+        localStorage.removeItem('protec_auth');
+        window.location.href = 'login.html';
+    }
+
+    // VARIABLES GLOBALES
+    let productos = JSON.parse(localStorage.getItem('protec_productos')) || [];
+    let galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
+    let contenido = JSON.parse(localStorage.getItem('protec_contenido')) || {};
+    let planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
+
+    // NAVEGACIÓN
     function toggleSubmenu(id) {
-        // Cerrar todos los submenús excepto el clickeado
-        document.querySelectorAll('.submenu').forEach(s => { 
-            if(s.id !== id) s.classList.remove('open'); 
-        });
-        // Toggle del submenú actual
-        const submenu = document.getElementById(id);
-        if(submenu) submenu.classList.toggle('open');
+        document.querySelectorAll('.submenu').forEach(s => { if(s.id !== id) s.classList.remove('open'); });
+        document.getElementById(id)?.classList.toggle('open');
     }
 
     function showGlobal(section) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-        
         const el = document.getElementById('global-' + section);
         if(el) {
             el.classList.add('active');
             if(section === 'productos') renderProductos();
             if(section === 'kits') renderKits();
             if(section === 'marcas') renderMarcas();
-        }
-        
-        if(window.event && window.event.target && window.event.target.classList) {
-            window.event.target.classList.add('active');
+            if(section === 'solicitudes') renderSolicitudes();
         }
     }
 
     function showService(servicio, tab) {
-        // Ocultar todas las secciones
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-        
-        // Mostrar sección del servicio
-        const el = document.getElementById('service-' + servicio);
-        if(el) el.classList.add('active');
-        
-        // Actualizar título según el servicio
-        const titulos = {
-            'cctv': '📷 Gestión CCTV',
-            'pos': '💳 Gestión POS',
-            'web': '🌐 Gestión Web',
-            'mant': '🔧 Gestión Mantenimiento'
-        };
-        const tituloEl = document.querySelector('.admin-section.active h2');
-        if(tituloEl && titulos[servicio]) {
-            tituloEl.textContent = titulos[servicio];
-        }
-        
-        // Activar tab por defecto
+        document.getElementById('service-' + servicio)?.classList.add('active');
         const tabBtn = document.querySelector(`#service-${servicio} .service-tabs .tab-btn`);
         if(tabBtn) switchTab(servicio, tab, tabBtn);
         else loadServiceContent(servicio, tab);
-        
-        // Marcar menú activo
-        if(window.event && window.event.target && window.event.target.classList) {
-            window.event.target.classList.add('active');
-        }
     }
 
     function switchTab(servicio, tab, btnElement) {
-        // Ocultar todos los tabs del servicio
         document.querySelectorAll(`#service-${servicio} .tab-content`).forEach(c => c.classList.remove('active'));
         document.querySelectorAll(`#service-${servicio} .tab-btn`).forEach(b => b.classList.remove('active'));
-        
-        // Mostrar tab activo
-        const content = document.getElementById(`${servicio}-${tab}`);
-        if(content) content.classList.add('active');
-        if(btnElement && btnElement.classList) btnElement.classList.add('active');
-        
-        // Cargar contenido
+        document.getElementById(`${servicio}-${tab}`)?.classList.add('active');
+        btnElement?.classList.add('active');
         loadServiceContent(servicio, tab);
     }
 
@@ -576,207 +357,167 @@ function cerrarSesion() {
         if(tab === 'contenido') cargarContenido(servicio);
     }
 
-    // =========================================
-    // 3. MARCAS (Conectado a Supabase)
-    // =========================================
-
+    // GESTIÓN DE MARCAS (SUPABASE SÓLIDO)
     async function renderMarcas() {
         const tbody = document.getElementById('tablaMarcas');
         if(!tbody) return;
 
-        // Cargar desde Supabase
+        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center">Cargando...</td></tr>';
+
         const { data, error } = await window.supabaseClient
             .from('marcas')
             .select('*')
             .order('created_at', { ascending: false });
 
         if(error) {
-            console.error('Error cargando marcas:', error);
+            console.error('Error al obtener marcas:', error);
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#ff5a5a;">Error al cargar</td></tr>';
             return;
         }
 
-        // Dibujar la tabla
         tbody.innerHTML = '';
         if(data && data.length > 0) {
             data.forEach((m) => {
                 tbody.innerHTML += `
                     <tr>
                         <td>${m.nombre}</td>
-                        <td>
-                            <button class="btn-action btn-delete" onclick="deleteMarcaSupabase('${m.id}')">Eliminar</button>
-                        </td>
-                    </tr>
-                `;
+                        <td><button class="btn-action btn-delete" onclick="eliminarMarca('${m.id}')">Eliminar</button></td>
+                    </tr>`;
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center">Sin marcas</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--text-muted);">Sin marcas registradas</td></tr>';
         }
-        
-        // Actualizar los selectores de productos/kits con las marcas nuevas
-        actualizarSelectores(data);
+        actualizarSelectores(data || []);
     }
 
-    // Guardar nueva marca en Supabase
-    document.getElementById('formMarca')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const nombre = document.getElementById('inputMarca').value.trim();
-        
-        if(!nombre) return alert('Escribe un nombre');
-
-        // Enviar a Supabase
-        const { error } = await window.supabaseClient
-            .from('marcas')
-            .insert([{ nombre: nombre }]);
-
-        if(error) {
-            alert('Error: ' + error.message);
-        } else {
-            document.getElementById('inputMarca').value = ''; // Limpiar input
-            renderMarcas(); // Recargar tabla
-        }
-    });
-
-    // Eliminar marca de Supabase
-    async function deleteMarcaSupabase(id) {
+    window.eliminarMarca = async function(id) {
         if(confirm('¿Eliminar esta marca?')) {
-            const { error } = await window.supabaseClient
-                .from('marcas')
-                .delete()
-                .eq('id', id);
-                
+            const { error } = await window.supabaseClient.from('marcas').delete().eq('id', id);
             if(!error) {
-                renderMarcas();
+                await renderMarcas();
             } else {
-                alert('Error al eliminar');
+                alert('Error al eliminar: ' + error.message);
             }
         }
-    }
+    };
 
-    // Actualizar los dropdowns de selección de marca en productos/kits
-    function actualizarSelectores(marcas) {
+    function actualizarSelectores(marcasData = []) {
         document.querySelectorAll('.dynamic-brand-select').forEach(sel => {
+            const val = sel.value;
             sel.innerHTML = '<option value="">Seleccionar...</option>';
-            marcas.forEach(m => sel.innerHTML += `<option value="${m.nombre}">${m.nombre}</option>`);
+            marcasData.forEach(m => sel.innerHTML += `<option value="${m.nombre}">${m.nombre}</option>`);
+            if(val) sel.value = val;
         });
     }
 
-    // =========================================
-    // 4. PRODUCTOS Y KITS
-    // =========================================
+    // PRODUCTOS Y KITS
     function renderProductos() {
         const tbody = document.getElementById('tablaProductos'); 
         if(!tbody) return;
         const items = productos.filter(p => p.tipo !== 'kit');
-        tbody.innerHTML = items.map(p => {
-            const idx = productos.indexOf(p);
-            return `<tr><td>${p.imagen ? `<img src="${p.imagen}" style="width:40px;height:40px;object-fit:cover">` : '📷'}</td><td>${p.nombre}</td><td>${p.marca}</td><td>${p.modelo}</td><td>$${p.precio}</td><td><button class="btn-action btn-delete" onclick="deleteProd(${idx})">Eliminar</button></td></tr>`;
-        }).join('') || '<tr><td colspan="6" style="text-align:center">Sin productos</td></tr>';
+        tbody.innerHTML = items.map((p, i) => `
+            <tr>
+                <td>${p.imagen ? `<img src="${p.imagen}" style="width:40px;height:40px;object-fit:cover">` : '📷'}</td>
+                <td>${p.nombre}</td><td>${p.marca}</td><td>${p.modelo}</td><td>$${p.precio}</td>
+                <td><button class="btn-action btn-delete" onclick="deleteProd(${i})">Eliminar</button></td>
+            </tr>`).join('') || '<tr><td colspan="6" style="text-align:center">Sin productos</td></tr>';
         document.getElementById('countProductos').innerText = items.length;
     }
-    
+
     function renderKits() {
         const tbody = document.getElementById('tablaKits'); 
         if(!tbody) return;
         const items = productos.filter(p => p.tipo === 'kit');
-        tbody.innerHTML = items.map(p => {
-            const idx = productos.indexOf(p);
-            return `<tr><td>${p.nombre}</td><td>${p.marca}</td><td>$${p.precio}</td><td><button class="btn-action btn-delete" onclick="deleteProd(${idx})">Eliminar</button></td></tr>`;
-        }).join('') || '<tr><td colspan="4" style="text-align:center">Sin kits</td></tr>';
+        tbody.innerHTML = items.map((p, i) => `
+            <tr>
+                <td>${p.nombre}</td><td>${p.marca}</td><td>$${p.precio}</td>
+                <td><button class="btn-action btn-delete" onclick="deleteProd(${i})">Eliminar</button></td>
+            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Sin kits</td></tr>';
         document.getElementById('countKits').innerText = items.length;
     }
-    
-    document.getElementById('formProducto').addEventListener('submit', e => {
-        e.preventDefault();
-        const id = document.getElementById('prodId').value;
-        const nuevo = {
-            nombre: document.getElementById('prodNombre').value, 
-            marca: document.getElementById('prodMarca').value,
-            modelo: document.getElementById('prodModelo').value, 
-            tipo: document.getElementById('prodTipo').value,
-            precio: document.getElementById('prodPrecio').value, 
-            imagen: document.getElementById('prodImagenBase64').value,
-            enOferta: document.getElementById('prodEnOferta').checked, 
-            precioOferta: document.getElementById('prodPrecioOferta').value
-        };
-        if(id) productos[id] = nuevo; 
-        else productos.push(nuevo);
-        localStorage.setItem('protec_productos', JSON.stringify(productos));
-        closeModal('modalProducto'); 
-        renderProductos(); 
-        renderKits();
-    });
-    
-    function deleteProd(i) { 
-        if(confirm('¿Eliminar?')) { 
-            productos.splice(i,1); 
-            localStorage.setItem('protec_productos', JSON.stringify(productos)); 
-            renderProductos(); 
-            renderKits(); 
-        } 
-    }
-    
-    document.getElementById('formKit').addEventListener('submit', e => {
-        e.preventDefault();
-        productos.push({ 
-            nombre: document.getElementById('kitNombre').value, 
-            marca: document.getElementById('kitMarca').value, 
-            tipo: 'kit', 
-            descripcion: document.getElementById('kitDesc').value, 
-            precio: document.getElementById('kitPrecio').value 
-        });
-        localStorage.setItem('protec_productos', JSON.stringify(productos));
-        closeModal('modalKit'); 
-        renderKits();
-    });
 
-    // =========================================
-    // 5. PLANES (CORREGIDO - Separado por servicio)
-    // =========================================
+    function deleteProd(i) {
+        if(confirm('¿Eliminar equipo/kit?')) {
+            productos.splice(i, 1);
+            localStorage.setItem('protec_productos', JSON.stringify(productos));
+            renderProductos(); renderKits();
+        }
+    }
+
+    // SOLICITUDES
+    function renderSolicitudes(filtro = 'todos') {
+        const tbody = document.getElementById('tablaSolicitudes');
+        if(!tbody) return;
+        let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
+        if(filtro !== 'todos') solicitudes = solicitudes.filter(s => s.servicio === filtro);
+
+        if(solicitudes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay solicitudes</td></tr>';
+            return;
+        }
+        tbody.innerHTML = solicitudes.map(s => `
+            <tr>
+                <td>${s.fecha}</td>
+                <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px;">${s.servicio}</span></td>
+                <td>${s.nombre}</td><td>${s.telefono}</td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${s.mensaje || '-'}</td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="verDetalleSolicitud(${s.id})">Ver</button>
+                    <button class="btn-action btn-delete" onclick="eliminarSolicitud(${s.id})">Eliminar</button>
+                </td>
+            </tr>`).join('');
+    }
+
+    function verDetalleSolicitud(id) {
+        const solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
+        const s = solicitudes.find(item => item.id == id);
+        if(!s) return;
+        alert(`📋 SOLICITUD #${s.id}\n📅 Fecha: ${s.fecha}\n🔧 Servicio: ${s.servicio}\n👤 Nombre: ${s.nombre}\n📞 Teléfono: ${s.telefono}\n💬 Mensaje: ${s.mensaje||'-'}`);
+    }
+
+    function eliminarSolicitud(id) {
+        if(confirm('¿Eliminar esta solicitud?')) {
+            let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
+            solicitudes = solicitudes.filter(s => s.id !== id);
+            localStorage.setItem('protec_solicitudes', JSON.stringify(solicitudes));
+            renderSolicitudes();
+        }
+    }
+
+    // PLANES
     function renderPlanes(servicio) {
         const container = document.getElementById(`plans-${servicio}-container`); 
         if(!container) return;
-        
-        // Asegurar que el array de planes exista
-        if(!planes[servicio]) planes[servicio] = [];
-        
-        if(planes[servicio].length === 0) {
-            container.innerHTML = '<p style="color:var(--text-muted)">No hay planes configurados. Agrega planes desde el código o localStorage.</p>';
+        if(!planes[servicio] || planes[servicio].length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted)">Sin planes configurados.</p>';
             return;
         }
-        
         container.innerHTML = planes[servicio].map((plan, idx) => `
             <div class="plan-edit-card">
                 <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
                     <input type="text" value="${plan.nombre}" onchange="updatePlan('${servicio}', ${idx}, 'nombre', this.value)" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--accent);font-size:1.2rem;font-weight:bold;width:70%;">
-                    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" ${plan.activo?'checked':''} onchange="updatePlan('${servicio}', ${idx}, 'activo', this.checked)"> Activo</label>
+                    <label><input type="checkbox" ${plan.activo?'checked':''} onchange="updatePlan('${servicio}', ${idx}, 'activo', this.checked)"> Activo</label>
                 </div>
                 <div class="form-group"><label>Precio</label><input type="number" value="${plan.precio}" onchange="updatePlan('${servicio}', ${idx}, 'precio', this.value)"></div>
                 <div class="form-group"><label>Características (una por línea)</label><textarea rows="4" onchange="updatePlan('${servicio}', ${idx}, 'caracteristicas', this.value.split('\\n').filter(x=>x.trim()))">${(plan.caracteristicas || []).join('\n')}</textarea></div>
-            </div>
-        `).join('');
+            </div>`).join('');
     }
-    
+
     function updatePlan(servicio, idx, campo, valor) {
         if(!planes[servicio]) planes[servicio] = [];
         planes[servicio][idx][campo] = valor;
         localStorage.setItem('protec_planes', JSON.stringify(planes));
     }
 
-    // =========================================
-    // 6. GALERÍA (CORREGIDO - Separado por servicio)
-    // =========================================
+    // GALERÍA Y CONTENIDO
     function renderGaleria(servicio) {
         const container = document.getElementById(`galeria-${servicio}-container`); 
         if(!container) return;
-        
-        // Filtrar SOLO las imágenes del servicio actual
         const items = galeria.filter(i => i.servicio === servicio);
-        
         if(items.length === 0) {
-            container.innerHTML = '<p style="color:var(--text-muted)">No hay imágenes para este servicio. Agrega una nueva.</p>';
+            container.innerHTML = '<p style="color:var(--text-muted)">Sin imágenes registradas.</p>';
             return;
         }
-        
         container.innerHTML = items.map((item) => {
             const realIdx = galeria.indexOf(item);
             return `<div class="card" style="position:relative;">
@@ -787,62 +528,40 @@ function cerrarSesion() {
             </div>`;
         }).join('');
     }
-    
+
     function openGalleryModal(servicio) {
         document.getElementById('galeriaServicio').value = servicio;
         openModal('modalGaleria');
     }
-    
-    document.getElementById('formGaleria').addEventListener('submit', e => {
-        e.preventDefault();
-        const servicio = document.getElementById('galeriaServicio').value;
-        galeria.push({ 
-            titulo: document.getElementById('galeriaTitulo').value, 
-            servicio: servicio, // Guardar el servicio correcto
-            descripcion: document.getElementById('galeriaDesc').value, 
-            imagen: document.getElementById('galeriaImagenBase64').value 
-        });
-        localStorage.setItem('protec_galeria', JSON.stringify(galeria));
-        closeModal('modalGaleria'); 
-        renderGaleria(servicio); // Renderizar solo el servicio actual
-        e.target.reset();
-    });
-    
+
     function deleteGaleria(idx, servicio) { 
-        galeria.splice(idx,1); 
+        galeria.splice(idx, 1); 
         localStorage.setItem('protec_galeria', JSON.stringify(galeria)); 
         renderGaleria(servicio); 
     }
 
-    // =========================================
-    // 7. CONTENIDO
-    // =========================================
     function cargarContenido(servicio) {
         const c = contenido[servicio]; 
         if(!c) return;
-        const t = document.getElementById(`${servicio}-title`);
-        const d = document.getElementById(`${servicio}-desc`);
-        if(t) t.value = c.title;
-        if(d) d.value = c.desc;
+        document.getElementById(`${servicio}-title`).value = c.title || '';
+        document.getElementById(`${servicio}-desc`).value = c.desc || '';
     }
-    
+
     function saveContent(servicio) {
         contenido[servicio] = { 
             title: document.getElementById(`${servicio}-title`).value, 
             desc: document.getElementById(`${servicio}-desc`).value 
         };
         localStorage.setItem('protec_contenido', JSON.stringify(contenido));
-        alert('✅ Contenido guardado correctamente');
+        alert('✅ Guardado correctamente');
     }
 
-    // =========================================
-    // UTILIDADES
-    // =========================================
+    // UTILS MODALES
     function openModal(id) { 
         document.getElementById(id).style.display = 'flex'; 
-        if(id==='modalProducto') actualizarSelectores();
+        if(id==='modalProducto' || id==='modalKit') renderMarcas();
     }
-    
+
     function closeModal(id) { 
         document.getElementById(id).style.display = 'none'; 
         document.getElementById(id).querySelector('form')?.reset();
@@ -851,7 +570,7 @@ function cerrarSesion() {
         document.getElementById('kitId').value = '';
         document.getElementById('galeriaServicio').value = '';
     }
-    
+
     function previewImage(input, previewId) {
         const preview = document.getElementById(previewId);
         if (input.files && input.files[0]) {
@@ -865,146 +584,115 @@ function cerrarSesion() {
             reader.readAsDataURL(input.files[0]);
         }
     }
-    
-    document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
-        document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
-    });
 
-    // INICIALIZACIÓN
+    // INICIALIZACIÓN DE EVENTOS AL CARGAR EL DOM
     document.addEventListener('DOMContentLoaded', () => {
         renderProductos(); 
         renderKits(); 
-        //renderMarcas(); 
-        actualizarSelectores();
-        // Cargar primera sección por defecto
+        //renderMarcas();
         showService('cctv', 'planes');
-    });
-    // =========================================
-    // CERRAR SESIÓN
-    // =========================================
-    function cerrarSesion() {
-        // Eliminar flag de autenticación
-        localStorage.removeItem('protec_auth');
-        
-        // Opcional: limpiar datos sensibles si los hubiera
-        // localStorage.removeItem('protec_user');
-        
-        // Redirigir al login o al home
-        window.location.href = 'login.html'; // o 'index.html' si no tienes login.html
-    }
-</script>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. FUNCIÓN PARA CARGAR MARCAS
-    async function renderMarcas() {
-        const tbody = document.getElementById('tablaMarcas');
-        if(!tbody) return;
-        
-        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center">Cargando...</td></tr>';
+        // FORMULARIO MARCA (SIN DUPLICADOS)
+        const formMarca = document.getElementById('formMarca');
+        if(formMarca) {
+            formMarca.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btnSubmit = document.getElementById('btnGuardarMarca');
+                const inputMarca = document.getElementById('inputMarca');
+                const valorNombre = inputMarca.value.trim().toUpperCase();
 
-        const { data, error } = await window.supabaseClient
-            .from('marcas')
-            .select('*')
-            .order('created_at', { ascending: false });
+                if(!valorNombre) return alert('Por favor escribe un nombre');
 
-        if (error) {
-            console.error(error);
-            return;
-        }
+                btnSubmit.disabled = true;
 
-        tbody.innerHTML = '';
-        if (data && data.length > 0) {
-            data.forEach(m => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${m.nombre}</td>
-                        <td><button class="btn-action btn-delete" onclick="eliminarMarca('${m.id}')">Eliminar</button></td>
-                    </tr>
-                `;
+                // Consulta limpia en Supabase para evitar duplicados
+                const { data: existentes, error: errorCheck } = await window.supabaseClient
+                    .from('marcas')
+                    .select('nombre')
+                    .ilike('nombre', valorNombre);
+
+                if(errorCheck) {
+                    console.error('Error al validar marca:', errorCheck);
+                }
+
+                if(existentes && existentes.length > 0) {
+                    alert('⚠️ Esta marca ya existe.');
+                    btnSubmit.disabled = false;
+                    return;
+                }
+
+                // Insertar marca única
+                const { error: errorInsert } = await window.supabaseClient
+                    .from('marcas')
+                    .insert([{ nombre: valorNombre }]);
+
+                btnSubmit.disabled = false;
+
+                if(errorInsert) {
+                    alert('Error al guardar: ' + errorInsert.message);
+                } else {
+                    inputMarca.value = '';
+                    await renderMarcas();
+                }
             });
-        } else {
-            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:gray;">Sin marcas</td></tr>';
-        }
-        
-        // Actualizar selectores
-        actualizarSelectores(data);
-    }
-
-    // 2. FUNCIÓN PARA GUARDAR
-    // Formulario Marca (Supabase Directo - CON PREVENCIÓN DE DUPLICADOS)
-const formMarca = document.getElementById('formMarca');
-if (formMarca) {
-    // Remover cualquier listener previo para evitar duplicados
-    const newForm = formMarca.cloneNode(true);
-    formMarca.parentNode.replaceChild(newForm, formMarca);
-    
-    newForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const inputMarca = document.getElementById('inputMarca');
-        const valorNombre = inputMarca.value.trim().toUpperCase(); // Convertir a mayúsculas
-        
-        if (!valorNombre) {
-            alert('Por favor escribe un nombre');
-            return;
         }
 
-        // VERIFICAR SI YA EXISTE LA MARCA
-        const { data: existingData, error: checkError } = await window.supabaseClient
-            .from('marcas')
-            .select('nombre')
-            .ilike(valorNombre); // Búsqueda case-insensitive
-
-        if (checkError) {
-            console.error('Error verificando:', checkError);
-        }
-
-        if (existingData && existingData.length > 0) {
-            alert('⚠️ Esta marca ya existe en la base de datos');
-            return;
-        }
-
-        // Insertar solo si no existe
-        const { error } = await window.supabaseClient
-            .from('marcas')
-            .insert([{ nombre: valorNombre }]);
-
-        if (error) {
-            alert('Error al guardar: ' + error.message);
-        } else {
-            inputMarca.value = '';
-            await renderMarcas();
-        }
-    });
-}
-
-    // 3. FUNCIÓN ELIMINAR (Global)
-    window.eliminarMarca = async (id) => {
-        if(confirm('¿Eliminar marca?')) {
-            const { error } = await window.supabaseClient
-                .from('marcas')
-                .delete()
-                .eq('id', id);
-            
-            if(!error) renderMarcas();
-        }
-    };
-
-    // Función auxiliar para selectores
-    function actualizarSelectores(marcas) {
-        document.querySelectorAll('.dynamic-brand-select').forEach(sel => {
-            const valActual = sel.value;
-            sel.innerHTML = '<option value="">Seleccionar...</option>';
-            marcas.forEach(m => sel.innerHTML += `<option value="${m.nombre}">${m.nombre}</option>`);
-            if(valActual) sel.value = valActual;
+        // FORMULARIO PRODUCTO
+        document.getElementById('formProducto')?.addEventListener('submit', e => {
+            e.preventDefault();
+            const id = document.getElementById('prodId').value;
+            const nuevo = {
+                nombre: document.getElementById('prodNombre').value, 
+                marca: document.getElementById('prodMarca').value,
+                modelo: document.getElementById('prodModelo').value, 
+                tipo: document.getElementById('prodTipo').value,
+                precio: document.getElementById('prodPrecio').value, 
+                imagen: document.getElementById('prodImagenBase64').value,
+                enOferta: document.getElementById('prodEnOferta').checked, 
+                precioOferta: document.getElementById('prodPrecioOferta').value
+            };
+            if(id) productos[id] = nuevo; 
+            else productos.push(nuevo);
+            localStorage.setItem('protec_productos', JSON.stringify(productos));
+            closeModal('modalProducto'); 
+            renderProductos(); renderKits();
         });
-    }
 
-    // Iniciar
-    renderMarcas();
-});
-</script>
+        // FORMULARIO KIT
+        document.getElementById('formKit')?.addEventListener('submit', e => {
+            e.preventDefault();
+            productos.push({ 
+                nombre: document.getElementById('kitNombre').value, 
+                marca: document.getElementById('kitMarca').value, 
+                tipo: 'kit', 
+                descripcion: document.getElementById('kitDesc').value, 
+                precio: document.getElementById('kitPrecio').value 
+            });
+            localStorage.setItem('protec_productos', JSON.stringify(productos));
+            closeModal('modalKit'); 
+            renderKits();
+        });
+
+        // FORMULARIO GALERÍA
+        document.getElementById('formGaleria')?.addEventListener('submit', e => {
+            e.preventDefault();
+            const servicio = document.getElementById('galeriaServicio').value;
+            galeria.push({ 
+                titulo: document.getElementById('galeriaTitulo').value, 
+                servicio: servicio,
+                descripcion: document.getElementById('galeriaDesc').value, 
+                imagen: document.getElementById('galeriaImagenBase64').value 
+            });
+            localStorage.setItem('protec_galeria', JSON.stringify(galeria));
+            closeModal('modalGaleria'); 
+            renderGaleria(servicio);
+            e.target.reset();
+        });
+
+        document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
+            document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
+        });
+    });
+    </script>
 </body>
 </html>
