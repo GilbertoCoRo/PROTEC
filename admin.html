@@ -897,77 +897,100 @@ function cerrarSesion() {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Referencia al input
-    const inputMarca = document.getElementById('inputMarca');
-    
-    // 1. CARGAR MARCAS
-    async function cargarMarcas() {
-        // Usamos window.supabaseClient como definimos en el paso 1
+    // 1. FUNCIÓN PARA CARGAR MARCAS
+    async function renderMarcas() {
+        const tbody = document.getElementById('tablaMarcas');
+        if(!tbody) return;
+        
+        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center">Cargando...</td></tr>';
+
         const { data, error } = await window.supabaseClient
             .from('marcas')
             .select('*')
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Error cargando:', error);
+            console.error(error);
             return;
         }
 
-        const tbody = document.getElementById('tablaMarcas');
-        if (tbody) {
-            tbody.innerHTML = '';
-            if (data && data.length > 0) {
-                data.forEach(marca => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${marca.nombre}</td>
-                            <td><button class="btn-action btn-delete" onclick="eliminarMarca('${marca.id}')">Eliminar</button></td>
-                        </tr>
-                    `;
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:gray;">Sin marcas</td></tr>';
-            }
+        tbody.innerHTML = '';
+        if (data && data.length > 0) {
+            data.forEach(m => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${m.nombre}</td>
+                        <td><button class="btn-action btn-delete" onclick="eliminarMarca('${m.id}')">Eliminar</button></td>
+                    </tr>
+                `;
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:gray;">Sin marcas</td></tr>';
         }
+        
+        // Actualizar selectores
+        actualizarSelectores(data);
     }
 
-    // 2. GUARDAR MARCA
+    // 2. FUNCIÓN PARA GUARDAR
+    // Buscamos el formulario actual en el DOM cada vez para evitar referencias viejas
     const formMarca = document.getElementById('formMarca');
+    
     if (formMarca) {
-        // Elimina cualquier otro evento 'submit' viejo que tengas para este formulario
+        // Limpiar eventos anteriores (si los hubiera)
+        formMarca.onsubmit = null;
         
         formMarca.addEventListener('submit', async (e) => {
-            e.preventDefault(); // ¡ESTO ES CLAVE! Evita que la página se recargue y borre el texto
+            e.preventDefault(); // Evita recarga
             
-            const valorNombre = inputMarca.value.trim();
+            // LEEMOS EL VALOR DIRECTAMENTE DEL DOM EN ESTE INSTANTE
+            const inputEl = document.getElementById('inputMarca');
+            const valor = inputEl ? inputEl.value.trim() : '';
             
-            if (!valorNombre) {
-                alert('Por favor escribe un nombre');
+            console.log('Valor capturado:', valor); // Para depurar en consola
+
+            if (!valor) {
+                alert('Escribe un nombre');
                 return;
             }
 
             const { error } = await window.supabaseClient
                 .from('marcas')
-                .insert([{ nombre: valorNombre }]);
+                .insert([{ nombre: valor }]);
 
             if (error) {
-                alert('Error al guardar: ' + error.message);
+                alert('Error: ' + error.message);
             } else {
-                inputMarca.value = ''; // Limpiamos solo después de guardar
-                cargarMarcas();
+                inputEl.value = ''; // Limpiamos el input
+                renderMarcas(); // Recargamos
             }
         });
     }
 
-    // 3. ELIMINAR
+    // 3. FUNCIÓN ELIMINAR (Global)
     window.eliminarMarca = async (id) => {
-        if(confirm('¿Eliminar esta marca?')) {
-            await window.supabaseClient.from('marcas').delete().eq('id', id);
-            cargarMarcas();
+        if(confirm('¿Eliminar marca?')) {
+            const { error } = await window.supabaseClient
+                .from('marcas')
+                .delete()
+                .eq('id', id);
+            
+            if(!error) renderMarcas();
         }
     };
 
-    cargarMarcas();
+    // Función auxiliar para selectores
+    function actualizarSelectores(marcas) {
+        document.querySelectorAll('.dynamic-brand-select').forEach(sel => {
+            const valActual = sel.value;
+            sel.innerHTML = '<option value="">Seleccionar...</option>';
+            marcas.forEach(m => sel.innerHTML += `<option value="${m.nombre}">${m.nombre}</option>`);
+            if(valActual) sel.value = valActual;
+        });
+    }
+
+    // Iniciar
+    renderMarcas();
 });
 </script>
 </body>
