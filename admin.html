@@ -933,39 +933,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. FUNCIÓN PARA GUARDAR
-    // Buscamos el formulario actual en el DOM cada vez para evitar referencias viejas
-    const formMarca = document.getElementById('formMarca');
+    // Formulario Marca (Supabase Directo - CON PREVENCIÓN DE DUPLICADOS)
+const formMarca = document.getElementById('formMarca');
+if (formMarca) {
+    // Remover cualquier listener previo para evitar duplicados
+    const newForm = formMarca.cloneNode(true);
+    formMarca.parentNode.replaceChild(newForm, formMarca);
     
-    if (formMarca) {
-        // Limpiar eventos anteriores (si los hubiera)
-        formMarca.onsubmit = null;
+    newForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        formMarca.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Evita recarga
-            
-            // LEEMOS EL VALOR DIRECTAMENTE DEL DOM EN ESTE INSTANTE
-            const inputEl = document.getElementById('inputMarca');
-            const valor = inputEl ? inputEl.value.trim() : '';
-            
-            console.log('Valor capturado:', valor); // Para depurar en consola
+        const inputMarca = document.getElementById('inputMarca');
+        const valorNombre = inputMarca.value.trim().toUpperCase(); // Convertir a mayúsculas
+        
+        if (!valorNombre) {
+            alert('Por favor escribe un nombre');
+            return;
+        }
 
-            if (!valor) {
-                alert('Escribe un nombre');
-                return;
-            }
+        // VERIFICAR SI YA EXISTE LA MARCA
+        const { data: existingData, error: checkError } = await window.supabaseClient
+            .from('marcas')
+            .select('nombre')
+            .ilike(valorNombre); // Búsqueda case-insensitive
 
-            const { error } = await window.supabaseClient
-                .from('marcas')
-                .insert([{ nombre: valor }]);
+        if (checkError) {
+            console.error('Error verificando:', checkError);
+        }
 
-            if (error) {
-                alert('Error: ' + error.message);
-            } else {
-                inputEl.value = ''; // Limpiamos el input
-                renderMarcas(); // Recargamos
-            }
-        });
-    }
+        if (existingData && existingData.length > 0) {
+            alert('⚠️ Esta marca ya existe en la base de datos');
+            return;
+        }
+
+        // Insertar solo si no existe
+        const { error } = await window.supabaseClient
+            .from('marcas')
+            .insert([{ nombre: valorNombre }]);
+
+        if (error) {
+            alert('Error al guardar: ' + error.message);
+        } else {
+            inputMarca.value = '';
+            await renderMarcas();
+        }
+    });
+}
 
     // 3. FUNCIÓN ELIMINAR (Global)
     window.eliminarMarca = async (id) => {
