@@ -74,7 +74,7 @@
   // ⚠️ REEMPLAZA ESTO CON TU CLAVE 'anon public' QUE COPIASTE ARRIBA
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'; 
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
 </head>
 <body>
@@ -844,102 +844,81 @@ function cerrarSesion() {
     }
 </script>
 <script>
-    // Esperar a que cargue toda la página
+    // Esperar a que cargue la página
     document.addEventListener('DOMContentLoaded', () => {
         
-        // --- 1. CARGAR MARCAS DESDE SUPABASE ---
+        // 1. FUNCIÓN PARA CARGAR MARCAS DESDE LA NUBE
         async function cargarMarcas() {
-            const { data, error } = await supabase
+            const { data, error } = await window.supabaseClient
                 .from('marcas')
-                .select('*')
-                .order('nombre', { ascending: true });
+                .select('*');
 
             if (error) {
-                console.error('Error al cargar marcas:', error);
+                console.error('Error cargando marcas:', error);
                 return;
             }
 
-            renderMarcasTabla(data);
-        }
-
-        // Función para renderizar la tabla (Adaptada para recibir datos de Supabase)
-        function renderMarcasTabla(marcas) {
             const tbody = document.getElementById('tablaMarcas');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            marcas.forEach((m) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${m.nombre}</td>
-                        <td>
-                            <button class="btn-action btn-delete" onclick="eliminarMarca('${m.id}')">Eliminar</button>
-                        </td>
-                    </tr>
-                `;
-            });
+            if (tbody) {
+                tbody.innerHTML = '';
+                // Si hay datos, los pintamos
+                if (data) {
+                    data.forEach(marca => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${marca.nombre}</td>
+                                <td>
+                                    <button class="btn-action btn-delete" onclick="eliminarMarca('${marca.id}')">Eliminar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
         }
 
-        // --- 2. GUARDAR NUEVA MARCA ---
+        // 2. FUNCIÓN PARA GUARDAR NUEVA MARCA
         const formMarca = document.getElementById('formMarca');
-        if(formMarca) {
+        if (formMarca) {
             formMarca.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
                 const input = document.getElementById('inputMarca');
                 const nombre = input.value.trim();
-                
-                if (!nombre) return alert('Escribe el nombre de la marca');
 
-                // Mostrar estado de carga (opcional)
-                const btn = formMarca.querySelector('button');
-                const textoOriginal = btn.innerText;
-                btn.innerText = 'Guardando...';
-                btn.disabled = true;
+                if (!nombre) return alert('Escribe un nombre');
 
-                try {
-                    // Enviar a Supabase
-                    const { data, error } = await supabase
-                        .from('marcas')
-                        .insert([{ nombre: nombre }]);
+                // Enviar a Supabase
+                const { error } = await window.supabaseClient
+                    .from('marcas')
+                    .insert([{ nombre: nombre }]);
 
-                    if (error) throw error;
-
-                    alert('✅ Marca guardada en Supabase');
+                if (!error) {
+                    alert('✅ Guardado en Supabase');
                     input.value = ''; // Limpiar input
-                    cargarMarcas(); // Recargar tabla
-
-                } catch (error) {
-                    console.error('Error:', error);
+                    cargarMarcas();   // Recargar tabla
+                } else {
                     alert('❌ Error: ' + error.message);
-                } finally {
-                    btn.innerText = textoOriginal;
-                    btn.disabled = false;
                 }
             });
         }
 
-        // --- 3. ELIMINAR MARCA ---
-        // Hacemos la función global para que el botón HTML la encuentre
+        // 3. FUNCIÓN PARA ELIMINAR (Hacemos que sea global para el HTML)
         window.eliminarMarca = async (id) => {
-            if (!confirm('¿Seguro que deseas eliminar esta marca?')) return;
+            if (!confirm('¿Eliminar esta marca?')) return;
+            
+            const { error } = await window.supabaseClient
+                .from('marcas')
+                .delete()
+                .eq('id', id);
 
-            try {
-                const { error } = await supabase
-                    .from('marcas')
-                    .delete()
-                    .eq('id', id);
-
-                if (error) throw error;
-                
-                alert('Marca eliminada');
+            if (!error) {
                 cargarMarcas(); // Recargar
-            } catch (error) {
+            } else {
                 alert('Error al eliminar: ' + error.message);
             }
-        }
+        };
 
-        // Iniciar carga
+        // 4. INICIAR CARGA
         cargarMarcas();
     });
 </script>
