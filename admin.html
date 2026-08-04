@@ -577,36 +577,86 @@ function cerrarSesion() {
     }
 
     // =========================================
-    // 3. MARCAS
+    // 3. MARCAS (Conectado a Supabase)
     // =========================================
-    function renderMarcas() {
-        const tbody = document.getElementById('tablaMarcas'); 
+
+    async function renderMarcas() {
+        const tbody = document.getElementById('tablaMarcas');
         if(!tbody) return;
-        tbody.innerHTML = marcas.map((m,i) => `<tr><td>${m}</td><td><button class="btn-action btn-delete" onclick="deleteMarca(${i})">Eliminar</button></td></tr>`).join('') || '<tr><td colspan="2" style="text-align:center">Sin marcas</td></tr>';
+
+        // Cargar desde Supabase
+        const { data, error } = await window.supabaseClient
+            .from('marcas')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if(error) {
+            console.error('Error cargando marcas:', error);
+            return;
+        }
+
+        // Dibujar la tabla
+        tbody.innerHTML = '';
+        if(data && data.length > 0) {
+            data.forEach((m) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${m.nombre}</td>
+                        <td>
+                            <button class="btn-action btn-delete" onclick="deleteMarcaSupabase('${m.id}')">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center">Sin marcas</td></tr>';
+        }
+        
+        // Actualizar los selectores de productos/kits con las marcas nuevas
+        actualizarSelectores(data);
     }
-    
-    document.getElementById('formMarca')?.addEventListener('submit', e => {
+
+    // Guardar nueva marca en Supabase
+    document.getElementById('formMarca')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const nombre = document.getElementById('inputMarca').value.trim();
-        if(!nombre || marcas.some(m => m.toLowerCase()===nombre.toLowerCase())) return alert('Inválida o duplicada');
-        marcas.push(nombre); 
-        localStorage.setItem('protec_marcas', JSON.stringify(marcas));
-        renderMarcas(); 
-        actualizarSelectores(); 
-        e.target.reset();
+        
+        if(!nombre) return alert('Escribe un nombre');
+
+        // Enviar a Supabase
+        const { error } = await window.supabaseClient
+            .from('marcas')
+            .insert([{ nombre: nombre }]);
+
+        if(error) {
+            alert('Error: ' + error.message);
+        } else {
+            document.getElementById('inputMarca').value = ''; // Limpiar input
+            renderMarcas(); // Recargar tabla
+        }
     });
-    
-    function deleteMarca(i) { 
-        marcas.splice(i,1); 
-        localStorage.setItem('protec_marcas', JSON.stringify(marcas)); 
-        renderMarcas(); 
-        actualizarSelectores(); 
+
+    // Eliminar marca de Supabase
+    async function deleteMarcaSupabase(id) {
+        if(confirm('¿Eliminar esta marca?')) {
+            const { error } = await window.supabaseClient
+                .from('marcas')
+                .delete()
+                .eq('id', id);
+                
+            if(!error) {
+                renderMarcas();
+            } else {
+                alert('Error al eliminar');
+            }
+        }
     }
-    
-    function actualizarSelectores() {
+
+    // Actualizar los dropdowns de selección de marca en productos/kits
+    function actualizarSelectores(marcas) {
         document.querySelectorAll('.dynamic-brand-select').forEach(sel => {
             sel.innerHTML = '<option value="">Seleccionar...</option>';
-            marcas.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+            marcas.forEach(m => sel.innerHTML += `<option value="${m.nombre}">${m.nombre}</option>`);
         });
     }
 
