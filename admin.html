@@ -445,7 +445,6 @@
     }
 
    // SOLICITUDES (SUPABASE)
-async function renderSolicitudes(filtro = 'todos') {
     const tbody = document.getElementById('tablaSolicitudes');
     if(!tbody) return;
     
@@ -487,7 +486,96 @@ async function renderSolicitudes(filtro = 'todos') {
         </tr>
     `).join('');
 }
+// =========================================
+// SOLICITUDES (CONECTADO A SUPABASE)
+// =========================================
 
+async function renderSolicitudes(filtro = 'todos') {
+    const tbody = document.getElementById('tablaSolicitudes');
+    if(!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Cargando solicitudes...</td></tr>';
+
+    let query = window.supabaseClient
+        .from('solicitudes')
+        .select('*')
+        .order('created_at', { ascending: false }); // Las más recientes primero
+
+    if(filtro !== 'todos') {
+        query = query.eq('servicio', filtro);
+    }
+
+    const { data, error } = await query;
+
+    if(error) {
+        console.error('Error al cargar solicitudes:', error);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar</td></tr>';
+        return;
+    }
+    
+    if(!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay solicitudes registradas</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = data.map(s => `
+        <tr>
+            <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
+            <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
+            <td>${s.nombre}</td>
+            <td>${s.telefono || '-'}</td>
+            <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
+            <td>
+                <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
+                <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filtrarSolicitudes(servicio, btn) {
+    document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderSolicitudes(servicio);
+}
+
+async function verDetalleSolicitud(id) {
+    // Buscar en los datos ya cargados o hacer una nueva consulta si es necesario
+    // Para simplificar, haremos una consulta directa por ID
+    const { data, error } = await window.supabaseClient
+        .from('solicitudes')
+        .select('*')
+        .eq('id', id)
+        .single();
+        
+    if(!data) return;
+    
+    let detalles = `📋 SOLICITUD\n`;
+    detalles += ` Fecha: ${data.fecha || '-' }\n`;
+    detalles += `🔧 Servicio: ${data.servicio}\n`;
+    detalles += `👤 Nombre: ${data.nombre}\n`;
+    detalles += `📞 Teléfono: ${data.telefono}\n`;
+    if(data.numero_camaras) detalles += `\n📌 Cámaras: ${data.numero_camaras}`;
+    if(data.presupuesto) detalles += `\n💰 Presupuesto: ${data.presupuesto}`;
+    detalles += `\n\n💬 Mensaje:\n${data.mensaje || '-'}`;
+    
+    alert(detalles);
+}
+
+async function eliminarSolicitud(id) {
+    if(confirm('¿Eliminar esta solicitud?')) {
+        const { error } = await window.supabaseClient
+            .from('solicitudes')
+            .delete()
+            .eq('id', id);
+            
+        if(!error) {
+            renderSolicitudes(); // Recargar la tabla
+        } else {
+            alert('Error al eliminar');
+        }
+    }
+}
 function filtrarSolicitudes(servicio, btn) {
     document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
