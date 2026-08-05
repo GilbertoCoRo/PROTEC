@@ -439,5 +439,41 @@ function guardarSolicitud(servicio, datos) {
     return true;
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function enviarSoporteMant(e) {
+    e.preventDefault();
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.innerText = 'Enviando...';
+    btn.disabled = true;
+    
+    const datos = {
+        nombre: document.getElementById('mant-nombre').value,
+        telefono: document.getElementById('mant-telefono').value,
+        servicio: 'Mantenimiento',
+        tipo_instalacion: document.getElementById('mant-servicio').value,
+        presupuesto: document.getElementById('mant-presupuesto').value,
+        mensaje: document.getElementById('mant-mensaje').value,
+        fecha: new Date().toLocaleDateString('es-MX')
+    };
+    
+    const { error } = await supabase.from('solicitudes').insert([datos]);
+    
+    btn.innerText = 'SOLICITAR SERVICIO';
+    btn.disabled = false;
+    
+    if(error) {
+        alert('❌ Error: ' + error.message);
+    } else {
+        alert('✅ Solicitud de soporte recibida. Te contactaremos en menos de 2 horas.');
+        e.target.reset();
+    }
+}
+</script>
 </body>
 </html>

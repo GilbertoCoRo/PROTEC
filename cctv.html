@@ -164,24 +164,46 @@
         <button type="submit" class="btn btn-primary" style="width: 100%;">ENVIAR SOLICITUD</button>
     </form>
 
-    <script>
-    function enviarCotizacionCCTV(e) {
-        e.preventDefault();
-        
-        const datos = {
-            nombre: document.getElementById('cctv-nombre').value,
-            telefono: document.getElementById('cctv-telefono').value,
-            tipo: document.getElementById('cctv-tipo').value,
-            camaras: document.getElementById('cctv-camaras').value,
-            presupuesto: document.getElementById('cctv-presupuesto').value,
-            mensaje: document.getElementById('cctv-mensaje').value
-        };
-        
-        if(guardarSolicitud('CCTV', datos)) {
-            alert('✅ Solicitud recibida. Te contactaremos en menos de 2 horas.');
-            e.target.reset();
-        }
+    
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Configurar Supabase
+const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function enviarCotizacionCCTV(e) {
+    e.preventDefault();
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    const textoOriginal = btn.innerText;
+    btn.innerText = 'Enviando...';
+    btn.disabled = true;
+    
+    const datos = {
+        nombre: document.getElementById('cctv-nombre').value,
+        telefono: document.getElementById('cctv-telefono').value,
+        servicio: 'CCTV',
+        tipo_instalacion: document.getElementById('cctv-tipo').value,
+        numero_camaras: document.getElementById('cctv-camaras').value,
+        presupuesto: document.getElementById('cctv-presupuesto').value,
+        mensaje: document.getElementById('cctv-mensaje').value,
+        fecha: new Date().toLocaleDateString('es-MX')
+    };
+    
+    const { error } = await supabase.from('solicitudes').insert([datos]);
+    
+    btn.innerText = textoOriginal;
+    btn.disabled = false;
+    
+    if(error) {
+        alert('❌ Error al enviar: ' + error.message);
+    } else {
+        alert('✅ Solicitud recibida. Te contactaremos en menos de 2 horas.');
+        e.target.reset();
     }
+}
 </script>
 </section>
 
