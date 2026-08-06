@@ -321,16 +321,22 @@
         document.getElementById(id)?.classList.toggle('open');
     }
 
-    function showGlobal(section) {
+   function showGlobal(section) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+        
         const el = document.getElementById('global-' + section);
         if(el) {
             el.classList.add('active');
+            
+            // Cargar datos específicos según la sección
             if(section === 'productos') renderProductos();
             if(section === 'kits') renderKits();
             if(section === 'marcas') renderMarcas();
-            if(section === 'solicitudes') renderSolicitudes();
+            if(section === 'solicitudes') {
+                console.log('Cargando solicitudes...'); // Debug
+                renderSolicitudes();
+            }
         }
     }
 
@@ -447,54 +453,65 @@
 // =========================================
 
 async function renderSolicitudes(filtro = 'todos') {
+    console.log('Renderizando solicitudes, filtro:', filtro);
+    
     const tbody = document.getElementById('tablaSolicitudes');
-    if(!tbody) return;
-    
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Cargando...</td></tr>';
-
-    let query = window.supabaseClient
-        .from('solicitudes')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if(filtro !== 'todos') {
-        query = query.eq('servicio', filtro);
-    }
-
-    const { data, error } = await query;
-
-    if(error) {
-        console.error('Error cargando solicitudes:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ff5a5a;">Error al cargar</td></tr>';
-        return;
-    }
-
-    if(!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay solicitudes registradas</td></tr>';
-        const countEl = document.getElementById('countSolicitudes');
-        if(countEl) countEl.innerText = '0';
+    if(!tbody) {
+        console.error('No se encontró tablaSolicitudes');
         return;
     }
     
-    // Actualizar contador del dashboard
-    const countEl = document.getElementById('countSolicitudes');
-    if(countEl) countEl.innerText = data.length;
-    
-    tbody.innerHTML = data.map(s => `
-        <tr>
-            <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
-            <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
-            <td>${s.nombre}</td>
-            <td>${s.telefono || '-'}</td>
-            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${s.mensaje || '-'}</td>
-            <td>
-                <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
-                <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Cargando solicitudes...</td></tr>';
+
+    try {
+        let query = window.supabaseClient
+            .from('solicitudes')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if(filtro !== 'todos') {
+            query = query.eq('servicio', filtro.toUpperCase());
+        }
+
+        const { data, error } = await query;
+
+        if(error) {
+            console.error('Error de Supabase:', error);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff5a5a;">Error al cargar: ' + error.message + '</td></tr>';
+            return;
+        }
+
+        console.log('Datos recibidos:', data);
+
+        if(!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">No hay solicitudes registradas</td></tr>';
+            document.getElementById('countSolicitudes').innerText = '0';
+            return;
+        }
+        
+        // Actualizar contador
+        document.getElementById('countSolicitudes').innerText = data.length;
+        
+        // Renderizar tabla
+        tbody.innerHTML = data.map(s => `
+            <tr>
+                <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
+                <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
+                <td>${s.nombre}</td>
+                <td>${s.telefono || '-'}</td>
+                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
+                    <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+        
+    } catch(err) {
+        console.error('Error general:', err);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff5a5a;">Error inesperado</td></tr>';
+    }
 }
-
 function filtrarSolicitudes(servicio, btn) {
     document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
