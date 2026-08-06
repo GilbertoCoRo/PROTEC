@@ -449,10 +449,75 @@
         }
     }
     // =========================================
-// SOLICITUDES (SUPABASE - CORREGIDO)
-// =========================================
+    // SOLICITUDES (SUPABASE - CORREGIDO)
+    // =========================================
 
-async function renderSolicitudes(filtro = 'todos') {
+    async function renderSolicitudes(filtro = 'todos') {
+        console.log(' Iniciando renderSolicitudes, filtro:', filtro);
+        console.log('🔑 Supabase client:', window.supabaseClient ? 'OK' : 'ERROR');
+        
+        const tbody = document.getElementById('tablaSolicitudes');
+        if(!tbody) {
+            console.error('❌ No se encontró #tablaSolicitudes');
+            return;
+        }
+        
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">🔄 Cargando...</td></tr>';
+
+        try {
+            let query = window.supabaseClient
+                .from('solicitudes')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            console.log('📤 Query antes de ejecutar:', query);
+
+            if(filtro !== 'todos') {
+                query = query.eq('servicio', filtro);
+                console.log(' Query con filtro:', filtro);
+            }
+
+            const { data, error } = await query;
+
+            console.log('📥 Respuesta de Supabase:');
+            console.log('   - Data:', data);
+            console.log('   - Error:', error);
+            console.log('   - Total registros:', data ? data.length : 0);
+
+            if(error) {
+                console.error('❌ Error de Supabase:', error);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ff5a5a; padding: 2rem;">Error: ${error.message}</td></tr>`;
+                return;
+            }
+
+            if(!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">No hay solicitudes registradas</td></tr>';
+                document.getElementById('countSolicitudes').innerText = '0';
+                return;
+            }
+            
+            document.getElementById('countSolicitudes').innerText = data.length;
+            
+            tbody.innerHTML = data.map(s => `
+                <tr>
+                    <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
+                    <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
+                    <td>${s.nombre}</td>
+                    <td>${s.telefono || '-'}</td>
+                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
+                        <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+        } catch(err) {
+            console.error(' Error general:', err);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff5a5a; padding: 2rem;">Error inesperado</td></tr>';
+        }
+    }
+
     console.log('Renderizando solicitudes, filtro:', filtro);
     
     const tbody = document.getElementById('tablaSolicitudes');
