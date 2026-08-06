@@ -304,7 +304,6 @@
             window.location.replace('login.html');
         }
     })();
-
     function cerrarSesion() {
         localStorage.removeItem('protec_auth');
         window.location.href = 'login.html';
@@ -443,8 +442,11 @@
             renderProductos(); renderKits();
         }
     }
+    // =========================================
+// SOLICITUDES (SUPABASE - CORREGIDO)
+// =========================================
 
-   // SOLICITUDES (SUPABASE)
+async function renderSolicitudes(filtro = 'todos') {
     const tbody = document.getElementById('tablaSolicitudes');
     if(!tbody) return;
     
@@ -469,8 +471,14 @@
 
     if(!data || data.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay solicitudes registradas</td></tr>';
+        const countEl = document.getElementById('countSolicitudes');
+        if(countEl) countEl.innerText = '0';
         return;
     }
+    
+    // Actualizar contador del dashboard
+    const countEl = document.getElementById('countSolicitudes');
+    if(countEl) countEl.innerText = data.length;
     
     tbody.innerHTML = data.map(s => `
         <tr>
@@ -486,96 +494,7 @@
         </tr>
     `).join('');
 }
-// =========================================
-// SOLICITUDES (CONECTADO A SUPABASE)
-// =========================================
 
-async function renderSolicitudes(filtro = 'todos') {
-    const tbody = document.getElementById('tablaSolicitudes');
-    if(!tbody) return;
-    
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Cargando solicitudes...</td></tr>';
-
-    let query = window.supabaseClient
-        .from('solicitudes')
-        .select('*')
-        .order('created_at', { ascending: false }); // Las más recientes primero
-
-    if(filtro !== 'todos') {
-        query = query.eq('servicio', filtro);
-    }
-
-    const { data, error } = await query;
-
-    if(error) {
-        console.error('Error al cargar solicitudes:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar</td></tr>';
-        return;
-    }
-    
-    if(!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay solicitudes registradas</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = data.map(s => `
-        <tr>
-            <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
-            <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
-            <td>${s.nombre}</td>
-            <td>${s.telefono || '-'}</td>
-            <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
-            <td>
-                <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
-                <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-function filtrarSolicitudes(servicio, btn) {
-    document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderSolicitudes(servicio);
-}
-
-async function verDetalleSolicitud(id) {
-    // Buscar en los datos ya cargados o hacer una nueva consulta si es necesario
-    // Para simplificar, haremos una consulta directa por ID
-    const { data, error } = await window.supabaseClient
-        .from('solicitudes')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-    if(!data) return;
-    
-    let detalles = `📋 SOLICITUD\n`;
-    detalles += ` Fecha: ${data.fecha || '-' }\n`;
-    detalles += `🔧 Servicio: ${data.servicio}\n`;
-    detalles += `👤 Nombre: ${data.nombre}\n`;
-    detalles += `📞 Teléfono: ${data.telefono}\n`;
-    if(data.numero_camaras) detalles += `\n📌 Cámaras: ${data.numero_camaras}`;
-    if(data.presupuesto) detalles += `\n💰 Presupuesto: ${data.presupuesto}`;
-    detalles += `\n\n💬 Mensaje:\n${data.mensaje || '-'}`;
-    
-    alert(detalles);
-}
-
-async function eliminarSolicitud(id) {
-    if(confirm('¿Eliminar esta solicitud?')) {
-        const { error } = await window.supabaseClient
-            .from('solicitudes')
-            .delete()
-            .eq('id', id);
-            
-        if(!error) {
-            renderSolicitudes(); // Recargar la tabla
-        } else {
-            alert('Error al eliminar');
-        }
-    }
-}
 function filtrarSolicitudes(servicio, btn) {
     document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -588,24 +507,17 @@ async function verDetalleSolicitud(id) {
         .select('*')
         .eq('id', id)
         .single();
+        
+    if(!data) return;
     
-    if(error || !data) {
-        alert('Error al cargar detalles');
-        return;
-    }
+    let msg = `📋 SOLICITUD\n`;
+    msg += `Fecha: ${data.fecha || '-'}\n`;
+    msg += `Servicio: ${data.servicio}\n`;
+    msg += `Nombre: ${data.nombre}\n`;
+    msg += `Teléfono: ${data.telefono || '-'}\n`;
+    if(data.mensaje) msg += `\nMensaje: ${data.mensaje}`;
     
-    let detalles = `📋 SOLICITUD #${data.id.substring(0,8)}...\n`;
-    detalles += ` Fecha: ${data.fecha || new Date(data.created_at).toLocaleDateString('es-MX')}\n`;
-    detalles += `🔧 Servicio: ${data.servicio}\n`;
-    detalles += `👤 Nombre: ${data.nombre}\n`;
-    detalles += `📞 Teléfono: ${data.telefono || 'No especificado'}\n`;
-    
-    if(data.tipo_instalacion) detalles += `\n📌 Tipo instalación: ${data.tipo_instalacion}`;
-    if(data.numero_camaras) detalles += `\n📌 Número cámaras: ${data.numero_camaras}`;
-    if(data.presupuesto) detalles += `\n📌 Presupuesto: $${data.presupuesto}`;
-    if(data.mensaje) detalles += `\n\n💬 Mensaje:\n${data.mensaje}`;
-    
-    alert(detalles);
+    alert(msg);
 }
 
 async function eliminarSolicitud(id) {
@@ -616,237 +528,212 @@ async function eliminarSolicitud(id) {
             .eq('id', id);
             
         if(!error) {
-            await renderSolicitudes();
-        } else {
-            alert('Error al eliminar: ' + error.message);
-        }
-    }
-}
-    function verDetalleSolicitud(id) {
-        const solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
-        const s = solicitudes.find(item => item.id == id);
-        if(!s) return;
-        alert(`📋 SOLICITUD #${s.id}\n📅 Fecha: ${s.fecha}\n🔧 Servicio: ${s.servicio}\n👤 Nombre: ${s.nombre}\n📞 Teléfono: ${s.telefono}\n💬 Mensaje: ${s.mensaje||'-'}`);
-    }
-
-    function eliminarSolicitud(id) {
-        if(confirm('¿Eliminar esta solicitud?')) {
-            let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
-            solicitudes = solicitudes.filter(s => s.id !== id);
-            localStorage.setItem('protec_solicitudes', JSON.stringify(solicitudes));
             renderSolicitudes();
+        } else {
+            alert('Error: ' + error.message);
         }
     }
+}
 
-    // PLANES
-    function renderPlanes(servicio) {
-        const container = document.getElementById(`plans-${servicio}-container`); 
-        if(!container) return;
-        if(!planes[servicio] || planes[servicio].length === 0) {
-            container.innerHTML = '<p style="color:var(--text-muted)">Sin planes configurados.</p>';
-            return;
-        }
-        container.innerHTML = planes[servicio].map((plan, idx) => `
-            <div class="plan-edit-card">
-                <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
-                    <input type="text" value="${plan.nombre}" onchange="updatePlan('${servicio}', ${idx}, 'nombre', this.value)" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--accent);font-size:1.2rem;font-weight:bold;width:70%;">
-                    <label><input type="checkbox" ${plan.activo?'checked':''} onchange="updatePlan('${servicio}', ${idx}, 'activo', this.checked)"> Activo</label>
-                </div>
-                <div class="form-group"><label>Precio</label><input type="number" value="${plan.precio}" onchange="updatePlan('${servicio}', ${idx}, 'precio', this.value)"></div>
-                <div class="form-group"><label>Características (una por línea)</label><textarea rows="4" onchange="updatePlan('${servicio}', ${idx}, 'caracteristicas', this.value.split('\\n').filter(x=>x.trim()))">${(plan.caracteristicas || []).join('\n')}</textarea></div>
-            </div>`).join('');
+// =========================================
+// PLANES (localStorage - sin cambios)
+// =========================================
+function renderPlanes(servicio) {
+    const container = document.getElementById(`plans-${servicio}-container`); 
+    if(!container) return;
+    if(!planes[servicio] || planes[servicio].length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted)">Sin planes configurados.</p>';
+        return;
     }
+    container.innerHTML = planes[servicio].map((plan, idx) => `
+        <div class="plan-edit-card">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
+                <input type="text" value="${plan.nombre}" onchange="updatePlan('${servicio}', ${idx}, 'nombre', this.value)" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--accent);font-size:1.2rem;font-weight:bold;width:70%;">
+                <label><input type="checkbox" ${plan.activo?'checked':''} onchange="updatePlan('${servicio}', ${idx}, 'activo', this.checked)"> Activo</label>
+            </div>
+            <div class="form-group"><label>Precio</label><input type="number" value="${plan.precio}" onchange="updatePlan('${servicio}', ${idx}, 'precio', this.value)"></div>
+            <div class="form-group"><label>Características (una por línea)</label><textarea rows="4" onchange="updatePlan('${servicio}', ${idx}, 'caracteristicas', this.value.split('\\n').filter(x=>x.trim()))">${(plan.caracteristicas || []).join('\n')}</textarea></div>
+        </div>`).join('');
+}
 
-    function updatePlan(servicio, idx, campo, valor) {
-        if(!planes[servicio]) planes[servicio] = [];
-        planes[servicio][idx][campo] = valor;
-        localStorage.setItem('protec_planes', JSON.stringify(planes));
+function updatePlan(servicio, idx, campo, valor) {
+    if(!planes[servicio]) planes[servicio] = [];
+    planes[servicio][idx][campo] = valor;
+    localStorage.setItem('protec_planes', JSON.stringify(planes));
+}
+
+// =========================================
+// GALERÍA Y CONTENIDO (localStorage)
+// =========================================
+function renderGaleria(servicio) {
+    const container = document.getElementById(`galeria-${servicio}-container`); 
+    if(!container) return;
+    const items = galeria.filter(i => i.servicio === servicio);
+    if(items.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted)">Sin imágenes registradas.</p>';
+        return;
     }
+    container.innerHTML = items.map((item) => {
+        const realIdx = galeria.indexOf(item);
+        return `<div class="card" style="position:relative;">
+            ${item.imagen ? `<img src="${item.imagen}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;margin-bottom:1rem;">` : ''}
+            <h4>${item.titulo}</h4>
+            <p style="font-size:0.85rem;color:var(--text-muted)">${item.descripcion||''}</p>
+            <button class="btn-action btn-delete" style="position:absolute;top:5px;right:5px;" onclick="deleteGaleria(${realIdx}, '${servicio}')">X</button>
+        </div>`;
+    }).join('');
+}
 
-    // GALERÍA Y CONTENIDO
-    function renderGaleria(servicio) {
-        const container = document.getElementById(`galeria-${servicio}-container`); 
-        if(!container) return;
-        const items = galeria.filter(i => i.servicio === servicio);
-        if(items.length === 0) {
-            container.innerHTML = '<p style="color:var(--text-muted)">Sin imágenes registradas.</p>';
-            return;
-        }
-        container.innerHTML = items.map((item) => {
-            const realIdx = galeria.indexOf(item);
-            return `<div class="card" style="position:relative;">
-                ${item.imagen ? `<img src="${item.imagen}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;margin-bottom:1rem;">` : ''}
-                <h4>${item.titulo}</h4>
-                <p style="font-size:0.85rem;color:var(--text-muted)">${item.descripcion||''}</p>
-                <button class="btn-action btn-delete" style="position:absolute;top:5px;right:5px;" onclick="deleteGaleria(${realIdx}, '${servicio}')">X</button>
-            </div>`;
-        }).join('');
-    }
+function openGalleryModal(servicio) {
+    document.getElementById('galeriaServicio').value = servicio;
+    openModal('modalGaleria');
+}
 
-    function openGalleryModal(servicio) {
-        document.getElementById('galeriaServicio').value = servicio;
-        openModal('modalGaleria');
-    }
+function deleteGaleria(idx, servicio) { 
+    galeria.splice(idx, 1); 
+    localStorage.setItem('protec_galeria', JSON.stringify(galeria)); 
+    renderGaleria(servicio); 
+}
 
-    function deleteGaleria(idx, servicio) { 
-        galeria.splice(idx, 1); 
-        localStorage.setItem('protec_galeria', JSON.stringify(galeria)); 
-        renderGaleria(servicio); 
-    }
+function cargarContenido(servicio) {
+    const c = contenido[servicio]; 
+    if(!c) return;
+    document.getElementById(`${servicio}-title`).value = c.title || '';
+    document.getElementById(`${servicio}-desc`).value = c.desc || '';
+}
 
-    function cargarContenido(servicio) {
-        const c = contenido[servicio]; 
-        if(!c) return;
-        document.getElementById(`${servicio}-title`).value = c.title || '';
-        document.getElementById(`${servicio}-desc`).value = c.desc || '';
-    }
+function saveContent(servicio) {
+    contenido[servicio] = { 
+        title: document.getElementById(`${servicio}-title`).value, 
+        desc: document.getElementById(`${servicio}-desc`).value 
+    };
+    localStorage.setItem('protec_contenido', JSON.stringify(contenido));
+    alert('✅ Guardado correctamente');
+}
 
-    function saveContent(servicio) {
-        contenido[servicio] = { 
-            title: document.getElementById(`${servicio}-title`).value, 
-            desc: document.getElementById(`${servicio}-desc`).value 
+// =========================================
+// UTILS MODALES
+// =========================================
+function openModal(id) { 
+    document.getElementById(id).style.display = 'flex'; 
+    if(id==='modalProducto' || id==='modalKit') renderMarcas();
+}
+
+function closeModal(id) { 
+    document.getElementById(id).style.display = 'none'; 
+    document.getElementById(id).querySelector('form')?.reset();
+    document.getElementById('groupPrecioOferta')?.style.setProperty('display','none');
+    document.getElementById('prodId').value = '';
+    document.getElementById('kitId').value = '';
+    document.getElementById('galeriaServicio').value = '';
+}
+
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => { 
+            preview.src = e.target.result; 
+            preview.style.display = 'block'; 
+            const hiddenInput = input.closest('form').querySelector('input[type="hidden"][id$="Base64"]');
+            if(hiddenInput) hiddenInput.value = e.target.result; 
         };
-        localStorage.setItem('protec_contenido', JSON.stringify(contenido));
-        alert('✅ Guardado correctamente');
+        reader.readAsDataURL(input.files[0]);
     }
+}
 
-    // UTILS MODALES
-    function openModal(id) { 
-        document.getElementById(id).style.display = 'flex'; 
-        if(id==='modalProducto' || id==='modalKit') renderMarcas();
-    }
+// =========================================
+// INICIALIZACIÓN
+// =========================================
+document.addEventListener('DOMContentLoaded', () => {
+    renderProductos(); 
+    renderKits(); 
+    // renderMarcas(); // Se llama automáticamente en showGlobal
+    showService('cctv', 'planes');
 
-    function closeModal(id) { 
-        document.getElementById(id).style.display = 'none'; 
-        document.getElementById(id).querySelector('form')?.reset();
-        document.getElementById('groupPrecioOferta')?.style.setProperty('display','none');
-        document.getElementById('prodId').value = '';
-        document.getElementById('kitId').value = '';
-        document.getElementById('galeriaServicio').value = '';
-    }
-
-    function previewImage(input, previewId) {
-        const preview = document.getElementById(previewId);
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => { 
-                preview.src = e.target.result; 
-                preview.style.display = 'block'; 
-                const hiddenInput = input.closest('form').querySelector('input[type="hidden"][id$="Base64"]');
-                if(hiddenInput) hiddenInput.value = e.target.result; 
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // INICIALIZACIÓN DE EVENTOS AL CARGAR EL DOM
-    document.addEventListener('DOMContentLoaded', () => {
-        renderProductos(); 
-        renderKits(); 
-        //renderMarcas();
-        showService('cctv', 'planes');
-
-        // FORMULARIO MARCA (SIN DUPLICADOS)
-        const formMarca = document.getElementById('formMarca');
-        if(formMarca) {
-            formMarca.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btnSubmit = document.getElementById('btnGuardarMarca');
-                const inputMarca = document.getElementById('inputMarca');
-                const valorNombre = inputMarca.value.trim().toUpperCase();
-
-                if(!valorNombre) return alert('Por favor escribe un nombre');
-
-                btnSubmit.disabled = true;
-
-                // Consulta limpia en Supabase para evitar duplicados
-                const { data: existentes, error: errorCheck } = await window.supabaseClient
-                    .from('marcas')
-                    .select('nombre')
-                    .ilike('nombre', valorNombre);
-
-                if(errorCheck) {
-                    console.error('Error al validar marca:', errorCheck);
-                }
-
-                if(existentes && existentes.length > 0) {
-                    alert('⚠️ Esta marca ya existe.');
-                    btnSubmit.disabled = false;
-                    return;
-                }
-
-                // Insertar marca única
-                const { error: errorInsert } = await window.supabaseClient
-                    .from('marcas')
-                    .insert([{ nombre: valorNombre }]);
-
-                btnSubmit.disabled = false;
-
-                if(errorInsert) {
-                    alert('Error al guardar: ' + errorInsert.message);
-                } else {
-                    inputMarca.value = '';
-                    await renderMarcas();
-                }
-            });
-        }
-
-        // FORMULARIO PRODUCTO
-        document.getElementById('formProducto')?.addEventListener('submit', e => {
+    // FORMULARIO MARCA
+    const formMarca = document.getElementById('formMarca');
+    if(formMarca) {
+        formMarca.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = document.getElementById('prodId').value;
-            const nuevo = {
-                nombre: document.getElementById('prodNombre').value, 
-                marca: document.getElementById('prodMarca').value,
-                modelo: document.getElementById('prodModelo').value, 
-                tipo: document.getElementById('prodTipo').value,
-                precio: document.getElementById('prodPrecio').value, 
-                imagen: document.getElementById('prodImagenBase64').value,
-                enOferta: document.getElementById('prodEnOferta').checked, 
-                precioOferta: document.getElementById('prodPrecioOferta').value
-            };
-            if(id) productos[id] = nuevo; 
-            else productos.push(nuevo);
-            localStorage.setItem('protec_productos', JSON.stringify(productos));
-            closeModal('modalProducto'); 
-            renderProductos(); renderKits();
-        });
+            const btnSubmit = document.getElementById('btnGuardarMarca');
+            const inputMarca = document.getElementById('inputMarca');
+            const valorNombre = inputMarca.value.trim().toUpperCase();
 
-        // FORMULARIO KIT
-        document.getElementById('formKit')?.addEventListener('submit', e => {
-            e.preventDefault();
-            productos.push({ 
-                nombre: document.getElementById('kitNombre').value, 
-                marca: document.getElementById('kitMarca').value, 
-                tipo: 'kit', 
-                descripcion: document.getElementById('kitDesc').value, 
-                precio: document.getElementById('kitPrecio').value 
-            });
-            localStorage.setItem('protec_productos', JSON.stringify(productos));
-            closeModal('modalKit'); 
-            renderKits();
-        });
+            if(!valorNombre) return alert('Por favor escribe un nombre');
+            btnSubmit.disabled = true;
 
-        // FORMULARIO GALERÍA
-        document.getElementById('formGaleria')?.addEventListener('submit', e => {
-            e.preventDefault();
-            const servicio = document.getElementById('galeriaServicio').value;
-            galeria.push({ 
-                titulo: document.getElementById('galeriaTitulo').value, 
-                servicio: servicio,
-                descripcion: document.getElementById('galeriaDesc').value, 
-                imagen: document.getElementById('galeriaImagenBase64').value 
-            });
-            localStorage.setItem('protec_galeria', JSON.stringify(galeria));
-            closeModal('modalGaleria'); 
-            renderGaleria(servicio);
-            e.target.reset();
-        });
+            const { error } = await window.supabaseClient
+                .from('marcas')
+                .insert([{ nombre: valorNombre }]);
 
-        document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
-            document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
+            btnSubmit.disabled = false;
+
+            if(error) {
+                alert('Error: ' + error.message);
+            } else {
+                inputMarca.value = '';
+                await renderMarcas();
+            }
         });
+    }
+
+    // FORMULARIO PRODUCTO
+    document.getElementById('formProducto')?.addEventListener('submit', e => {
+        e.preventDefault();
+        const id = document.getElementById('prodId').value;
+        const nuevo = {
+            nombre: document.getElementById('prodNombre').value, 
+            marca: document.getElementById('prodMarca').value,
+            modelo: document.getElementById('prodModelo').value, 
+            tipo: document.getElementById('prodTipo').value,
+            precio: document.getElementById('prodPrecio').value, 
+            imagen: document.getElementById('prodImagenBase64').value,
+            enOferta: document.getElementById('prodEnOferta').checked, 
+            precioOferta: document.getElementById('prodPrecioOferta').value
+        };
+        if(id) productos[id] = nuevo; 
+        else productos.push(nuevo);
+        localStorage.setItem('protec_productos', JSON.stringify(productos));
+        closeModal('modalProducto'); 
+        renderProductos(); renderKits();
     });
-    </script>
+
+    // FORMULARIO KIT
+    document.getElementById('formKit')?.addEventListener('submit', e => {
+        e.preventDefault();
+        productos.push({ 
+            nombre: document.getElementById('kitNombre').value, 
+            marca: document.getElementById('kitMarca').value, 
+            tipo: 'kit', 
+            descripcion: document.getElementById('kitDesc').value, 
+            precio: document.getElementById('kitPrecio').value 
+        });
+        localStorage.setItem('protec_productos', JSON.stringify(productos));
+        closeModal('modalKit'); 
+        renderKits();
+    });
+
+    // FORMULARIO GALERÍA
+    document.getElementById('formGaleria')?.addEventListener('submit', e => {
+        e.preventDefault();
+        const servicio = document.getElementById('galeriaServicio').value;
+        galeria.push({ 
+            titulo: document.getElementById('galeriaTitulo').value, 
+            servicio: servicio,
+            descripcion: document.getElementById('galeriaDesc').value, 
+            imagen: document.getElementById('galeriaImagenBase64').value 
+        });
+        localStorage.setItem('protec_galeria', JSON.stringify(galeria));
+        closeModal('modalGaleria'); 
+        renderGaleria(servicio);
+        e.target.reset();
+    });
+
+    document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
+        document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
+    });
+});
+</script>
 </body>
 </html>
