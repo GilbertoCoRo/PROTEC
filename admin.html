@@ -297,91 +297,101 @@
     </div>
 
     <!-- SCRIPT UNIFICADO -->
+        <!-- SCRIPT UNIFICADO Y CORREGIDO -->
     <script>
-    // SESIÓN Y SEGURIDAD
-    (function verificarSesion() {
-        if(localStorage.getItem('protec_auth') !== 'true') {
+    // =========================================
+    // 1. SESIÓN Y SEGURIDAD
+    // =========================================
+    function verificarSesion() {
+        const auth = localStorage.getItem('protec_auth');
+        if (auth !== 'true') {
             window.location.replace('login.html');
         }
-    })();
+    }
+
     function cerrarSesion() {
         localStorage.removeItem('protec_auth');
         window.location.href = 'login.html';
     }
 
-    // VARIABLES GLOBALES
+    // Verificar al cargar
+    verificarSesion();
+
+    // =========================================
+    // 2. VARIABLES GLOBALES
+    // =========================================
     let productos = JSON.parse(localStorage.getItem('protec_productos')) || [];
     let galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
     let contenido = JSON.parse(localStorage.getItem('protec_contenido')) || {};
     let planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
 
-    // NAVEGACIÓN
+    // =========================================
+    // 3. NAVEGACIÓN (Definición Global)
+    // =========================================
     function toggleSubmenu(id) {
-        document.querySelectorAll('.submenu').forEach(s => { if(s.id !== id) s.classList.remove('open'); });
-        document.getElementById(id)?.classList.toggle('open');
+        document.querySelectorAll('.submenu').forEach(s => {
+            if (s.id !== id) s.classList.remove('open');
+        });
+        const submenu = document.getElementById(id);
+        if (submenu) submenu.classList.toggle('open');
     }
 
-   function showGlobal(section) {
+    function showGlobal(section) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
         
         const el = document.getElementById('global-' + section);
-        if(el) {
+        if (el) {
             el.classList.add('active');
-            
             // Cargar datos específicos según la sección
-            if(section === 'productos') renderProductos();
-            if(section === 'kits') renderKits();
-            if(section === 'marcas') renderMarcas();
-            if(section === 'solicitudes') {
-                console.log('Cargando solicitudes...'); // Debug
-                renderSolicitudes();
-            }
+            if (section === 'productos') renderProductos();
+            if (section === 'kits') renderKits();
+            if (section === 'marcas') renderMarcas();
+            if (section === 'solicitudes') renderSolicitudes();
+        }
+        
+        // Marcar link activo
+        if (window.event && window.event.target) {
+            window.event.target.classList.add('active');
         }
     }
 
     function showService(servicio, tab) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-        document.getElementById('service-' + servicio)?.classList.add('active');
+        const el = document.getElementById('service-' + servicio);
+        if (el) el.classList.add('active');
+        
         const tabBtn = document.querySelector(`#service-${servicio} .service-tabs .tab-btn`);
-        if(tabBtn) switchTab(servicio, tab, tabBtn);
-        else loadServiceContent(servicio, tab);
+        if (tabBtn) switchTab(servicio, tab, tabBtn);
     }
 
     function switchTab(servicio, tab, btnElement) {
         document.querySelectorAll(`#service-${servicio} .tab-content`).forEach(c => c.classList.remove('active'));
         document.querySelectorAll(`#service-${servicio} .tab-btn`).forEach(b => b.classList.remove('active'));
-        document.getElementById(`${servicio}-${tab}`)?.classList.add('active');
-        btnElement?.classList.add('active');
-        loadServiceContent(servicio, tab);
+        const content = document.getElementById(`${servicio}-${tab}`);
+        if (content) content.classList.add('active');
+        if (btnElement) btnElement.classList.add('active');
     }
 
-    function loadServiceContent(servicio, tab) {
-        if(tab === 'planes') renderPlanes(servicio);
-        if(tab === 'galeria' || tab === 'portafolio') renderGaleria(servicio);
-        if(tab === 'contenido') cargarContenido(servicio);
-    }
-
-    // GESTIÓN DE MARCAS (SUPABASE SÓLIDO)
+    // =========================================
+    // 4. GESTIÓN DE MARCAS (SUPABASE)
+    // =========================================
     async function renderMarcas() {
         const tbody = document.getElementById('tablaMarcas');
-        if(!tbody) return;
-
-        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center">Cargando...</td></tr>';
+        if (!tbody) return;
 
         const { data, error } = await window.supabaseClient
             .from('marcas')
             .select('*')
             .order('created_at', { ascending: false });
 
-        if(error) {
-            console.error('Error al obtener marcas:', error);
-            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#ff5a5a;">Error al cargar</td></tr>';
+        if (error) {
+            console.error('Error marcas:', error);
             return;
         }
 
         tbody.innerHTML = '';
-        if(data && data.length > 0) {
+        if (data && data.length > 0) {
             data.forEach((m) => {
                 tbody.innerHTML += `
                     <tr>
@@ -396,13 +406,9 @@
     }
 
     window.eliminarMarca = async function(id) {
-        if(confirm('¿Eliminar esta marca?')) {
+        if (confirm('¿Eliminar esta marca?')) {
             const { error } = await window.supabaseClient.from('marcas').delete().eq('id', id);
-            if(!error) {
-                await renderMarcas();
-            } else {
-                alert('Error al eliminar: ' + error.message);
-            }
+            if (!error) await renderMarcas();
         }
     };
 
@@ -411,14 +417,88 @@
             const val = sel.value;
             sel.innerHTML = '<option value="">Seleccionar...</option>';
             marcasData.forEach(m => sel.innerHTML += `<option value="${m.nombre}">${m.nombre}</option>`);
-            if(val) sel.value = val;
+            if (val) sel.value = val;
         });
     }
 
-    // PRODUCTOS Y KITS
+    // =========================================
+    // 5. SOLICITUDES (SUPABASE - CORREGIDO)
+    // =========================================
+    async function renderSolicitudes(filtro = 'todos') {
+        const tbody = document.getElementById('tablaSolicitudes');
+        if (!tbody) return;
+
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Cargando...</td></tr>';
+
+        try {
+            let query = window.supabaseClient
+                .from('solicitudes')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (filtro !== 'todos') {
+                query = query.eq('servicio', filtro);
+            }
+
+            const { data, error } = await query;
+
+            if (error) {
+                console.error('Error solicitudes:', error);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff5a5a;">Error: ' + error.message + '</td></tr>';
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay solicitudes registradas</td></tr>';
+                document.getElementById('countSolicitudes').innerText = '0';
+                return;
+            }
+
+            document.getElementById('countSolicitudes').innerText = data.length;
+
+            tbody.innerHTML = data.map(s => `
+                <tr>
+                    <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
+                    <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
+                    <td>${s.nombre}</td>
+                    <td>${s.telefono || '-'}</td>
+                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${s.mensaje || '-'}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
+                        <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            console.error('Error fatal en solicitudes:', err);
+        }
+    }
+
+    function filtrarSolicitudes(servicio, btn) {
+        document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderSolicitudes(servicio);
+    }
+
+    window.verDetalleSolicitud = async function(id) {
+        const { data } = await window.supabaseClient.from('solicitudes').select('*').eq('id', id).single();
+        if (!data) return;
+        alert(`Solicitud de: ${data.nombre}\nTel: ${data.telefono}\nServicio: ${data.servicio}\nMensaje: ${data.mensaje}`);
+    };
+
+    window.eliminarSolicitud = async function(id) {
+        if (confirm('¿Eliminar solicitud?')) {
+            await window.supabaseClient.from('solicitudes').delete().eq('id', id);
+            renderSolicitudes();
+        }
+    };
+
+    // =========================================
+    // 6. PRODUCTOS Y KITS (LOCALSTORAGE)
+    // =========================================
     function renderProductos() {
-        const tbody = document.getElementById('tablaProductos'); 
-        if(!tbody) return;
+        const tbody = document.getElementById('tablaProductos');
+        if (!tbody) return;
         const items = productos.filter(p => p.tipo !== 'kit');
         tbody.innerHTML = items.map((p, i) => `
             <tr>
@@ -430,8 +510,8 @@
     }
 
     function renderKits() {
-        const tbody = document.getElementById('tablaKits'); 
-        if(!tbody) return;
+        const tbody = document.getElementById('tablaKits');
+        if (!tbody) return;
         const items = productos.filter(p => p.tipo === 'kit');
         tbody.innerHTML = items.map((p, i) => `
             <tr>
@@ -441,381 +521,147 @@
         document.getElementById('countKits').innerText = items.length;
     }
 
-    function deleteProd(i) {
-        if(confirm('¿Eliminar equipo/kit?')) {
+    window.deleteProd = function(i) {
+        if (confirm('¿Eliminar?')) {
             productos.splice(i, 1);
             localStorage.setItem('protec_productos', JSON.stringify(productos));
             renderProductos(); renderKits();
         }
     }
+
     // =========================================
-    // SOLICITUDES (SUPABASE - CORREGIDO)
+    // 7. PLANES, GALERÍA, CONTENIDO
     // =========================================
-
-    async function renderSolicitudes(filtro = 'todos') {
-        console.log(' Iniciando renderSolicitudes, filtro:', filtro);
-        console.log('🔑 Supabase client:', window.supabaseClient ? 'OK' : 'ERROR');
-        
-        const tbody = document.getElementById('tablaSolicitudes');
-        if(!tbody) {
-            console.error('❌ No se encontró #tablaSolicitudes');
-            return;
-        }
-        
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">🔄 Cargando...</td></tr>';
-
-        try {
-            let query = window.supabaseClient
-                .from('solicitudes')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            console.log('📤 Query antes de ejecutar:', query);
-
-            if(filtro !== 'todos') {
-                query = query.eq('servicio', filtro);
-                console.log(' Query con filtro:', filtro);
-            }
-
-            const { data, error } = await query;
-
-            console.log('📥 Respuesta de Supabase:');
-            console.log('   - Data:', data);
-            console.log('   - Error:', error);
-            console.log('   - Total registros:', data ? data.length : 0);
-
-            if(error) {
-                console.error('❌ Error de Supabase:', error);
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ff5a5a; padding: 2rem;">Error: ${error.message}</td></tr>`;
-                return;
-            }
-
-            if(!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">No hay solicitudes registradas</td></tr>';
-                document.getElementById('countSolicitudes').innerText = '0';
-                return;
-            }
-            
-            document.getElementById('countSolicitudes').innerText = data.length;
-            
-            tbody.innerHTML = data.map(s => `
-                <tr>
-                    <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
-                    <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
-                    <td>${s.nombre}</td>
-                    <td>${s.telefono || '-'}</td>
-                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
-                    <td>
-                        <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
-                        <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-            
-        } catch(err) {
-            console.error(' Error general:', err);
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff5a5a; padding: 2rem;">Error inesperado</td></tr>';
-        }
+    function renderPlanes(servicio) {
+        const container = document.getElementById(`plans-${servicio}-container`);
+        if (!container) return;
+        if (!planes[servicio]) planes[servicio] = [];
+        container.innerHTML = planes[servicio].map((plan, idx) => `
+            <div class="plan-edit-card">
+                <input type="text" value="${plan.nombre}" onchange="updatePlan('${servicio}', ${idx}, 'nombre', this.value)">
+                <div class="form-group"><label>Precio</label><input type="number" value="${plan.precio}" onchange="updatePlan('${servicio}', ${idx}, 'precio', this.value)"></div>
+            </div>`).join('');
     }
 
-    console.log('Renderizando solicitudes, filtro:', filtro);
-    
-    const tbody = document.getElementById('tablaSolicitudes');
-    if(!tbody) {
-        console.error('No se encontró tablaSolicitudes');
-        return;
-    }
-    
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Cargando solicitudes...</td></tr>';
-
-    try {
-        let query = window.supabaseClient
-            .from('solicitudes')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if(filtro !== 'todos') {
-            query = query.eq('servicio', filtro.toUpperCase());
-        }
-
-        const { data, error } = await query;
-
-        if(error) {
-            console.error('Error de Supabase:', error);
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff5a5a;">Error al cargar: ' + error.message + '</td></tr>';
-            return;
-        }
-
-        console.log('Datos recibidos:', data);
-
-        if(!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">No hay solicitudes registradas</td></tr>';
-            document.getElementById('countSolicitudes').innerText = '0';
-            return;
-        }
-        
-        // Actualizar contador
-        document.getElementById('countSolicitudes').innerText = data.length;
-        
-        // Renderizar tabla
-        tbody.innerHTML = data.map(s => `
-            <tr>
-                <td>${s.fecha || new Date(s.created_at).toLocaleDateString('es-MX')}</td>
-                <td><span style="background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.servicio}</span></td>
-                <td>${s.nombre}</td>
-                <td>${s.telefono || '-'}</td>
-                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.mensaje || '-'}</td>
-                <td>
-                    <button class="btn-action btn-edit" onclick="verDetalleSolicitud('${s.id}')">Ver</button>
-                    <button class="btn-action btn-delete" onclick="eliminarSolicitud('${s.id}')">Eliminar</button>
-                </td>
-            </tr>
-        `).join('');
-        
-    } catch(err) {
-        console.error('Error general:', err);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff5a5a;">Error inesperado</td></tr>';
-    }
-}
-function filtrarSolicitudes(servicio, btn) {
-    document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderSolicitudes(servicio);
-}
-
-async function verDetalleSolicitud(id) {
-    const { data, error } = await window.supabaseClient
-        .from('solicitudes')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-    if(!data) return;
-    
-    let msg = `📋 SOLICITUD\n`;
-    msg += `Fecha: ${data.fecha || '-'}\n`;
-    msg += `Servicio: ${data.servicio}\n`;
-    msg += `Nombre: ${data.nombre}\n`;
-    msg += `Teléfono: ${data.telefono || '-'}\n`;
-    if(data.mensaje) msg += `\nMensaje: ${data.mensaje}`;
-    
-    alert(msg);
-}
-
-async function eliminarSolicitud(id) {
-    if(confirm('¿Eliminar esta solicitud?')) {
-        const { error } = await window.supabaseClient
-            .from('solicitudes')
-            .delete()
-            .eq('id', id);
-            
-        if(!error) {
-            renderSolicitudes();
-        } else {
-            alert('Error: ' + error.message);
-        }
-    }
-}
-
-// =========================================
-// PLANES (localStorage - sin cambios)
-// =========================================
-function renderPlanes(servicio) {
-    const container = document.getElementById(`plans-${servicio}-container`); 
-    if(!container) return;
-    if(!planes[servicio] || planes[servicio].length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted)">Sin planes configurados.</p>';
-        return;
-    }
-    container.innerHTML = planes[servicio].map((plan, idx) => `
-        <div class="plan-edit-card">
-            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
-                <input type="text" value="${plan.nombre}" onchange="updatePlan('${servicio}', ${idx}, 'nombre', this.value)" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--accent);font-size:1.2rem;font-weight:bold;width:70%;">
-                <label><input type="checkbox" ${plan.activo?'checked':''} onchange="updatePlan('${servicio}', ${idx}, 'activo', this.checked)"> Activo</label>
-            </div>
-            <div class="form-group"><label>Precio</label><input type="number" value="${plan.precio}" onchange="updatePlan('${servicio}', ${idx}, 'precio', this.value)"></div>
-            <div class="form-group"><label>Características (una por línea)</label><textarea rows="4" onchange="updatePlan('${servicio}', ${idx}, 'caracteristicas', this.value.split('\\n').filter(x=>x.trim()))">${(plan.caracteristicas || []).join('\n')}</textarea></div>
-        </div>`).join('');
-}
-
-function updatePlan(servicio, idx, campo, valor) {
-    if(!planes[servicio]) planes[servicio] = [];
-    planes[servicio][idx][campo] = valor;
-    localStorage.setItem('protec_planes', JSON.stringify(planes));
-}
-
-// =========================================
-// GALERÍA Y CONTENIDO (localStorage)
-// =========================================
-function renderGaleria(servicio) {
-    const container = document.getElementById(`galeria-${servicio}-container`); 
-    if(!container) return;
-    const items = galeria.filter(i => i.servicio === servicio);
-    if(items.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted)">Sin imágenes registradas.</p>';
-        return;
-    }
-    container.innerHTML = items.map((item) => {
-        const realIdx = galeria.indexOf(item);
-        return `<div class="card" style="position:relative;">
-            ${item.imagen ? `<img src="${item.imagen}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;margin-bottom:1rem;">` : ''}
-            <h4>${item.titulo}</h4>
-            <p style="font-size:0.85rem;color:var(--text-muted)">${item.descripcion||''}</p>
-            <button class="btn-action btn-delete" style="position:absolute;top:5px;right:5px;" onclick="deleteGaleria(${realIdx}, '${servicio}')">X</button>
-        </div>`;
-    }).join('');
-}
-
-function openGalleryModal(servicio) {
-    document.getElementById('galeriaServicio').value = servicio;
-    openModal('modalGaleria');
-}
-
-function deleteGaleria(idx, servicio) { 
-    galeria.splice(idx, 1); 
-    localStorage.setItem('protec_galeria', JSON.stringify(galeria)); 
-    renderGaleria(servicio); 
-}
-
-function cargarContenido(servicio) {
-    const c = contenido[servicio]; 
-    if(!c) return;
-    document.getElementById(`${servicio}-title`).value = c.title || '';
-    document.getElementById(`${servicio}-desc`).value = c.desc || '';
-}
-
-function saveContent(servicio) {
-    contenido[servicio] = { 
-        title: document.getElementById(`${servicio}-title`).value, 
-        desc: document.getElementById(`${servicio}-desc`).value 
+    window.updatePlan = function(servicio, idx, campo, valor) {
+        planes[servicio][idx][campo] = valor;
+        localStorage.setItem('protec_planes', JSON.stringify(planes));
     };
-    localStorage.setItem('protec_contenido', JSON.stringify(contenido));
-    alert('✅ Guardado correctamente');
-}
 
-// =========================================
-// UTILS MODALES
-// =========================================
-function openModal(id) { 
-    document.getElementById(id).style.display = 'flex'; 
-    if(id==='modalProducto' || id==='modalKit') renderMarcas();
-}
-
-function closeModal(id) { 
-    document.getElementById(id).style.display = 'none'; 
-    document.getElementById(id).querySelector('form')?.reset();
-    document.getElementById('groupPrecioOferta')?.style.setProperty('display','none');
-    document.getElementById('prodId').value = '';
-    document.getElementById('kitId').value = '';
-    document.getElementById('galeriaServicio').value = '';
-}
-
-function previewImage(input, previewId) {
-    const preview = document.getElementById(previewId);
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = e => { 
-            preview.src = e.target.result; 
-            preview.style.display = 'block'; 
-            const hiddenInput = input.closest('form').querySelector('input[type="hidden"][id$="Base64"]');
-            if(hiddenInput) hiddenInput.value = e.target.result; 
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-// =========================================
-// INICIALIZACIÓN
-// =========================================
-document.addEventListener('DOMContentLoaded', () => {
-    renderProductos(); 
-    renderKits(); 
-    // renderMarcas(); // Se llama automáticamente en showGlobal
-    showService('cctv', 'planes');
-
-    // FORMULARIO MARCA
-    const formMarca = document.getElementById('formMarca');
-    if(formMarca) {
-        formMarca.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btnSubmit = document.getElementById('btnGuardarMarca');
-            const inputMarca = document.getElementById('inputMarca');
-            const valorNombre = inputMarca.value.trim().toUpperCase();
-
-            if(!valorNombre) return alert('Por favor escribe un nombre');
-            btnSubmit.disabled = true;
-
-            const { error } = await window.supabaseClient
-                .from('marcas')
-                .insert([{ nombre: valorNombre }]);
-
-            btnSubmit.disabled = false;
-
-            if(error) {
-                alert('Error: ' + error.message);
-            } else {
-                inputMarca.value = '';
-                await renderMarcas();
-            }
-        });
+    function renderGaleria(servicio) {
+        const container = document.getElementById(`galeria-${servicio}-container`);
+        if (!container) return;
+        const items = galeria.filter(i => i.servicio === servicio);
+        container.innerHTML = items.map((item, i) => `
+            <div class="card">
+                ${item.imagen ? `<img src="${item.imagen}" style="width:100%;height:100px;object-fit:cover;">` : ''}
+                <h4>${item.titulo}</h4>
+                <button onclick="deleteGaleria(${i}, '${servicio}')">X</button>
+            </div>`).join('');
     }
 
-    // FORMULARIO PRODUCTO
-    document.getElementById('formProducto')?.addEventListener('submit', e => {
-        e.preventDefault();
-        const id = document.getElementById('prodId').value;
-        const nuevo = {
-            nombre: document.getElementById('prodNombre').value, 
-            marca: document.getElementById('prodMarca').value,
-            modelo: document.getElementById('prodModelo').value, 
-            tipo: document.getElementById('prodTipo').value,
-            precio: document.getElementById('prodPrecio').value, 
-            imagen: document.getElementById('prodImagenBase64').value,
-            enOferta: document.getElementById('prodEnOferta').checked, 
-            precioOferta: document.getElementById('prodPrecioOferta').value
-        };
-        if(id) productos[id] = nuevo; 
-        else productos.push(nuevo);
-        localStorage.setItem('protec_productos', JSON.stringify(productos));
-        closeModal('modalProducto'); 
-        renderProductos(); renderKits();
-    });
-
-    // FORMULARIO KIT
-    document.getElementById('formKit')?.addEventListener('submit', e => {
-        e.preventDefault();
-        productos.push({ 
-            nombre: document.getElementById('kitNombre').value, 
-            marca: document.getElementById('kitMarca').value, 
-            tipo: 'kit', 
-            descripcion: document.getElementById('kitDesc').value, 
-            precio: document.getElementById('kitPrecio').value 
-        });
-        localStorage.setItem('protec_productos', JSON.stringify(productos));
-        closeModal('modalKit'); 
-        renderKits();
-    });
-
-    // FORMULARIO GALERÍA
-    document.getElementById('formGaleria')?.addEventListener('submit', e => {
-        e.preventDefault();
-        const servicio = document.getElementById('galeriaServicio').value;
-        galeria.push({ 
-            titulo: document.getElementById('galeriaTitulo').value, 
-            servicio: servicio,
-            descripcion: document.getElementById('galeriaDesc').value, 
-            imagen: document.getElementById('galeriaImagenBase64').value 
-        });
+    window.deleteGaleria = function(idx, servicio) {
+        galeria.splice(idx, 1);
         localStorage.setItem('protec_galeria', JSON.stringify(galeria));
-        closeModal('modalGaleria'); 
         renderGaleria(servicio);
-        e.target.reset();
-    });
+    };
 
-    document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
-        document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
+    window.saveContent = function(servicio) {
+        contenido[servicio] = {
+            title: document.getElementById(`${servicio}-title`).value,
+            desc: document.getElementById(`${servicio}-desc`).value
+        };
+        localStorage.setItem('protec_contenido', JSON.stringify(contenido));
+        alert('✅ Guardado');
+    };
+
+    function cargarContenido(servicio) {
+        const c = contenido[servicio];
+        if (!c) return;
+        document.getElementById(`${servicio}-title`).value = c.title || '';
+        document.getElementById(`${servicio}-desc`).value = c.desc || '';
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+        if (id === 'modalProducto' || id === 'modalKit') renderMarcas();
+    }
+
+    window.closeModal = function(id) {
+        document.getElementById(id).style.display = 'none';
+    };
+
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                const hidden = input.closest('form').querySelector('input[type="hidden"][id$="Base64"]');
+                if (hidden) hidden.value = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // =========================================
+    // 8. EVENT LISTENERS (Inicialización)
+    // =========================================
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProductos();
+        renderKits();
+        // renderMarcas(); // Se carga al entrar a la sección
+        
+        // Formulario Marcas
+        const formMarca = document.getElementById('formMarca');
+        if (formMarca) {
+            formMarca.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const input = document.getElementById('inputMarca');
+                const { error } = await window.supabaseClient.from('marcas').insert([{ nombre: input.value.trim() }]);
+                if (!error) {
+                    input.value = '';
+                    renderMarcas();
+                } else {
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        // Formulario Producto
+        document.getElementById('formProducto')?.addEventListener('submit', e => {
+            e.preventDefault();
+            const id = document.getElementById('prodId').value;
+            const nuevo = {
+                nombre: document.getElementById('prodNombre').value,
+                marca: document.getElementById('prodMarca').value,
+                tipo: document.getElementById('prodTipo').value,
+                precio: document.getElementById('prodPrecio').value,
+                imagen: document.getElementById('prodImagenBase64').value
+            };
+            if (id) productos[id] = nuevo; else productos.push(nuevo);
+            localStorage.setItem('protec_productos', JSON.stringify(productos));
+            closeModal('modalProducto');
+            renderProductos();
+        });
+
+        // Formulario Kit
+        document.getElementById('formKit')?.addEventListener('submit', e => {
+            e.preventDefault();
+            productos.push({
+                nombre: document.getElementById('kitNombre').value,
+                marca: document.getElementById('kitMarca').value,
+                precio: document.getElementById('kitPrecio').value,
+                tipo: 'kit'
+            });
+            localStorage.setItem('protec_productos', JSON.stringify(productos));
+            closeModal('modalKit');
+            renderKits();
+        });
     });
-});
-</script>
+    </script>
+</body>
+</html>
 </body>
 </html>
