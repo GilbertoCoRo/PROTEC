@@ -296,12 +296,15 @@
         </div>
     </div>
 
-    <!-- SCRIPT UNIFICADO -->
-        <!-- SCRIPT UNIFICADO Y CORREGIDO -->
-    <script>
+<!-- ========================================
+     SCRIPT UNIFICADO - admin.html
+     ======================================== -->
+<script>
     // =========================================
     // 1. SESIÓN Y SEGURIDAD
     // =========================================
+    
+    // Verificar si el usuario está autenticado
     function verificarSesion() {
         const auth = localStorage.getItem('protec_auth');
         if (auth !== 'true') {
@@ -309,25 +312,31 @@
         }
     }
 
+    // Función para cerrar sesión
     function cerrarSesion() {
         localStorage.removeItem('protec_auth');
         window.location.href = 'login.html';
     }
 
-    // Verificar al cargar
+    // Ejecutar verificación al cargar el script
     verificarSesion();
 
+
     // =========================================
-    // 2. VARIABLES GLOBALES
+    // 2. VARIABLES GLOBALES (localStorage)
     // =========================================
+    // Nota: Estas se mantienen en localStorage porque aún no migran a Supabase
     let productos = JSON.parse(localStorage.getItem('protec_productos')) || [];
     let galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
     let contenido = JSON.parse(localStorage.getItem('protec_contenido')) || {};
     let planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
 
+
     // =========================================
-    // 3. NAVEGACIÓN (Definición Global)
+    // 3. NAVEGACIÓN (Funciones Globales)
     // =========================================
+    
+    // Alternar apertura/cierre de submenús en sidebar
     function toggleSubmenu(id) {
         document.querySelectorAll('.submenu').forEach(s => {
             if (s.id !== id) s.classList.remove('open');
@@ -336,6 +345,7 @@
         if (submenu) submenu.classList.toggle('open');
     }
 
+    // Mostrar sección global (Dashboard, Productos, Kits, Solicitudes, Marcas)
     function showGlobal(section) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
@@ -350,12 +360,13 @@
             if (section === 'solicitudes') renderSolicitudes();
         }
         
-        // Marcar link activo
+        // Marcar link activo en sidebar
         if (window.event && window.event.target) {
             window.event.target.classList.add('active');
         }
     }
 
+    // Mostrar sección por servicio (CCTV, POS, Web, Mantenimiento)
     function showService(servicio, tab) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         const el = document.getElementById('service-' + servicio);
@@ -365,6 +376,7 @@
         if (tabBtn) switchTab(servicio, tab, tabBtn);
     }
 
+    // Cambiar entre tabs dentro de una sección de servicio
     function switchTab(servicio, tab, btnElement) {
         document.querySelectorAll(`#service-${servicio} .tab-content`).forEach(c => c.classList.remove('active'));
         document.querySelectorAll(`#service-${servicio} .tab-btn`).forEach(b => b.classList.remove('active'));
@@ -373,9 +385,12 @@
         if (btnElement) btnElement.classList.add('active');
     }
 
+
     // =========================================
     // 4. GESTIÓN DE MARCAS (SUPABASE)
     // =========================================
+    
+    // Renderizar tabla de marcas desde Supabase
     async function renderMarcas() {
         const tbody = document.getElementById('tablaMarcas');
         if (!tbody) return;
@@ -405,6 +420,7 @@
         actualizarSelectores(data || []);
     }
 
+    // Eliminar marca desde Supabase (función global para onclick)
     window.eliminarMarca = async function(id) {
         if (confirm('¿Eliminar esta marca?')) {
             const { error } = await window.supabaseClient.from('marcas').delete().eq('id', id);
@@ -412,6 +428,7 @@
         }
     };
 
+    // Actualizar los <select> de marcas en modales de producto/kit
     function actualizarSelectores(marcasData = []) {
         document.querySelectorAll('.dynamic-brand-select').forEach(sel => {
             const val = sel.value;
@@ -421,9 +438,12 @@
         });
     }
 
+
     // =========================================
-    // 5. SOLICITUDES (SUPABASE - CORREGIDO)
+    // 5. SOLICITUDES (SUPABASE)
     // =========================================
+    
+    // Renderizar tabla de solicitudes desde Supabase
     async function renderSolicitudes(filtro = 'todos') {
         const tbody = document.getElementById('tablaSolicitudes');
         if (!tbody) return;
@@ -474,18 +494,21 @@
         }
     }
 
+    // Filtrar solicitudes por servicio
     function filtrarSolicitudes(servicio, btn) {
         document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderSolicitudes(servicio);
     }
 
+    // Ver detalles de una solicitud (función global)
     window.verDetalleSolicitud = async function(id) {
         const { data } = await window.supabaseClient.from('solicitudes').select('*').eq('id', id).single();
         if (!data) return;
         alert(`Solicitud de: ${data.nombre}\nTel: ${data.telefono}\nServicio: ${data.servicio}\nMensaje: ${data.mensaje}`);
     };
 
+    // Eliminar solicitud (función global)
     window.eliminarSolicitud = async function(id) {
         if (confirm('¿Eliminar solicitud?')) {
             await window.supabaseClient.from('solicitudes').delete().eq('id', id);
@@ -493,45 +516,146 @@
         }
     };
 
+
     // =========================================
-    // 6. PRODUCTOS Y KITS (LOCALSTORAGE)
+    // 6. PRODUCTOS Y KITS (SUPABASE)
     // =========================================
-    function renderProductos() {
+    
+    // --- RENDERIZAR PRODUCTOS (tipo: equipo) ---
+    async function renderProductos() {
         const tbody = document.getElementById('tablaProductos');
-        if (!tbody) return;
-        const items = productos.filter(p => p.tipo !== 'kit');
-        tbody.innerHTML = items.map((p, i) => `
-            <tr>
-                <td>${p.imagen ? `<img src="${p.imagen}" style="width:40px;height:40px;object-fit:cover">` : '📷'}</td>
-                <td>${p.nombre}</td><td>${p.marca}</td><td>${p.modelo}</td><td>$${p.precio}</td>
-                <td><button class="btn-action btn-delete" onclick="deleteProd(${i})">Eliminar</button></td>
-            </tr>`).join('') || '<tr><td colspan="6" style="text-align:center">Sin productos</td></tr>';
-        document.getElementById('countProductos').innerText = items.length;
+        if(!tbody) return;
+        
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Cargando productos...</td></tr>';
+
+        const { data, error } = await window.supabaseClient
+            .from('productos')
+            .select('*')
+            .eq('tipo', 'equipo')
+            .order('created_at', { ascending: false });
+
+        if(error) {
+            console.error('Error cargando productos:', error);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red">Error al cargar</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        if(data && data.length > 0) {
+            data.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${p.imagen_url ? `<img src="${p.imagen_url}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">` : '📷'}</td>
+                        <td>${p.nombre}</td>
+                        <td>${p.marca || '-'}</td>
+                        <td>${p.modelo || '-'}</td>
+                        <td>
+                            ${p.en_oferta && p.precio_oferta ? 
+                                `<span style="text-decoration:line-through;color:#999">$${p.precio}</span><br><span style="color:var(--accent);font-weight:bold">$${p.precio_oferta}</span>` : 
+                                `$${p.precio}`
+                            }
+                        </td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="editarProducto('${p.id}')">Editar</button>
+                            <button class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+                        </td>
+                    </tr>`;
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">Sin productos</td></tr>';
+        }
+        
+        document.getElementById('countProductos').innerText = data ? data.length : 0;
     }
 
-    function renderKits() {
-        const tbody = document.getElementById('tablaKits');
-        if (!tbody) return;
-        const items = productos.filter(p => p.tipo === 'kit');
-        tbody.innerHTML = items.map((p, i) => `
-            <tr>
-                <td>${p.nombre}</td><td>${p.marca}</td><td>$${p.precio}</td>
-                <td><button class="btn-action btn-delete" onclick="deleteProd(${i})">Eliminar</button></td>
-            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Sin kits</td></tr>';
-        document.getElementById('countKits').innerText = items.length;
-    }
-
-    window.deleteProd = function(i) {
-        if (confirm('¿Eliminar?')) {
-            productos.splice(i, 1);
-            localStorage.setItem('protec_productos', JSON.stringify(productos));
-            renderProductos(); renderKits();
+    // --- ELIMINAR PRODUCTO ---
+    window.eliminarProducto = async function(id) {
+        if(confirm('¿Eliminar producto?')) {
+            const { error } = await window.supabaseClient
+                .from('productos')
+                .delete()
+                .eq('id', id);
+                
+            if(!error) {
+                renderProductos();
+                renderKits();
+            } else {
+                alert('Error: ' + error.message);
+            }
         }
     }
 
+    // --- EDITAR PRODUCTO (Llenar modal con datos) ---
+    window.editarProducto = async function(id) {
+        const { data, error } = await window.supabaseClient
+            .from('productos')
+            .select('*')
+            .eq('id', id)
+            .single();
+            
+        if(!data) return;
+        
+        document.getElementById('prodId').value = data.id;
+        document.getElementById('prodNombre').value = data.nombre;
+        document.getElementById('prodMarca').value = data.marca || '';
+        document.getElementById('prodModelo').value = data.modelo || '';
+        document.getElementById('prodPrecio').value = data.precio;
+        document.getElementById('prodImagenBase64').value = data.imagen_url || '';
+        document.getElementById('prodEnOferta').checked = data.en_oferta || false;
+        document.getElementById('prodPrecioOferta').value = data.precio_oferta || '';
+        
+        if(data.imagen_url) {
+            const preview = document.getElementById('previewProd');
+            preview.src = data.imagen_url;
+            preview.style.display = 'block';
+        }
+        
+        openModal('modalProducto');
+    }
+
+    // --- RENDERIZAR KITS (tipo: kit) ---
+    async function renderKits() {
+        const tbody = document.getElementById('tablaKits');
+        if(!tbody) return;
+        
+        const { data, error } = await window.supabaseClient
+            .from('productos')
+            .select('*')
+            .eq('tipo', 'kit')
+            .order('created_at', { ascending: false });
+
+        if(error) {
+            console.error('Error cargando kits:', error);
+            return;
+        }
+
+        tbody.innerHTML = '';
+        if(data && data.length > 0) {
+            data.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${p.nombre}</td>
+                        <td>${p.marca || '-'}</td>
+                        <td>$${p.precio}</td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="editarProducto('${p.id}')">Editar</button>
+                            <button class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+                        </td>
+                    </tr>`;
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Sin kits</td></tr>';
+        }
+        
+        document.getElementById('countKits').innerText = data ? data.length : 0;
+    }
+
+
     // =========================================
-    // 7. PLANES, GALERÍA, CONTENIDO
+    // 7. PLANES, GALERÍA, CONTENIDO (localStorage)
     // =========================================
+    
+    // Renderizar planes de un servicio (desde localStorage)
     function renderPlanes(servicio) {
         const container = document.getElementById(`plans-${servicio}-container`);
         if (!container) return;
@@ -543,11 +667,13 @@
             </div>`).join('');
     }
 
+    // Actualizar plan en localStorage
     window.updatePlan = function(servicio, idx, campo, valor) {
         planes[servicio][idx][campo] = valor;
         localStorage.setItem('protec_planes', JSON.stringify(planes));
     };
 
+    // Renderizar galería de un servicio (desde localStorage)
     function renderGaleria(servicio) {
         const container = document.getElementById(`galeria-${servicio}-container`);
         if (!container) return;
@@ -560,12 +686,14 @@
             </div>`).join('');
     }
 
+    // Eliminar imagen de galería (localStorage)
     window.deleteGaleria = function(idx, servicio) {
         galeria.splice(idx, 1);
         localStorage.setItem('protec_galeria', JSON.stringify(galeria));
         renderGaleria(servicio);
     };
 
+    // Guardar contenido de página (título/descripción) en localStorage
     window.saveContent = function(servicio) {
         contenido[servicio] = {
             title: document.getElementById(`${servicio}-title`).value,
@@ -575,6 +703,7 @@
         alert('✅ Guardado');
     };
 
+    // Cargar contenido de página en los inputs
     function cargarContenido(servicio) {
         const c = contenido[servicio];
         if (!c) return;
@@ -582,15 +711,23 @@
         document.getElementById(`${servicio}-desc`).value = c.desc || '';
     }
 
+
+    // =========================================
+    // 8. UTILIDADES DE MODALES Y IMÁGENES
+    // =========================================
+    
+    // Abrir modal por ID
     function openModal(id) {
         document.getElementById(id).style.display = 'flex';
         if (id === 'modalProducto' || id === 'modalKit') renderMarcas();
     }
 
+    // Cerrar modal por ID (función global)
     window.closeModal = function(id) {
         document.getElementById(id).style.display = 'none';
     };
 
+    // Vista previa de imagen al seleccionar archivo
     function previewImage(input, previewId) {
         const preview = document.getElementById(previewId);
         if (input.files && input.files[0]) {
@@ -605,22 +742,24 @@
         }
     }
 
+
     // =========================================
-    // 8. EVENT LISTENERS (Inicialización)
+    // 9. INICIALIZACIÓN (DOMContentLoaded)
     // =========================================
     document.addEventListener('DOMContentLoaded', () => {
-        renderProductos();
-        renderKits();
-        // renderMarcas(); // Se carga al entrar a la sección
-        
-        // Formulario Marcas
+        // Cargar datos iniciales
+        renderProductos(); 
+        renderKits(); 
+        showService('cctv', 'planes');
+
+        // --- FORMULARIO DE MARCAS ---
         const formMarca = document.getElementById('formMarca');
-        if (formMarca) {
+        if(formMarca) {
             formMarca.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const input = document.getElementById('inputMarca');
                 const { error } = await window.supabaseClient.from('marcas').insert([{ nombre: input.value.trim() }]);
-                if (!error) {
+                if(!error) {
                     input.value = '';
                     renderMarcas();
                 } else {
@@ -629,39 +768,86 @@
             });
         }
 
-        // Formulario Producto
-        document.getElementById('formProducto')?.addEventListener('submit', e => {
+        // --- FORMULARIO DE PRODUCTO (SUPABASE) ---
+        document.getElementById('formProducto')?.addEventListener('submit', async e => {
             e.preventDefault();
+            
             const id = document.getElementById('prodId').value;
             const nuevo = {
                 nombre: document.getElementById('prodNombre').value,
                 marca: document.getElementById('prodMarca').value,
-                tipo: document.getElementById('prodTipo').value,
-                precio: document.getElementById('prodPrecio').value,
-                imagen: document.getElementById('prodImagenBase64').value
+                modelo: document.getElementById('prodModelo').value,
+                tipo: 'equipo',
+                precio: parseFloat(document.getElementById('prodPrecio').value),
+                imagen_url: document.getElementById('prodImagenBase64').value,
+                en_oferta: document.getElementById('prodEnOferta').checked,
+                precio_oferta: document.getElementById('prodEnOferta').checked ? 
+                    parseFloat(document.getElementById('prodPrecioOferta').value || 0) : null
             };
-            if (id) productos[id] = nuevo; else productos.push(nuevo);
-            localStorage.setItem('protec_productos', JSON.stringify(productos));
-            closeModal('modalProducto');
-            renderProductos();
+
+            let error;
+            if(id) {
+                // Actualizar existente
+                const { error: updError } = await window.supabaseClient.from('productos').update(nuevo).eq('id', id);
+                error = updError;
+            } else {
+                // Crear nuevo
+                const { error: insError } = await window.supabaseClient.from('productos').insert([nuevo]);
+                error = insError;
+            }
+
+            if(error) {
+                alert('Error: ' + error.message);
+            } else {
+                closeModal('modalProducto');
+                renderProductos();
+                renderKits();
+            }
         });
 
-        // Formulario Kit
-        document.getElementById('formKit')?.addEventListener('submit', e => {
+        // --- FORMULARIO DE KIT (SUPABASE) ---
+        document.getElementById('formKit')?.addEventListener('submit', async e => {
             e.preventDefault();
-            productos.push({
+            
+            const nuevo = {
                 nombre: document.getElementById('kitNombre').value,
                 marca: document.getElementById('kitMarca').value,
-                precio: document.getElementById('kitPrecio').value,
-                tipo: 'kit'
+                descripcion: document.getElementById('kitDesc').value,
+                tipo: 'kit',
+                precio: parseFloat(document.getElementById('kitPrecio').value)
+            };
+
+            const { error } = await window.supabaseClient.from('productos').insert([nuevo]);
+
+            if(error) {
+                alert('Error: ' + error.message);
+            } else {
+                closeModal('modalKit');
+                renderKits();
+            }
+        });
+
+        // --- FORMULARIO DE GALERÍA (localStorage) ---
+        document.getElementById('formGaleria')?.addEventListener('submit', e => {
+            e.preventDefault();
+            const servicio = document.getElementById('galeriaServicio').value;
+            galeria.push({ 
+                titulo: document.getElementById('galeriaTitulo').value, 
+                servicio: servicio,
+                descripcion: document.getElementById('galeriaDesc').value, 
+                imagen: document.getElementById('galeriaImagenBase64').value 
             });
-            localStorage.setItem('protec_productos', JSON.stringify(productos));
-            closeModal('modalKit');
-            renderKits();
+            localStorage.setItem('protec_galeria', JSON.stringify(galeria));
+            closeModal('modalGaleria'); 
+            renderGaleria(servicio);
+            e.target.reset();
+        });
+
+        // --- CHECKBOX DE OFERTA (mostrar/ocultar precio oferta) ---
+        document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
+            document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
         });
     });
-    </script>
-</body>
-</html>
+</script>
 </body>
 </html>
