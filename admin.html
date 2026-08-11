@@ -189,14 +189,19 @@
                 </div>
             </div>
 
-            <div id="service-pos" class="admin-section">
+           <div id="service-pos" class="admin-section">
                 <h2>💳 Gestión POS</h2>
                 <div class="service-tabs">
                     <button class="tab-btn active" onclick="switchTab('pos', 'planes', this)">Planes</button>
                     <button class="tab-btn" onclick="switchTab('pos', 'galeria', this)">Galería</button>
                     <button class="tab-btn" onclick="switchTab('pos', 'contenido', this)">Contenido</button>
                 </div>
-                <div id="pos-planes" class="tab-content active"><div id="plans-pos-container" class="grid-2"></div></div>
+                
+                <div id="pos-planes" class="tab-content active">
+                    <button class="btn btn-primary" onclick="agregarPlan('pos')" style="margin-bottom: 1rem;">+ Nuevo Plan POS</button>
+                    <div id="plans-pos-container" class="grid-2"></div>
+                </div>
+
                 <div id="pos-galeria" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('pos')">+ Foto</button><div id="galeria-pos-container" class="grid-3" style="margin-top:1rem;"></div></div>
                 <div id="pos-contenido" class="tab-content">
                     <div class="card">
@@ -214,7 +219,10 @@
                     <button class="tab-btn" onclick="switchTab('web', 'portafolio', this)">Portafolio</button>
                     <button class="tab-btn" onclick="switchTab('web', 'contenido', this)">Contenido</button>
                 </div>
-                <div id="web-planes" class="tab-content active"><div id="plans-web-container" class="grid-2"></div></div>
+                <div id="web-planes" class="tab-content active">
+                    <button class="btn btn-primary" onclick="agregarPlan('web')" style="margin-bottom: 1rem;">+ Nuevo Plan Web</button>
+                    <div id="plans-web-container" class="grid-2"></div>
+                </div>
                 <div id="web-portafolio" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('web')">+ Proyecto</button><div id="galeria-web-container" class="grid-3" style="margin-top:1rem;"></div></div>
                 <div id="web-contenido" class="tab-content">
                     <div class="card">
@@ -232,7 +240,10 @@
                     <button class="tab-btn" onclick="switchTab('mant', 'galeria', this)">Galería</button>
                     <button class="tab-btn" onclick="switchTab('mant', 'contenido', this)">Contenido</button>
                 </div>
-                <div id="mant-planes" class="tab-content active"><div id="plans-mant-container" class="grid-2"></div></div>
+                <div id="mant-planes" class="tab-content active">
+                    <button class="btn btn-primary" onclick="agregarPlan('mant')" style="margin-bottom: 1rem;">+ Nuevo Plan Mantenimiento</button>
+                    <div id="plans-mant-container" class="grid-2"></div>
+                </div>
                 <div id="mant-galeria" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('mant')">+ Foto</button><div id="galeria-mant-container" class="grid-3" style="margin-top:1rem;"></div></div>
                 <div id="mant-contenido" class="tab-content">
                     <div class="card">
