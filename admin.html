@@ -655,61 +655,121 @@
     // 7. PLANES, GALERÍA, CONTENIDO (localStorage)
     // =========================================
     
-    // Renderizar planes de un servicio (desde localStorage)
-    function renderPlanes(servicio) {
+    // =========================================
+    // 7. PLANES (SUPABASE)
+    // =========================================
+
+    // Renderizar planes de un servicio desde Supabase
+    async function renderPlanes(servicio) {
         const container = document.getElementById(`plans-${servicio}-container`);
         if (!container) return;
-        if (!planes[servicio]) planes[servicio] = [];
-        container.innerHTML = planes[servicio].map((plan, idx) => `
-            <div class="plan-edit-card">
-                <input type="text" value="${plan.nombre}" onchange="updatePlan('${servicio}', ${idx}, 'nombre', this.value)">
-                <div class="form-group"><label>Precio</label><input type="number" value="${plan.precio}" onchange="updatePlan('${servicio}', ${idx}, 'precio', this.value)"></div>
-            </div>`).join('');
+        
+        container.innerHTML = '<p style="text-align:center;padding:2rem">Cargando planes...</p>';
+        
+        const { data, error } = await window.supabaseClient
+            .from('planes')
+            .select('*')
+            .eq('servicio', servicio)
+            .eq('activo', true)
+            .order('recomendado', { ascending: false });
+        
+        if (error) {
+            console.error('Error cargando planes:', error);
+            container.innerHTML = '<p style="color:red;text-align:center">Error al cargar</p>';
+            return;
+        }
+        
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);text-align:center">Sin planes configurados.</p>';
+            return;
+        }
+        
+        container.innerHTML = data.map((plan, idx) => `
+            <div class="plan-edit-card" style="position:relative">
+                ${plan.recomendado ? '<span style="position:absolute;top:-10px;right:20px;background:var(--accent);color:var(--bg-dark);padding:2px 10px;font-size:0.7rem;font-weight:bold;border-radius:20px">RECOMENDADO</span>' : ''}
+                <div style="display:flex;justify-content:space-between;margin-bottom:1rem">
+                    <input type="text" value="${plan.nombre}" 
+                        onchange="updatePlan('${plan.id}', 'nombre', this.value)" 
+                        style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--accent);font-size:1.2rem;font-weight:bold;width:70%">
+                    <label style="display:flex;align-items:center;gap:5px;cursor:pointer">
+                        <input type="checkbox" ${plan.activo ? 'checked' : ''} 
+                            onchange="updatePlan('${plan.id}', 'activo', this.checked)"> Activo
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Precio</label>
+                    <input type="text" value="${plan.precio}" 
+                        onchange="updatePlan('${plan.id}', 'precio', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Características (una por línea)</label>
+                    <textarea rows="4" 
+                        onchange="updatePlan('${plan.id}', 'caracteristicas', this.value.split('\\n').filter(x=>x.trim()))">${(plan.caracteristicas || []).join('\n')}</textarea>
+                </div>
+                <button class="btn-action btn-delete" onclick="eliminarPlan('${plan.id}')" style="margin-top:1rem">Eliminar plan</button>
+            </div>
+        `).join('');
     }
 
-    // Actualizar plan en localStorage
-    window.updatePlan = function(servicio, idx, campo, valor) {
-        planes[servicio][idx][campo] = valor;
-        localStorage.setItem('protec_planes', JSON.stringify(planes));
+    // Actualizar plan en Supabase
+    window.updatePlan = async function(id, campo, valor) {
+        const updates = { [campo]: valor };
+        const { error } = await window.supabaseClient
+            .from('planes')
+            .update(updates)
+            .eq('id', id);
+        
+        if (error) {
+            console.error('Error actualizando plan:', error);
+            alert('Error: ' + error.message);
+        }
     };
 
-    // Renderizar galería de un servicio (desde localStorage)
-    function renderGaleria(servicio) {
-        const container = document.getElementById(`galeria-${servicio}-container`);
-        if (!container) return;
-        const items = galeria.filter(i => i.servicio === servicio);
-        container.innerHTML = items.map((item, i) => `
-            <div class="card">
-                ${item.imagen ? `<img src="${item.imagen}" style="width:100%;height:100px;object-fit:cover;">` : ''}
-                <h4>${item.titulo}</h4>
-                <button onclick="deleteGaleria(${i}, '${servicio}')">X</button>
-            </div>`).join('');
-    }
-
-    // Eliminar imagen de galería (localStorage)
-    window.deleteGaleria = function(idx, servicio) {
-        galeria.splice(idx, 1);
-        localStorage.setItem('protec_galeria', JSON.stringify(galeria));
-        renderGaleria(servicio);
+    // Eliminar plan
+    window.eliminarPlan = async function(id) {
+        if (confirm('¿Eliminar este plan?')) {
+            const { error } = await window.supabaseClient
+                .from('planes')
+                .delete()
+                .eq('id', id);
+            
+            if (!error) {
+                // Recargar todos los servicios que tengan planes
+                ['cctv', 'pos', 'web', 'mant'].forEach(serv => {
+                    const tab = document.querySelector(`#service-${serv}`);
+                    if (tab && tab.classList.contains('active')) {
+                        renderPlanes(serv);
+                    }
+                });
+            } else {
+                alert('Error: ' + error.message);
+            }
+        }
     };
 
-    // Guardar contenido de página (título/descripción) en localStorage
-    window.saveContent = function(servicio) {
-        contenido[servicio] = {
-            title: document.getElementById(`${servicio}-title`).value,
-            desc: document.getElementById(`${servicio}-desc`).value
+    // Agregar nuevo plan (función para botón "+ Nuevo Plan")
+    window.agregarPlan = async function(servicio) {
+        const nuevo = {
+            servicio: servicio,
+            nombre: 'Nuevo Plan',
+            precio: '0',
+            caracteristicas: ['Característica 1', 'Característica 2'],
+            recomendado: false,
+            activo: true
         };
-        localStorage.setItem('protec_contenido', JSON.stringify(contenido));
-        alert('✅ Guardado');
+        
+        const { data, error } = await window.supabaseClient
+            .from('planes')
+            .insert([nuevo])
+            .select()
+            .single();
+        
+        if (error) {
+            alert('Error: ' + error.message);
+        } else {
+            renderPlanes(servicio);
+        }
     };
-
-    // Cargar contenido de página en los inputs
-    function cargarContenido(servicio) {
-        const c = contenido[servicio];
-        if (!c) return;
-        document.getElementById(`${servicio}-title`).value = c.title || '';
-        document.getElementById(`${servicio}-desc`).value = c.desc || '';
-    }
 
 
     // =========================================
@@ -842,6 +902,7 @@
             renderGaleria(servicio);
             e.target.reset();
         });
+
 
         // --- CHECKBOX DE OFERTA (mostrar/ocultar precio oferta) ---
         document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
