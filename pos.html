@@ -354,26 +354,54 @@ function renderizarGaleria() {
 }
 
 // =========================================
-// 3. PLANES DINÁMICOS (POS)
+// 3. PLANES DINÁMICOS (SUPABASE) - POS
 // =========================================
-function renderizarPlanes() {
+async function renderizarPlanes() {
     const container = document.getElementById('planesContainer');
     if(!container) return;
     
-    const planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
-    const posPlanes = planes.pos || [];
+    container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando planes...</p>';
     
-    container.innerHTML = posPlanes.filter(p => p.activo !== false).map((plan, idx) => `
-        <div class="plan-card ${plan.nombre.includes('BUSINESS') ? 'featured' : ''}">
-            ${plan.nombre.includes('BUSINESS') ? '<span style="position:absolute;top:-10px;right:20px;background:var(--accent);color:var(--bg-dark);padding:2px 10px;font-size:0.7rem;font-weight:bold;border-radius:20px;">RECOMENDADO</span>' : ''}
-            <div class="plan-name">${plan.nombre}</div>
-            <div class="plan-price">$${parseFloat(plan.precio).toLocaleString()} <span>${plan.precio !== '0' ? 'MXN + licencia anual' : 'MXN'}</span></div>
-            <ul class="plan-features">
-                ${plan.caracteristicas?.map(c => `<li>${c}</li>`).join('') || ''}
-            </ul>
-            <button class="btn ${plan.nombre.includes('BUSINESS') ? 'btn-primary' : 'btn-outline'}" style="width:100%;">COTIZAR</button>
-        </div>
-    `).join('');
+    try {
+        // Usar window.supabaseClient si ya existe, o crear uno nuevo si es necesario
+        const client = window.supabaseClient || window.supabase.createClient(
+            'https://jqehwpfgrzbgixyscvcy.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'
+        );
+
+        const { data, error } = await client
+            .from('planes')
+            .select('*')
+            .eq('servicio', 'pos')
+            .eq('activo', true)
+            .order('recomendado', { ascending: false });
+        
+        if(error) {
+            console.error('Error cargando planes POS:', error);
+            container.innerHTML = '<p style="color:red;text-align:center">Error al cargar</p>';
+            return;
+        }
+        
+        if(!data || data.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);text-align:center">Sin planes configurados.</p>';
+            return;
+        }
+        
+        container.innerHTML = data.map(plan => `
+            <div class="plan-card ${plan.recomendado ? 'featured' : ''}">
+                ${plan.recomendado ? '<span style="position:absolute;top:-10px;right:20px;background:var(--accent);color:var(--bg-dark);padding:2px 10px;font-size:0.7rem;font-weight:bold;border-radius:20px">RECOMENDADO</span>' : ''}
+                <div class="plan-name">${plan.nombre}</div>
+                <div class="plan-price">$${parseFloat(plan.precio).toLocaleString()} <span>MXN</span></div>
+                <ul class="plan-features">
+                    ${(plan.caracteristicas || []).map(c => `<li>${c}</li>`).join('')}
+                </ul>
+                <button class="btn ${plan.recomendado ? 'btn-primary' : 'btn-outline'}" style="width:100%">COTIZAR</button>
+            </div>
+        `).join('');
+        
+    } catch(err) {
+        console.error('Error fatal:', err);
+    }
 }
 
 // =========================================
