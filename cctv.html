@@ -424,28 +424,59 @@ function renderizarGaleria() {
 }
 
 // =========================================
-// 4. PLANES DINÁMICOS
+// 4. PLANES DINÁMICOS (SUPABASE)
 // =========================================
-function renderizarPlanes() {
+async function renderizarPlanes() {
     const container = document.getElementById('planesContainer');
     if(!container) return;
     
-    const planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
-    const cctvPlanes = planes.cctv || [];
+    container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando planes...</p>';
     
-    container.innerHTML = cctvPlanes.filter(p => p.activo !== false).map((plan, idx) => `
-        <div class="plan-card ${plan.nombre.includes('PRO') ? 'featured' : ''}">
-            ${plan.nombre.includes('PRO') ? '<span style="position:absolute;top:-10px;right:20px;background:var(--accent);color:var(--bg-dark);padding:2px 10px;font-size:0.7rem;font-weight:bold;border-radius:20px;">RECOMENDADO</span>' : ''}
-            <div class="plan-name">${plan.nombre}</div>
-            <div class="plan-price">$${parseFloat(plan.precio).toLocaleString()} <span>MXN + instalación</span></div>
-            <ul class="plan-features">
-                ${plan.caracteristicas?.map(c => `<li>${c}</li>`).join('') || ''}
-            </ul>
-            <button class="btn ${plan.nombre.includes('PRO') ? 'btn-primary' : 'btn-outline'}" style="width:100%;">COTIZAR</button>
-        </div>
-    `).join('');
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('planes')
+            .select('*')
+            .eq('servicio', 'cctv')
+            .eq('activo', true)
+            .order('recomendado', { ascending: false });
+        
+        if(error) {
+            console.error('Error cargando planes:', error);
+            container.innerHTML = '<p style="color:red;text-align:center">Error al cargar planes</p>';
+            return;
+        }
+        
+        if(!data || data.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);text-align:center">Sin planes configurados.</p>';
+            return;
+        }
+        
+        container.innerHTML = data.map(plan => `
+            <div class="plan-card ${plan.recomendado ? 'featured' : ''}">
+                ${plan.recomendado ? '<span style="position:absolute;top:-10px;right:20px;background:var(--accent);color:var(--bg-dark);padding:2px 10px;font-size:0.7rem;font-weight:bold;border-radius:20px">RECOMENDADO</span>' : ''}
+                <div class="plan-name">${plan.nombre}</div>
+                <div class="plan-price">$${parseFloat(plan.precio).toLocaleString()} <span>MXN + instalación</span></div>
+                <ul class="plan-features">
+                    ${(plan.caracteristicas || []).map(c => `<li>${c}</li>`).join('')}
+                </ul>
+                <button class="btn ${plan.recomendado ? 'btn-primary' : 'btn-outline'}" style="width:100%" onclick="solicitarCotizacion('${plan.nombre}')">COTIZAR</button>
+            </div>
+        `).join('');
+        
+    } catch(err) {
+        console.error('Error fatal:', err);
+        container.innerHTML = '<p style="color:red;text-align:center">Error inesperado</p>';
+    }
 }
 
+// Helper para botón Cotizar (scroll a contacto)
+function solicitarCotizacion(planNombre) {
+    const mensaje = document.getElementById('cctv-mensaje');
+    if(mensaje) {
+        mensaje.value = `Estoy interesado en el plan: ${planNombre}\n\n`;
+    }
+    document.getElementById('section-contacto')?.scrollIntoView({ behavior: 'smooth' });
+}
 // =========================================
 // 5. CONTACTO
 // =========================================
