@@ -149,56 +149,38 @@
     </div>
 
     <!-- SECCIÓN: CONTACTO -->
-    <form class="contact-form" onsubmit="enviarDemoPOS(event)">
-      <div class="form-row">
-          <div class="form-group"><label>Nombre *</label><input type="text" id="pos-nombre" required></div>
-          <div class="form-group"><label>Nombre del Negocio *</label><input type="text" id="pos-negocio" required></div>
-      </div>
-      <div class="form-row">
-          <div class="form-group"><label>Teléfono *</label><input type="tel" id="pos-telefono" required></div>
-          <div class="form-group">
-              <label>Tipo de Negocio</label>
-              <select id="pos-tipo">
-                  <option>Restaurante</option>
-                  <option>Tienda minorista</option>
-                  <option>Servicios</option>
-                  <option>Otro</option>
-              </select>
-          </div>
-      </div>
-      <div class="form-group">
-          <label>Presupuesto Estimado (opcional)</label>
-          <input type="number" id="pos-presupuesto" placeholder="Ej: 12000">
-      </div>
-      <div class="form-group">
-          <label>Mensaje / Requisitos</label>
-          <textarea id="pos-mensaje" rows="4" placeholder="Describe lo que necesitas..."></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary" style="width: 100%;">SOLICITAR DEMO</button>
-  </form>
-
-  <script>
-  function enviarDemoPOS(e) {
-      e.preventDefault();
-      
-      const datos = {
-          nombre: document.getElementById('pos-nombre').value,
-          negocio: document.getElementById('pos-negocio').value,
-          telefono: document.getElementById('pos-telefono').value,
-          tipo: document.getElementById('pos-tipo').value,
-          presupuesto: document.getElementById('pos-presupuesto').value,
-          mensaje: document.getElementById('pos-mensaje').value
-      };
-      
-      if(guardarSolicitud('POS', datos)) {
-          alert('✅ Demo solicitada. Te contactaremos en menos de 24 horas.');
-          e.target.reset();
-      }
-  }
-  </script>
+    <div id="section-contacto" class="section-content">
+        <form class="contact-form" onsubmit="enviarDemoPOS(event)">
+            <div class="form-row">
+                <div class="form-group"><label>Nombre *</label><input type="text" id="pos-nombre" required></div>
+                <div class="form-group"><label>Nombre del Negocio *</label><input type="text" id="pos-negocio" required></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Teléfono *</label><input type="tel" id="pos-telefono" required></div>
+                <div class="form-group">
+                    <label>Tipo de Negocio</label>
+                    <select id="pos-tipo">
+                        <option>Restaurante</option>
+                        <option>Tienda minorista</option>
+                        <option>Servicios</option>
+                        <option>Otro</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Presupuesto Estimado (opcional)</label>
+                <input type="number" id="pos-presupuesto" placeholder="Ej: 12000">
+            </div>
+            <div class="form-group">
+                <label>Mensaje / Requisitos</label>
+                <textarea id="pos-mensaje" rows="4" placeholder="Describe lo que necesitas..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">SOLICITAR DEMO</button>
+        </form>
+    </div>
 </section>
 
-<!-- FOOTER (Igual que antes) -->
+<!-- FOOTER -->
 <footer class="relative z-10 pt-20 pb-8 px-6" style="background:var(--bg-deep);">
   <div class="neon-divider mb-16"></div>
   <div class="container" style="max-width:1200px;margin:0 auto;">
@@ -285,35 +267,21 @@
     </form>
   </div>
 </div>
-<form class="contact-form" onsubmit="enviarDemoPOS(event)">
-    <div class="form-row">
-        <div class="form-group"><label>Nombre *</label><input type="text" id="pos-nombre" required></div>
-        <div class="form-group"><label>Nombre del Negocio *</label><input type="text" id="pos-negocio" required></div>
-    </div>
-    <div class="form-row">
-        <div class="form-group"><label>Teléfono *</label><input type="tel" id="pos-telefono" required></div>
-        <div class="form-group">
-            <label>Tipo de Negocio</label>
-            <select id="pos-tipo">
-                <option>Restaurante</option>
-                <option>Tienda minorista</option>
-                <option>Servicios</option>
-                <option>Otro</option>
-            </select>
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Presupuesto Estimado (opcional)</label>
-        <input type="number" id="pos-presupuesto" placeholder="Ej: 12000">
-    </div>
-    <div class="form-group">
-        <label>Mensaje / Requisitos</label>
-        <textarea id="pos-mensaje" rows="4" placeholder="Describe lo que necesitas..."></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary" style="width: 100%;">SOLICITAR DEMO</button>
-</form>
+
+<!-- SDK DE SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+// =========================================
+// 0. CONFIGURACIÓN SUPABASE
+// =========================================
+if (!window.supabaseClient) {
+    window.supabaseClient = window.supabase.createClient(
+        'https://jqehwpfgrzbgixyscvcy.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'
+    );
+}
+
 // =========================================
 // 1. NAVEGACIÓN ENTRE SECCIONES
 // =========================================
@@ -363,13 +331,7 @@ async function renderizarPlanes() {
     container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando planes...</p>';
     
     try {
-        // Usar window.supabaseClient si ya existe, o crear uno nuevo si es necesario
-        const client = window.supabaseClient || window.supabase.createClient(
-            'https://jqehwpfgrzbgixyscvcy.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'
-        );
-
-        const { data, error } = await client
+        const { data, error } = await window.supabaseClient
             .from('planes')
             .select('*')
             .eq('servicio', 'pos')
@@ -405,12 +367,37 @@ async function renderizarPlanes() {
 }
 
 // =========================================
-// 4. CONTACTO
+// 4. ENVÍO DE FORMULARIO A SUPABASE
 // =========================================
-function enviarDemo(e) {
+async function enviarDemoPOS(e) {
     e.preventDefault();
-    alert('✅ Demo solicitada. Te contactaremos en menos de 2 horas.');
-    e.target.reset();
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    const textoOriginal = btn.innerText;
+    btn.innerText = 'Enviando...';
+    btn.disabled = true;
+    
+    const datos = {
+        nombre: document.getElementById('pos-nombre').value,
+        telefono: document.getElementById('pos-telefono').value,
+        servicio: 'POS',
+        tipo_instalacion: document.getElementById('pos-tipo').value,
+        presupuesto: document.getElementById('pos-presupuesto').value ? parseFloat(document.getElementById('pos-presupuesto').value) : null,
+        mensaje: document.getElementById('pos-mensaje').value,
+        fecha: new Date().toISOString()
+    };
+    
+    const { error } = await window.supabaseClient.from('solicitudes').insert([datos]);
+    
+    btn.innerText = textoOriginal;
+    btn.disabled = false;
+    
+    if(error) {
+        alert('❌ Error al enviar: ' + error.message);
+    } else {
+        alert('✅ Demo solicitada. Te contactaremos en menos de 24 horas.');
+        e.target.reset();
+    }
 }
 
 // =========================================
@@ -433,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarContenidoPagina();
 });
 
-// Refrescar si cambian datos en admin (otra pestaña)
+// Refrescar si cambian datos en admin
 window.addEventListener('storage', (e) => {
     if(['protec_galeria','protec_planes','protec_contenido'].includes(e.key)) {
         renderizarGaleria();
@@ -442,78 +429,12 @@ window.addEventListener('storage', (e) => {
     }
 });
 
-// Modal
+// Auxiliares Modal y Menú Móvil
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function toggleMobileMenu() {
     const menu = document.getElementById('mobileMenu');
     menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-}
-// =========================================
-// GUARDAR SOLICITUD DE CONTACTO
-// =========================================
-function guardarSolicitud(servicio, datos) {
-    // Obtener solicitudes existentes
-    let solicitudes = JSON.parse(localStorage.getItem('protec_solicitudes')) || [];
-    
-    // Agregar nueva solicitud con fecha
-    solicitudes.unshift({
-        id: Date.now(),
-        servicio: servicio,
-        fecha: new Date().toLocaleDateString('es-MX'),
-        ...datos
-    });
-    
-    // Guardar en localStorage
-    localStorage.setItem('protec_solicitudes', JSON.stringify(solicitudes));
-    
-    // Mostrar mensaje de éxito
-    return true;
-}
-</script>
-<!-- =========================================
-     SUPABASE + FORMULARIO POS (LIMPIO)
-     ========================================= -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-// Configuración global de Supabase (evita conflictos de declaración)
-if (!window.supabaseClient) {
-    window.supabaseClient = window.supabase.createClient(
-        'https://jqehwpfgrzbgixyscvcy.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4'
-    );
-}
-
-// Función de envío a Supabase (SOLO ESTA DEBE EXISTIR)
-async function enviarDemoPOS(e) {
-    e.preventDefault();
-    
-    const btn = e.target.querySelector('button[type="submit"]');
-    const textoOriginal = btn.innerText;
-    btn.innerText = 'Enviando...';
-    btn.disabled = true;
-    
-    const datos = {
-        nombre: document.getElementById('pos-nombre').value,
-        telefono: document.getElementById('pos-telefono').value,
-        servicio: 'POS',
-        tipo_instalacion: document.getElementById('pos-tipo').value,
-        presupuesto: document.getElementById('pos-presupuesto').value,
-        mensaje: document.getElementById('pos-mensaje').value,
-        fecha: new Date().toLocaleDateString('es-MX')
-    };
-    
-    const { error } = await window.supabaseClient.from('solicitudes').insert([datos]);
-    
-    btn.innerText = textoOriginal;
-    btn.disabled = false;
-    
-    if(error) {
-        alert('❌ Error al enviar: ' + error.message);
-    } else {
-        alert('✅ Demo solicitada. Te contactaremos en menos de 24 horas.');
-        e.target.reset();
-    }
 }
 </script>
 </body>
