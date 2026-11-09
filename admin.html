@@ -916,6 +916,71 @@
             document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
         });
     });
+    // =========================================
+    // 10. GESTIÓN DE CONTENIDO (SUPABASE - contenido_global)
+    // =========================================
+    async function cargarContenido(servicio) {
+        const inputTitulo = document.getElementById(`${servicio}-title`);
+        const inputDesc = document.getElementById(`${servicio}-desc`);
+        if (!inputTitulo && !inputDesc) return;
+
+        // Consultamos la tabla contenido_global filtrando por categoría/servicio
+        const { data, error } = await window.supabaseClient
+            .from('contenido_global')
+            .select('*')
+            .eq('categoria', servicio);
+
+        if (data && data.length > 0) {
+            // Buscar clave 'titulo' y 'descripcion' dentro de los registros del servicio
+            const regTitulo = data.find(item => item.clave === 'titulo');
+            const regDesc = data.find(item => item.clave === 'descripcion');
+
+            inputTitulo.value = regTitulo ? regTitulo.valor : '';
+            inputDesc.value = regDesc ? regDesc.valor : '';
+        } else {
+            inputTitulo.value = '';
+            inputDesc.value = '';
+        }
+    }
+
+    window.saveContent = async function(servicio) {
+        const titulo = document.getElementById(`${servicio}-title`)?.value || '';
+        const descripcion = document.getElementById(`${servicio}-desc`)?.value || '';
+
+        // Guardar o actualizar el título
+        await guardarOActualizarClave(servicio, 'titulo', titulo);
+        
+        // Guardar o actualizar la descripción
+        const res = await guardarOActualizarClave(servicio, 'descripcion', descripcion);
+
+        if (res.error) {
+            alert('❌ Error al guardar contenido: ' + res.error.message);
+        } else {
+            alert('✅ Contenido guardado correctamente en el servidor.');
+        }
+    };
+
+    // Función auxiliar para upsert en contenido_global basado en categoria y clave
+    async function guardarOActualizarClave(categoria, clave, valor) {
+        // Verificar si ya existe el registro
+        const { data: existente } = await window.supabaseClient
+            .from('contenido_global')
+            .select('id')
+            .eq('categoria', categoria)
+            .eq('clave', clave)
+            .single();
+
+        if (existente) {
+            return await window.supabaseClient
+                .from('contenido_global')
+                .update({ valor })
+                .eq('id', existente.id);
+        } else {
+            return await window.supabaseClient
+                .from('contenido_global')
+                .insert([{ categoria, clave, valor }]);
+        }
+    }
 </script>
 </body>
 </html>
