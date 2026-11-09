@@ -625,41 +625,73 @@
     }
 
     // --- RENDERIZAR KITS (tipo: kit) ---
+    // Renderizar Kits desde la tabla 'kits'
     async function renderKits() {
-        const tbody = document.getElementById('tablaKits');
+        const tbody = document.getElementById('tablaKits'); 
         if(!tbody) return;
-        
+
         const { data, error } = await window.supabaseClient
-            .from('productos')
+            .from('kits')
             .select('*')
-            .eq('tipo', 'kit')
             .order('created_at', { ascending: false });
 
         if(error) {
-            console.error('Error cargando kits:', error);
+            console.error('Error al cargar kits:', error);
             return;
         }
 
-        tbody.innerHTML = '';
-        if(data && data.length > 0) {
-            data.forEach(p => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${p.nombre}</td>
-                        <td>${p.marca || '-'}</td>
-                        <td>$${p.precio}</td>
-                        <td>
-                            <button class="btn-action btn-edit" onclick="editarProducto('${p.id}')">Editar</button>
-                            <button class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')">Eliminar</button>
-                        </td>
-                    </tr>`;
-            });
-        } else {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Sin kits</td></tr>';
-        }
-        
-        document.getElementById('countKits').innerText = data ? data.length : 0;
+        tbody.innerHTML = (data || []).map(k => `
+            <tr>
+                <td>${k.nombre}</td>
+                <td>${k.servicio || '-'}</td>
+                <td>$${k.precio}</td>
+                <td><button class="btn-action btn-delete" onclick="deleteKitSupabase('${k.id}')">Eliminar</button></td>
+            </tr>
+        `).join('') || '<tr><td colspan="4" style="text-align:center">Sin kits</td></tr>';
+
+        const countEl = document.getElementById('countKits');
+        if(countEl) countEl.innerText = data ? data.length : 0;
     }
+
+    // Eliminar Kit de la tabla 'kits'
+    async function deleteKitSupabase(id) {
+        if(confirm('¿Deseas eliminar este kit?')) {
+            const { error } = await window.supabaseClient
+                .from('kits')
+                .delete()
+                .eq('id', id);
+
+            if(!error) {
+                renderKits();
+                actualizarDashboard();
+            } else {
+                alert('Error al eliminar: ' + error.message);
+            }
+        }
+    }
+
+    // Listener para el formulario formKit
+    document.getElementById('formKit')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nuevoKit = { 
+            nombre: document.getElementById('kitNombre').value, 
+            descripcion: document.getElementById('kitDesc').value, 
+            precio: parseFloat(document.getElementById('kitPrecio').value),
+            servicio: 'cctv' // o la categoría que corresponda
+        };
+
+        const { error } = await window.supabaseClient
+            .from('kits')
+            .insert([nuevoKit]);
+
+        if (error) {
+            alert('Error al registrar kit: ' + error.message);
+        } else {
+            closeModal('modalKit'); 
+            renderKits();
+            actualizarDashboard();
+        }
+    });
 
 
     // =========================================
