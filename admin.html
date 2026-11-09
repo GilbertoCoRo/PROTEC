@@ -143,9 +143,9 @@
                 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <button class="filter-btn active" onclick="filtrarSolicitudes('todos', this)">Todos</button>
                     <button class="filter-btn" onclick="filtrarSolicitudes('CCTV', this)">CCTV</button>
-                    <button class="btn-filter" onclick="filtrarSolicitudes('POS', this)">POS</button>
-                    <button class="btn-filter" onclick="filtrarSolicitudes('Web', this)">Web</button>
-                    <button class="btn-filter" onclick="filtrarSolicitudes('Mantenimiento', this)">Mantenimiento</button>
+                    <button class="filter-btn" onclick="filtrarSolicitudes('POS', this)">POS</button>
+                    <button class="filter-btn" onclick="filtrarSolicitudes('Web', this)">Web</button>
+                    <button class="filter-btn" onclick="filtrarSolicitudes('Mantenimiento', this)">Mantenimiento</button>
                 </div>
                 <table class="admin-table">
                     <thead>
@@ -308,14 +308,12 @@
     </div>
 
 <!-- ========================================
-     SCRIPT UNIFICADO - admin.html
+     SCRIPT UNIFICADO - admin.html (Servidor)
      ======================================== -->
 <script>
     // =========================================
     // 1. SESIÓN Y SEGURIDAD
     // =========================================
-    
-    // Verificar si el usuario está autenticado
     function verificarSesion() {
         const auth = localStorage.getItem('protec_auth');
         if (auth !== 'true') {
@@ -323,31 +321,17 @@
         }
     }
 
-    // Función para cerrar sesión
     function cerrarSesion() {
         localStorage.removeItem('protec_auth');
         window.location.href = 'login.html';
     }
 
-    // Ejecutar verificación al cargar el script
     verificarSesion();
 
 
     // =========================================
-    // 2. VARIABLES GLOBALES (localStorage)
+    // 2. NAVEGACIÓN Y CONTROL DE VISTAS
     // =========================================
-    // Nota: Estas se mantienen en localStorage porque aún no migran a Supabase
-    let productos = JSON.parse(localStorage.getItem('protec_productos')) || [];
-    let galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
-    let contenido = JSON.parse(localStorage.getItem('protec_contenido')) || {};
-    let planes = JSON.parse(localStorage.getItem('protec_planes')) || {};
-
-
-    // =========================================
-    // 3. NAVEGACIÓN (Funciones Globales)
-    // =========================================
-    
-    // Alternar apertura/cierre de submenús en sidebar
     function toggleSubmenu(id) {
         document.querySelectorAll('.submenu').forEach(s => {
             if (s.id !== id) s.classList.remove('open');
@@ -356,7 +340,6 @@
         if (submenu) submenu.classList.toggle('open');
     }
 
-    // Mostrar sección global (Dashboard, Productos, Kits, Solicitudes, Marcas)
     function showGlobal(section) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
@@ -364,20 +347,17 @@
         const el = document.getElementById('global-' + section);
         if (el) {
             el.classList.add('active');
-            // Cargar datos específicos según la sección
             if (section === 'productos') renderProductos();
             if (section === 'kits') renderKits();
             if (section === 'marcas') renderMarcas();
             if (section === 'solicitudes') renderSolicitudes();
         }
         
-        // Marcar link activo en sidebar
         if (window.event && window.event.target) {
             window.event.target.classList.add('active');
         }
     }
 
-    // Mostrar sección por servicio (CCTV, POS, Web, Mantenimiento)
     function showService(servicio, tab) {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         const el = document.getElementById('service-' + servicio);
@@ -387,21 +367,27 @@
         if (tabBtn) switchTab(servicio, tab, tabBtn);
     }
 
-    // Cambiar entre tabs dentro de una sección de servicio
     function switchTab(servicio, tab, btnElement) {
         document.querySelectorAll(`#service-${servicio} .tab-content`).forEach(c => c.classList.remove('active'));
         document.querySelectorAll(`#service-${servicio} .tab-btn`).forEach(b => b.classList.remove('active'));
+        
         const content = document.getElementById(`${servicio}-${tab}`);
         if (content) content.classList.add('active');
         if (btnElement) btnElement.classList.add('active');
+
+        // Renderizar dinámicamente si es la pestaña de galería/portafolio
+        if (tab === 'galeria' || tab === 'portafolio') {
+            renderGaleriaSupabase(servicio);
+        }
+        if (tab === 'planes') {
+            renderPlanes(servicio);
+        }
     }
 
 
     // =========================================
-    // 4. GESTIÓN DE MARCAS (SUPABASE)
+    // 3. GESTIÓN DE MARCAS (SUPABASE)
     // =========================================
-    
-    // Renderizar tabla de marcas desde Supabase
     async function renderMarcas() {
         const tbody = document.getElementById('tablaMarcas');
         if (!tbody) return;
@@ -431,7 +417,6 @@
         actualizarSelectores(data || []);
     }
 
-    // Eliminar marca desde Supabase (función global para onclick)
     window.eliminarMarca = async function(id) {
         if (confirm('¿Eliminar esta marca?')) {
             const { error } = await window.supabaseClient.from('marcas').delete().eq('id', id);
@@ -439,7 +424,6 @@
         }
     };
 
-    // Actualizar los <select> de marcas en modales de producto/kit
     function actualizarSelectores(marcasData = []) {
         document.querySelectorAll('.dynamic-brand-select').forEach(sel => {
             const val = sel.value;
@@ -451,10 +435,8 @@
 
 
     // =========================================
-    // 5. SOLICITUDES (SUPABASE)
+    // 4. SOLICITUDES (SUPABASE)
     // =========================================
-    
-    // Renderizar tabla de solicitudes desde Supabase
     async function renderSolicitudes(filtro = 'todos') {
         const tbody = document.getElementById('tablaSolicitudes');
         if (!tbody) return;
@@ -505,21 +487,18 @@
         }
     }
 
-    // Filtrar solicitudes por servicio
     function filtrarSolicitudes(servicio, btn) {
         document.querySelectorAll('#global-solicitudes .filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderSolicitudes(servicio);
     }
 
-    // Ver detalles de una solicitud (función global)
     window.verDetalleSolicitud = async function(id) {
         const { data } = await window.supabaseClient.from('solicitudes').select('*').eq('id', id).single();
         if (!data) return;
         alert(`Solicitud de: ${data.nombre}\nTel: ${data.telefono}\nServicio: ${data.servicio}\nMensaje: ${data.mensaje}`);
     };
 
-    // Eliminar solicitud (función global)
     window.eliminarSolicitud = async function(id) {
         if (confirm('¿Eliminar solicitud?')) {
             await window.supabaseClient.from('solicitudes').delete().eq('id', id);
@@ -529,10 +508,8 @@
 
 
     // =========================================
-    // 6. PRODUCTOS Y KITS (SUPABASE)
+    // 5. PRODUCTOS Y KITS (SUPABASE)
     // =========================================
-    
-    // --- RENDERIZAR PRODUCTOS (tipo: equipo) ---
     async function renderProductos() {
         const tbody = document.getElementById('tablaProductos');
         if(!tbody) return;
@@ -579,14 +556,9 @@
         document.getElementById('countProductos').innerText = data ? data.length : 0;
     }
 
-    // --- ELIMINAR PRODUCTO ---
     window.eliminarProducto = async function(id) {
         if(confirm('¿Eliminar producto?')) {
-            const { error } = await window.supabaseClient
-                .from('productos')
-                .delete()
-                .eq('id', id);
-                
+            const { error } = await window.supabaseClient.from('productos').delete().eq('id', id);
             if(!error) {
                 renderProductos();
                 renderKits();
@@ -596,14 +568,8 @@
         }
     }
 
-    // --- EDITAR PRODUCTO (Llenar modal con datos) ---
     window.editarProducto = async function(id) {
-        const { data, error } = await window.supabaseClient
-            .from('productos')
-            .select('*')
-            .eq('id', id)
-            .single();
-            
+        const { data, error } = await window.supabaseClient.from('productos').select('*').eq('id', id).single();
         if(!data) return;
         
         document.getElementById('prodId').value = data.id;
@@ -624,7 +590,6 @@
         openModal('modalProducto');
     }
 
-    // --- RENDERIZAR KITS (tipo: kit) ---
     async function renderKits() {
         const tbody = document.getElementById('tablaKits');
         if(!tbody) return;
@@ -663,14 +628,8 @@
 
 
     // =========================================
-    // 7. PLANES, GALERÍA, CONTENIDO (localStorage)
+    // 6. PLANES (SUPABASE)
     // =========================================
-    
-    // =========================================
-    // 7. PLANES (SUPABASE)
-    // =========================================
-
-    // Renderizar planes de un servicio desde Supabase
     async function renderPlanes(servicio) {
         const container = document.getElementById(`plans-${servicio}-container`);
         if (!container) return;
@@ -722,35 +681,19 @@
         `).join('');
     }
 
-    // Actualizar plan en Supabase
     window.updatePlan = async function(id, campo, valor) {
         const updates = { [campo]: valor };
-        const { error } = await window.supabaseClient
-            .from('planes')
-            .update(updates)
-            .eq('id', id);
-        
-        if (error) {
-            console.error('Error actualizando plan:', error);
-            alert('Error: ' + error.message);
-        }
+        const { error } = await window.supabaseClient.from('planes').update(updates).eq('id', id);
+        if (error) alert('Error: ' + error.message);
     };
 
-    // Eliminar plan
     window.eliminarPlan = async function(id) {
         if (confirm('¿Eliminar este plan?')) {
-            const { error } = await window.supabaseClient
-                .from('planes')
-                .delete()
-                .eq('id', id);
-            
+            const { error } = await window.supabaseClient.from('planes').delete().eq('id', id);
             if (!error) {
-                // Recargar todos los servicios que tengan planes
                 ['cctv', 'pos', 'web', 'mant'].forEach(serv => {
                     const tab = document.querySelector(`#service-${serv}`);
-                    if (tab && tab.classList.contains('active')) {
-                        renderPlanes(serv);
-                    }
+                    if (tab && tab.classList.contains('active')) renderPlanes(serv);
                 });
             } else {
                 alert('Error: ' + error.message);
@@ -758,7 +701,6 @@
         }
     };
 
-    // Agregar nuevo plan (función para botón "+ Nuevo Plan")
     window.agregarPlan = async function(servicio) {
         const nuevo = {
             servicio: servicio,
@@ -769,16 +711,53 @@
             activo: true
         };
         
+        const { data, error } = await window.supabaseClient.from('planes').insert([nuevo]).select().single();
+        if (error) alert('Error: ' + error.message);
+        else renderPlanes(servicio);
+    };
+
+
+    // =========================================
+    // 7. GALERÍA / PORTAFOLIO (SUPABASE)
+    // =========================================
+    async function renderGaleriaSupabase(servicio) {
+        const container = document.getElementById(`galeria-${servicio}-container`) || document.getElementById(`portafolio-${servicio}-container`);
+        if (!container) return;
+
+        container.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);">Cargando galería...</p>';
+
         const { data, error } = await window.supabaseClient
-            .from('planes')
-            .insert([nuevo])
-            .select()
-            .single();
-        
+            .from('galeria')
+            .select('*')
+            .eq('servicio', servicio)
+            .order('created_at', { ascending: false });
+
         if (error) {
-            alert('Error: ' + error.message);
-        } else {
-            renderPlanes(servicio);
+            console.error('Error cargando galería:', error);
+            container.innerHTML = '<p style="color:red;grid-column:1/-1;text-align:center;">Error al cargar galería</p>';
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">No hay imágenes registradas.</p>';
+            return;
+        }
+
+        container.innerHTML = data.map(item => `
+            <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+                ${item.imagen_url ? `<img src="${item.imagen_url}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;margin-bottom:1rem;" alt="${item.titulo}">` : ''}
+                <h4 style="margin:0 0 0.5rem 0;color:var(--text-primary);">${item.titulo}</h4>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1rem 0;flex:1;">${item.descripcion || ''}</p>
+                <button class="btn-action btn-delete" onclick="eliminarGaleriaItem('${item.id}', '${servicio}')" style="width:100%;">Eliminar</button>
+            </div>
+        `).join('');
+    }
+
+    window.eliminarGaleriaItem = async function(id, servicio) {
+        if (confirm('¿Estás seguro de eliminar esta imagen?')) {
+            const { error } = await window.supabaseClient.from('galeria').delete().eq('id', id);
+            if (!error) renderGaleriaSupabase(servicio);
+            else alert('Error al eliminar: ' + error.message);
         }
     };
 
@@ -786,19 +765,33 @@
     // =========================================
     // 8. UTILIDADES DE MODALES Y IMÁGENES
     // =========================================
-    
-    // Abrir modal por ID
     function openModal(id) {
         document.getElementById(id).style.display = 'flex';
         if (id === 'modalProducto' || id === 'modalKit') renderMarcas();
     }
 
-    // Cerrar modal por ID (función global)
     window.closeModal = function(id) {
         document.getElementById(id).style.display = 'none';
     };
 
-    // Vista previa de imagen al seleccionar archivo
+    // Función que faltaba y causaba el error en el botón + Foto / + Proyecto
+    window.openGalleryModal = function(servicio) {
+        const inputServicio = document.getElementById('galeriaServicio');
+        if (inputServicio) inputServicio.value = servicio;
+        
+        // Limpiar previsualización anterior
+        const preview = document.getElementById('previewGaleria');
+        if (preview) {
+            preview.src = '';
+            preview.style.display = 'none';
+        }
+        
+        const form = document.getElementById('formGaleria');
+        if (form) form.reset();
+
+        openModal('modalGaleria');
+    };
+
     function previewImage(input, previewId) {
         const preview = document.getElementById(previewId);
         if (input.files && input.files[0]) {
@@ -818,7 +811,6 @@
     // 9. INICIALIZACIÓN (DOMContentLoaded)
     // =========================================
     document.addEventListener('DOMContentLoaded', () => {
-        // Cargar datos iniciales
         renderProductos(); 
         renderKits(); 
         showService('cctv', 'planes');
@@ -858,11 +850,9 @@
 
             let error;
             if(id) {
-                // Actualizar existente
                 const { error: updError } = await window.supabaseClient.from('productos').update(nuevo).eq('id', id);
                 error = updError;
             } else {
-                // Crear nuevo
                 const { error: insError } = await window.supabaseClient.from('productos').insert([nuevo]);
                 error = insError;
             }
@@ -898,24 +888,30 @@
             }
         });
 
-        // --- FORMULARIO DE GALERÍA (localStorage) ---
-        document.getElementById('formGaleria')?.addEventListener('submit', e => {
+        // --- FORMULARIO DE GALERÍA (SUPABASE) ---
+        document.getElementById('formGaleria')?.addEventListener('submit', async e => {
             e.preventDefault();
             const servicio = document.getElementById('galeriaServicio').value;
-            galeria.push({ 
-                titulo: document.getElementById('galeriaTitulo').value, 
+            
+            const nuevaFoto = {
                 servicio: servicio,
-                descripcion: document.getElementById('galeriaDesc').value, 
-                imagen: document.getElementById('galeriaImagenBase64').value 
-            });
-            localStorage.setItem('protec_galeria', JSON.stringify(galeria));
-            closeModal('modalGaleria'); 
-            renderGaleria(servicio);
-            e.target.reset();
+                titulo: document.getElementById('galeriaTitulo').value,
+                descripcion: document.getElementById('galeriaDesc').value,
+                imagen_url: document.getElementById('galeriaImagenBase64').value
+            };
+
+            const { error } = await window.supabaseClient.from('galeria').insert([nuevaFoto]);
+
+            if (error) {
+                alert('Error al guardar la imagen: ' + error.message);
+            } else {
+                closeModal('modalGaleria');
+                renderGaleriaSupabase(servicio);
+                e.target.reset();
+            }
         });
 
-
-        // --- CHECKBOX DE OFERTA (mostrar/ocultar precio oferta) ---
+        // --- CHECKBOX DE OFERTA ---
         document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
             document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
         });
