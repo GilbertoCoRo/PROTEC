@@ -298,27 +298,42 @@ function switchSection(id) {
 // =========================================
 // 2. GALERÍA DINÁMICA (POS)
 // =========================================
-function renderizarGaleria() {
+async function renderizarGaleria() {
     const grid = document.getElementById('galleryGrid');
     if(!grid) return;
     
-    const galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
-    const posItems = galeria.filter(item => item.servicio === 'pos');
+    grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">Cargando galería...</p>';
     
-    if(posItems.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">No hay instalaciones POS mostradas aún.</p>';
-        return;
-    }
-    
-    grid.innerHTML = posItems.map(item => `
-        <div class="gallery-item">
-            ${item.imagen ? `<img src="${item.imagen}" class="gallery-img" alt="${item.titulo}">` : ''}
-            <div class="gallery-info">
-                <h4>${item.titulo}</h4>
-                <p>${item.descripcion || ''}</p>
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('galeria')
+            .select('*')
+            .ilike('servicio', '%pos%')
+            .order('created_at', { ascending: false });
+        
+        if(error) {
+            console.error('Error cargando galería de Supabase:', error);
+            grid.innerHTML = '<p style="color:red;grid-column:1/-1;text-align:center;">Error al cargar la galería.</p>';
+            return;
+        }
+        
+        if(!data || data.length === 0) {
+            grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">No hay instalaciones POS mostradas aún.</p>';
+            return;
+        }
+        
+        grid.innerHTML = data.map(item => `
+            <div class="gallery-item">
+                ${item.imagen_url ? `<img src="${item.imagen_url}" class="gallery-img" alt="${item.titulo}">` : ''}
+                <div class="gallery-info">
+                    <h4>${item.titulo}</h4>
+                    <p>${item.descripcion || ''}</p>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch(err) {
+        console.error('Error fatal:', err);
+    }
 }
 
 // =========================================
