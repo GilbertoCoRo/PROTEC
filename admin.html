@@ -381,7 +381,7 @@
         } else if (tab === 'planes') {
             renderPlanes(servicio);
         } else if (tab === 'contenido') {
-            cargarContenido(servicio);
+            window.cargarContenido(servicio);
         }
     }
 
@@ -764,9 +764,9 @@
 
 
     // =========================================
-    // 8. CONTENIDO GLOBAL (SUPABASE) - DEFINIDAS GLOBALMENTE
+    // 8. CONTENIDO GLOBAL (SUPABASE) - EXPUESTO GLOBALMENTE
     // =========================================
-    async function cargarContenido(servicio) {
+    window.cargarContenido = async function(servicio) {
         const inputTitulo = document.getElementById(`${servicio}-title`);
         const inputDesc = document.getElementById(`${servicio}-desc`);
         if (!inputTitulo && !inputDesc) return;
@@ -779,42 +779,47 @@
         if (data && data.length > 0) {
             const regTitulo = data.find(item => item.clave === 'titulo');
             const regDesc = data.find(item => item.clave === 'descripcion');
-            inputTitulo.value = regTitulo ? regTitulo.valor : '';
-            inputDesc.value = regDesc ? regDesc.valor : '';
+            if (inputTitulo) inputTitulo.value = regTitulo ? regTitulo.valor : '';
+            if (inputDesc) inputDesc.value = regDesc ? regDesc.valor : '';
         } else {
-            inputTitulo.value = '';
-            inputDesc.value = '';
+            if (inputTitulo) inputTitulo.value = '';
+            if (inputDesc) inputDesc.value = '';
         }
-    }
+    };
 
     window.saveContent = async function(servicio) {
         const titulo = document.getElementById(`${servicio}-title`)?.value || '';
         const descripcion = document.getElementById(`${servicio}-desc`)?.value || '';
 
-        await guardarOActualizarClave(servicio, 'titulo', titulo);
-        const res = await guardarOActualizarClave(servicio, 'descripcion', descripcion);
+        await window.guardarOActualizarClave(servicio, 'titulo', titulo);
+        const res = await window.guardarOActualizarClave(servicio, 'descripcion', descripcion);
 
-        if (res.error) {
+        if (res && res.error) {
             alert('❌ Error al guardar contenido: ' + res.error.message);
         } else {
             alert('✅ Contenido guardado correctamente en el servidor.');
         }
     };
 
-    async function guardarOActualizarClave(categoria, clave, valor) {
+    window.guardarOActualizarClave = async function(categoria, clave, valor) {
         const { data: existente } = await window.supabaseClient
             .from('contenido_global')
             .select('id')
             .eq('categoria', categoria)
             .eq('clave', clave)
-            .single();
+            .maybeSingle();
 
         if (existente) {
-            return await window.supabaseClient.from('contenido_global').update({ valor }).eq('id', existente.id);
+            return await window.supabaseClient
+                .from('contenido_global')
+                .update({ valor })
+                .eq('id', existente.id);
         } else {
-            return await window.supabaseClient.from('contenido_global').insert([{ categoria, clave, valor }]);
+            return await window.supabaseClient
+                .from('contenido_global')
+                .insert([{ categoria, clave, valor }]);
         }
-    }
+    };
 
 
     // =========================================
