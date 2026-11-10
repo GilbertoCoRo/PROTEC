@@ -344,7 +344,7 @@ async function renderizarGaleria() {
         
         grid.innerHTML = data.map(item => `
             <div class="gallery-item">
-                ${item.imagen_url ? `<img src="${item.imagen_url}" class="gallery-img" alt="${item.titulo}">` : ''}
+                ${item.imagen_url ? `<img src="${item.imagen_url}" class="gallery-img" alt="${item.titulo}" style="cursor:pointer;" onclick="abrirZoom('${item.imagen_url}')">` : ''}
                 <div class="gallery-info">
                     <h4>${item.titulo}</h4>
                     <p>${item.descripcion || ''}</p>
@@ -355,7 +355,6 @@ async function renderizarGaleria() {
         console.error('Error fatal:', err);
     }
 }
-
 
 // =========================================
 // 3. PLANES DINÁMICOS (SUPABASE) - MANTENIMIENTO
@@ -512,6 +511,29 @@ async function enviarSoporteMant(e) {
     } else {
         alert('✅ Solicitud de soporte recibida. Te contactaremos en menos de 2 horas.');
         e.target.reset();
+    }
+}
+</script>
+<!-- MODAL PARA VER IMAGEN EN GRANDE -->
+<div id="modalZoom" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:3000; justify-content:center; align-items:center; cursor:pointer;" onclick="cerrarZoom()">
+    <span style="position:absolute; top:20px; right:30px; color:#fff; font-size:2.5rem; font-weight:bold; cursor:pointer;">&times;</span>
+    <img id="imagenZoom" src="" style="max-width:90%; max-height:90vh; object-fit:contain; border-radius:8px; border:1px solid var(--accent);">
+</div>
+
+<script>
+function abrirZoom(url) {
+    const modal = document.getElementById('modalZoom');
+    const img = document.getElementById('imagenZoom');
+    if(modal && img) {
+        img.src = url;
+        modal.style.display = 'flex';
+    }
+}
+
+function cerrarZoom() {
+    const modal = document.getElementById('modalZoom');
+    if(modal) {
+        modal.style.display = 'none';
     }
 }
 </script>
