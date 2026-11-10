@@ -400,28 +400,42 @@ function filtrarPorMarca(marca) {
 // =========================================
 // 3. GALERÍA DINÁMICA
 // =========================================
-function renderizarGaleria() {
+async function renderizarGaleria() {
     const grid = document.getElementById('galleryGrid');
     if(!grid) return;
     
-    const galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
-    // Filtro flexible que acepta 'cctv', 'CCTV' o variaciones
-    const cctvItems = galeria.filter(item => item.servicio && item.servicio.toLowerCase().includes('cctv'));
+    grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">Cargando galería...</p>';
     
-    if(cctvItems.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">No hay instalaciones mostradas aún.</p>';
-        return;
-    }
-    
-    grid.innerHTML = cctvItems.map(item => `
-        <div class="gallery-item">
-            ${item.imagen ? `<img src="${item.imagen}" class="gallery-img" alt="${item.titulo}">` : ''}
-            <div class="gallery-info">
-                <h4>${item.titulo}</h4>
-                <p>${item.descripcion || ''}</p>
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('galeria')
+            .select('*')
+            .ilike('servicio', '%cctv%')
+            .order('created_at', { ascending: false });
+        
+        if(error) {
+            console.error('Error cargando galería de Supabase:', error);
+            grid.innerHTML = '<p style="color:red;grid-column:1/-1;text-align:center;">Error al cargar la galería.</p>';
+            return;
+        }
+        
+        if(!data || data.length === 0) {
+            grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">No hay instalaciones mostradas aún.</p>';
+            return;
+        }
+        
+        grid.innerHTML = data.map(item => `
+            <div class="gallery-item">
+                ${item.imagen_url ? `<img src="${item.imagen_url}" class="gallery-img" alt="${item.titulo}">` : ''}
+                <div class="gallery-info">
+                    <h4>${item.titulo}</h4>
+                    <p>${item.descripcion || ''}</p>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch(err) {
+        console.error('Error fatal:', err);
+    }
 }
 
 // =========================================
