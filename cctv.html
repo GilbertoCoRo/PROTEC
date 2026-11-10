@@ -405,7 +405,8 @@ function renderizarGaleria() {
     if(!grid) return;
     
     const galeria = JSON.parse(localStorage.getItem('protec_galeria')) || [];
-    const cctvItems = galeria.filter(item => item.servicio === 'cctv');
+    // Filtro flexible que acepta 'cctv', 'CCTV' o variaciones
+    const cctvItems = galeria.filter(item => item.servicio && item.servicio.toLowerCase().includes('cctv'));
     
     if(cctvItems.length === 0) {
         grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;">No hay instalaciones mostradas aún.</p>';
