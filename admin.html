@@ -46,6 +46,8 @@
 
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- html2pdf.js SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
       const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4';
@@ -65,7 +67,10 @@
             <a href="#" onclick="showGlobal('solicitudes')">📨 Solicitudes</a>
             <a href="#" onclick="showGlobal('marcas')">🏷️ Gestión de Marcas</a>
             
-            <div class="menu-title" style="margin-top: 2rem;">🗂️ Gestión por Servicio</div>
+            <div class="menu-title" style="margin-top: 1.5rem;">📄 Cotizaciones</div>
+            <a href="#" onclick="showGlobal('cotizador')">📝 Generador / Historial</a>
+
+            <div class="menu-title" style="margin-top: 1.5rem;">🗂️ Gestión por Servicio</div>
             
             <div class="menu-item" onclick="toggleSubmenu('cctv-menu')">📷 CCTV</div>
             <div id="cctv-menu" class="submenu">
@@ -116,6 +121,141 @@
                 </div>
             </div>
 
+            <!-- NUEVA SECCIÓN: COTIZADOR & HISTÓRICO -->
+            <div id="global-cotizador" class="admin-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+                    <h2>📄 Generador de Cotizaciones</h2>
+                    <div class="service-tabs" style="margin-bottom:0;">
+                        <button class="tab-btn active" onclick="switchCotizadorTab('crear', this)">📝 Nueva Cotización</button>
+                        <button class="tab-btn" onclick="switchCotizadorTab('historico', this)">📂 Histórico</button>
+                        <button class="tab-btn" onclick="switchCotizadorTab('config', this)">⚙️ Datos de Empresa</button>
+                    </div>
+                </div>
+
+                <!-- PESTAÑA 1: CREAR COTIZACIÓN -->
+                <div id="cotizador-crear" class="tab-content active">
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom: 1rem;">
+                        <button class="btn btn-primary" onclick="guardarYDescargarPDF()" style="background:#00a884; font-weight:bold;">
+                            📥 Guardar y Descargar PDF
+                        </button>
+                    </div>
+
+                    <div id="hojaCotizacion" style="background:#fff; color:#333; padding:2rem; border-radius:8px; font-family:sans-serif; max-width:900px; margin:0 auto; box-shadow:0 0 10px rgba(0,0,0,0.3);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; border-bottom:3px solid #058B8A; padding-bottom:1rem;">
+                            <div>
+                                <h2 id="cotEmpresaNombre" style="margin:0; color:#058B8A; font-size:1.8rem;">PROTEC</h2>
+                                <p style="margin:5px 0 0 0; font-size:0.85rem; color:#666;">Seguridad Electrónica y Sistemas Tecnológicos</p>
+                            </div>
+                            <div style="text-align:right;">
+                                <h1 style="margin:0; color:#058B8A; font-size:1.6rem; letter-spacing:1px;">COTIZACIÓN</h1>
+                                <div style="margin-top:5px; font-size:0.9rem;">
+                                    <strong>N° Folio:</strong> <input type="text" id="cotFolio" value="COT-00063" style="width:110px; border:1px solid #ccc; border-radius:4px; padding:2px 5px; text-align:right;"><br>
+                                    <strong>Fecha:</strong> <input type="date" id="cotFecha" style="border:1px solid #ccc; border-radius:4px; padding:2px 5px; margin-top:3px;"><br>
+                                    <strong>Válida hasta:</strong> <input type="date" id="cotVigencia" style="border:1px solid #ccc; border-radius:4px; padding:2px 5px; margin-top:3px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                            <div style="background:#f8f9fa; padding:1rem; border-radius:6px; border-top:3px solid #058B8A;">
+                                <h4 style="margin:0 0 10px 0; color:#058B8A; font-size:0.9rem; text-transform:uppercase;">Empresa Emisora</h4>
+                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Empresa:</strong> <span id="cotEmpresaLabel">PROTEC</span></p>
+                                <p style="margin:3px 0; font-size:0.85rem;"><strong>RFC:</strong> <span id="cotRfcLabel">76.000.000-0</span></p>
+                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Dirección:</strong> <span id="cotDirLabel">Pachuca de Soto, Hidalgo</span></p>
+                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Web:</strong> <span id="cotWebLabel">www.protec.ink</span></p>
+                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Ejecutivo:</strong> <span id="cotEjecutivoLabel">Gilberto Covarrubias Rodriguez</span></p>
+                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Teléfono:</strong> <span id="cotTelLabel">7717485070</span></p>
+                            </div>
+
+                            <div style="background:#f8f9fa; padding:1rem; border-radius:6px; border-top:3px solid #058B8A;">
+                                <h4 style="margin:0 0 10px 0; color:#058B8A; font-size:0.9rem; text-transform:uppercase;">Datos del Cliente</h4>
+                                <div style="display:flex; flex-direction:column; gap:6px;">
+                                    <input type="text" id="cliNombre" placeholder="Nombre Cliente / Empresa" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                                    <input type="text" id="cliRfc" placeholder="RFC / ID Fiscal (opcional)" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                                    <input type="text" id="cliDireccion" placeholder="Dirección del cliente" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                                        <input type="text" id="cliContacto" placeholder="Contacto / Persona" style="border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                                        <input type="email" id="cliEmail" placeholder="Email cliente" style="border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                                    </div>
+                                    <input type="text" id="cliTel" placeholder="Teléfono cliente" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:1rem; font-size:0.85rem;">
+                            <thead>
+                                <tr style="background:#058B8A; color:#fff; text-transform:uppercase;">
+                                    <th style="padding:8px; text-align:left;">Descripción</th>
+                                    <th style="padding:8px; text-align:center; width:70px;">Cant.</th>
+                                    <th style="padding:8px; text-align:right; width:100px;">Precio</th>
+                                    <th style="padding:8px; text-align:center; width:70px;">Desc %</th>
+                                    <th style="padding:8px; text-align:right; width:110px;">Total</th>
+                                    <th class="no-print" style="padding:8px; text-align:center; width:40px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cotTbodyItems"></tbody>
+                        </table>
+
+                        <div class="no-print" style="margin-bottom:1.5rem; display:flex; gap:10px;">
+                            <button type="button" class="btn btn-primary" onclick="agregarFilaItem()" style="font-size:0.8rem;">+ Agregar Ítem</button>
+                            <button type="button" class="btn btn-outline" onclick="duplicarUltimaFilaItem()" style="font-size:0.8rem; background:#666; color:#fff;">Duplicar Último</button>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:1.5rem; border-top:1px solid #eee; padding-top:1rem;">
+                            <div style="font-size:0.8rem; color:#555;">
+                                <strong style="color:#058B8A;">Notas / Garantía:</strong>
+                                <textarea id="cotNotas" rows="3" style="width:100%; border:1px solid #ccc; border-radius:4px; padding:5px; font-size:0.75rem; margin-bottom:8px; font-family:sans-serif;"></textarea>
+                                <strong style="color:#058B8A;">Condiciones Comerciales:</strong>
+                                <textarea id="cotCondiciones" rows="4" style="width:100%; border:1px solid #ccc; border-radius:4px; padding:5px; font-size:0.75rem; font-family:sans-serif;"></textarea>
+                            </div>
+                            <div style="background:#f8f9fa; padding:1rem; border-radius:6px; font-size:0.85rem; display:flex; flex-direction:column; gap:8px;">
+                                <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><strong id="cotSubtotalText">$ 0.00</strong></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;"><span>Desc. Global %:</span><input type="number" id="cotDescGlobal" value="0" min="0" max="100" onchange="calcularTotalesCotizacion()" style="width:60px; text-align:right; border:1px solid #ccc; border-radius:4px;"></div>
+                                <div style="display:flex; justify-content:space-between;"><span>Descuento:</span><span id="cotDescMontoText">$ 0.00</span></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;"><span>Impuesto IVA %:</span><input type="number" id="cotImpuestoPorcentaje" value="0" min="0" onchange="calcularTotalesCotizacion()" style="width:60px; text-align:right; border:1px solid #ccc; border-radius:4px;"></div>
+                                <div style="display:flex; justify-content:space-between;"><span>Impuesto:</span><span id="cotImpuestoMontoText">$ 0.00</span></div>
+                                <div style="display:flex; justify-content:space-between; border-top:2px solid #058B8A; padding-top:8px; font-size:1.1rem; color:#058B8A;"><strong>TOTAL:</strong><strong id="cotTotalFinalText">$ 0.00</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PESTAÑA 2: HISTÓRICO -->
+                <div id="cotizador-historico" class="tab-content">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h3>📂 Histórico de Cotizaciones Guardadas</h3>
+                        <button class="btn btn-primary" onclick="cargarHistoricoCotizaciones()">🔄 Actualizar Lista</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>Folio</th><th>Cliente</th><th>Fecha</th><th>Válida Hasta</th><th>Total</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tablaHistoricoCotizaciones">
+                            <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Cargando histórico...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PESTAÑA 3: CONFIGURACIÓN -->
+                <div id="cotizador-config" class="tab-content">
+                    <div class="card" style="max-width:700px; margin:0 auto;">
+                        <h3 class="accent" style="margin-bottom:1.5rem;">⚙️ Configuración de Datos del Emisor</h3>
+                        <form id="formConfigCotizador" onsubmit="guardarConfigEmpresaSupabase(event)">
+                            <div class="form-group"><label>Nombre Comercial</label><input type="text" id="cfgEmpresa" class="form-control" value="PROTEC" required></div>
+                            <div class="form-group"><label>RFC / ID Fiscal</label><input type="text" id="cfgRfc" class="form-control" value="76.000.000-0"></div>
+                            <div class="form-group"><label>Dirección</label><input type="text" id="cfgDireccion" class="form-control" value="PACHUCA DE SOTO"></div>
+                            <div class="form-group"><label>Sitio Web</label><input type="text" id="cfgWeb" class="form-control" value="WWW.PROTEC.INK"></div>
+                            <div class="form-group"><label>Ejecutivo</label><input type="text" id="cfgEjecutivo" class="form-control" value="Gilberto Covarrubias Rodriguez"></div>
+                            <div class="form-group"><label>Teléfono</label><input type="text" id="cfgTelefono" class="form-control" value="7717485070"></div>
+                            <div class="form-group"><label>Notas Predeterminadas</label><textarea id="cfgNotas" class="form-control" rows="3">Garantía: 60 días únicamente en equipos e insumos nuevos suministrados en esta cotización contra defectos de fabricación.</textarea></div>
+                            <div class="form-group"><label>Condiciones Predeterminadas</label><textarea id="cfgCondiciones" class="form-control" rows="4">Alcance del trabajo: Incluye perforación, fijación y peinado de cableado por muro, resguardo de conexiones en cajas estancas IP65.</textarea></div>
+                            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">💾 Guardar en Supabase</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTOS -->
             <div id="global-productos" class="admin-section">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
                     <h2>Inventario de Cámaras</h2>
@@ -127,6 +267,7 @@
                 </table>
             </div>
 
+            <!-- KITS -->
             <div id="global-kits" class="admin-section">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
                     <h2>Kits de Instalación</h2>
@@ -138,6 +279,7 @@
                 </table>
             </div>
 
+            <!-- SOLICITUDES -->
             <div id="global-solicitudes" class="admin-section">
                 <h2>📨 Solicitudes Recibidas</h2>
                 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -170,7 +312,7 @@
                 </table>
             </div>
 
-            <!-- SECCIONES POR SERVICIO -->
+            <!-- CCTV -->
             <div id="service-cctv" class="admin-section">
                 <h2>📷 Gestión CCTV</h2>
                 <div class="service-tabs">
@@ -189,19 +331,18 @@
                 </div>
             </div>
 
-           <div id="service-pos" class="admin-section">
+            <!-- POS -->
+            <div id="service-pos" class="admin-section">
                 <h2>💳 Gestión POS</h2>
                 <div class="service-tabs">
                     <button class="tab-btn active" onclick="switchTab('pos', 'planes', this)">Planes</button>
                     <button class="tab-btn" onclick="switchTab('pos', 'galeria', this)">Galería</button>
                     <button class="tab-btn" onclick="switchTab('pos', 'contenido', this)">Contenido</button>
                 </div>
-                
                 <div id="pos-planes" class="tab-content active">
                     <button class="btn btn-primary" onclick="agregarPlan('pos')" style="margin-bottom: 1rem;">+ Nuevo Plan POS</button>
                     <div id="plans-pos-container" class="grid-2"></div>
                 </div>
-
                 <div id="pos-galeria" class="tab-content"><button class="btn btn-primary" onclick="openGalleryModal('pos')">+ Foto</button><div id="galeria-pos-container" class="grid-3" style="margin-top:1rem;"></div></div>
                 <div id="pos-contenido" class="tab-content">
                     <div class="card">
@@ -212,6 +353,7 @@
                 </div>
             </div>
 
+            <!-- WEB -->
             <div id="service-web" class="admin-section">
                 <h2>🌐 Gestión Web</h2>
                 <div class="service-tabs">
@@ -233,6 +375,7 @@
                 </div>
             </div>
 
+            <!-- MANTENIMIENTO -->
             <div id="service-mant" class="admin-section">
                 <h2>🔧 Gestión Mantenimiento</h2>
                 <div class="service-tabs">
@@ -351,6 +494,7 @@
             if (section === 'kits') renderKits();
             if (section === 'marcas') renderMarcas();
             if (section === 'solicitudes') renderSolicitudes();
+            if (section === 'cotizador') { inicializarCotizador(); cargarHistoricoCotizaciones(); }
         }
         
         if (window.event && window.event.target) {
@@ -375,7 +519,6 @@
         if (content) content.classList.add('active');
         if (btnElement) btnElement.classList.add('active');
 
-        // Renderizar o cargar dinámicamente según la pestaña activa
         if (tab === 'galeria' || tab === 'portafolio') {
             renderGaleriaSupabase(servicio);
         } else if (tab === 'planes') {
@@ -387,7 +530,266 @@
 
 
     // =========================================
-    // 3. GESTIÓN DE MARCAS (SUPABASE)
+    // 3. MÓDULO COTIZADOR & HISTÓRICO (SUPABASE)
+    // =========================================
+    function switchCotizadorTab(tab, btn) {
+        document.querySelectorAll('#global-cotizador .tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('#global-cotizador .tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('cotizador-' + tab).classList.add('active');
+        if (btn) btn.classList.add('active');
+        if (tab === 'historico') cargarHistoricoCotizaciones();
+    }
+
+    async function inicializarCotizador() {
+        const hoy = new Date();
+        document.getElementById('cotFecha').value = hoy.toISOString().split('T')[0];
+        const vigencia = new Date();
+        vigencia.setDate(hoy.getDate() + 15);
+        document.getElementById('cotVigencia').value = vigencia.toISOString().split('T')[0];
+
+        await cargarConfigEmpresaSupabase();
+
+        const tbody = document.getElementById('cotTbodyItems');
+        if (tbody && tbody.children.length === 0) {
+            agregarFilaItem("Cámara EPCOM 2mp (Nueva)", 3, 300, 0);
+            agregarFilaItem("Caja de Registro Estanca IP65", 9, 40, 0);
+        }
+    }
+
+    function agregarFilaItem(desc = '', cant = 1, precio = 0, descPct = 0) {
+        const tbody = document.getElementById('cotTbodyItems');
+        if (!tbody) return;
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #ddd';
+        tr.innerHTML = `
+            <td style="padding:6px;"><input type="text" class="item-desc" value="${desc}" placeholder="Descripción" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px;"></td>
+            <td style="padding:6px;"><input type="number" class="item-cant" value="${cant}" min="1" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px; text-align:center;"></td>
+            <td style="padding:6px;"><input type="number" class="item-precio" value="${precio}" min="0" step="0.01" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px; text-align:right;"></td>
+            <td style="padding:6px;"><input type="number" class="item-desc-pct" value="${descPct}" min="0" max="100" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px; text-align:center;"></td>
+            <td style="padding:6px; text-align:right; font-weight:bold; color:#058B8A;" class="item-total">$ 0.00</td>
+            <td class="no-print" style="padding:6px; text-align:center;"><button type="button" onclick="eliminarFilaItem(this)" style="background:#ff5a5a; color:#fff; border:none; border-radius:4px; width:25px; height:25px; cursor:pointer;">&times;</button></td>
+        `;
+        tbody.appendChild(tr);
+        calcularTotalesCotizacion();
+    }
+
+    function duplicarUltimaFilaItem() {
+        const filas = document.querySelectorAll('#cotTbodyItems tr');
+        if (filas.length > 0) {
+            const u = filas[filas.length - 1];
+            agregarFilaItem(u.querySelector('.item-desc').value, u.querySelector('.item-cant').value, u.querySelector('.item-precio').value, u.querySelector('.item-desc-pct').value);
+        } else {
+            agregarFilaItem();
+        }
+    }
+
+    function eliminarFilaItem(btn) {
+        btn.closest('tr').remove();
+        calcularTotalesCotizacion();
+    }
+
+    function calcularTotalesCotizacion() {
+        let subtotal = 0;
+        document.querySelectorAll('#cotTbodyItems tr').forEach(tr => {
+            const cant = parseFloat(tr.querySelector('.item-cant').value) || 0;
+            const precio = parseFloat(tr.querySelector('.item-precio').value) || 0;
+            const descPct = parseFloat(tr.querySelector('.item-desc-pct').value) || 0;
+            let totalLinea = (cant * precio);
+            if (descPct > 0) totalLinea -= (totalLinea * (descPct / 100));
+            tr.querySelector('.item-total').innerText = '$ ' + totalLinea.toLocaleString('es-MX', {minimumFractionDigits:2});
+            subtotal += totalLinea;
+        });
+
+        const descGlobal = subtotal * ((parseFloat(document.getElementById('cotDescGlobal').value) || 0) / 100);
+        const subDesc = subtotal - descGlobal;
+        const impuesto = subDesc * ((parseFloat(document.getElementById('cotImpuestoPorcentaje').value) || 0) / 100);
+        const totalFinal = subDesc + impuesto;
+
+        document.getElementById('cotSubtotalText').innerText = '$ ' + subtotal.toLocaleString('es-MX', {minimumFractionDigits:2});
+        document.getElementById('cotDescMontoText').innerText = '$ ' + descGlobal.toLocaleString('es-MX', {minimumFractionDigits:2});
+        document.getElementById('cotImpuestoMontoText').innerText = '$ ' + impuesto.toLocaleString('es-MX', {minimumFractionDigits:2});
+        document.getElementById('cotTotalFinalText').innerText = '$ ' + totalFinal.toLocaleString('es-MX', {minimumFractionDigits:2});
+    }
+
+    async function guardarConfigEmpresaSupabase(e) {
+        e.preventDefault();
+        const config = {
+            empresa: document.getElementById('cfgEmpresa').value,
+            rfc: document.getElementById('cfgRfc').value,
+            direccion: document.getElementById('cfgDireccion').value,
+            web: document.getElementById('cfgWeb').value,
+            ejecutivo: document.getElementById('cfgEjecutivo').value,
+            telefono: document.getElementById('cfgTelefono').value,
+            notas: document.getElementById('cfgNotas').value,
+            condiciones: document.getElementById('cfgCondiciones').value
+        };
+
+        const { error } = await window.supabaseClient
+            .from('configuracion_empresa')
+            .upsert({ clave: 'datos_empresa', valor: config }, { onConflict: 'clave' });
+
+        if (error) alert('❌ Error al guardar config: ' + error.message);
+        else {
+            alert('✅ Configuración guardada en Supabase.');
+            cargarConfigEmpresaSupabase();
+            switchCotizadorTab('crear');
+        }
+    }
+
+    async function cargarConfigEmpresaSupabase() {
+        const { data } = await window.supabaseClient
+            .from('configuracion_empresa')
+            .select('valor')
+            .eq('clave', 'datos_empresa')
+            .maybeSingle();
+
+        if (!data || !data.valor) return;
+        const cfg = data.valor;
+
+        document.getElementById('cotEmpresaNombre').innerText = cfg.empresa || 'PROTEC';
+        document.getElementById('cotEmpresaLabel').innerText = cfg.empresa || 'PROTEC';
+        document.getElementById('cotRfcLabel').innerText = cfg.rfc || '';
+        document.getElementById('cotDirLabel').innerText = cfg.direccion || '';
+        document.getElementById('cotWebLabel').innerText = cfg.web || '';
+        document.getElementById('cotEjecutivoLabel').innerText = cfg.ejecutivo || '';
+        document.getElementById('cotTelLabel').innerText = cfg.telefono || '';
+        document.getElementById('cotNotas').value = cfg.notas || '';
+        document.getElementById('cotCondiciones').value = cfg.condiciones || '';
+
+        document.getElementById('cfgEmpresa').value = cfg.empresa || '';
+        document.getElementById('cfgRfc').value = cfg.rfc || '';
+        document.getElementById('cfgDireccion').value = cfg.direccion || '';
+        document.getElementById('cfgWeb').value = cfg.web || '';
+        document.getElementById('cfgEjecutivo').value = cfg.ejecutivo || '';
+        document.getElementById('cfgTelefono').value = cfg.telefono || '';
+        document.getElementById('cfgNotas').value = cfg.notas || '';
+        document.getElementById('cfgCondiciones').value = cfg.condiciones || '';
+    }
+
+    async function guardarYDescargarPDF() {
+        const folio = document.getElementById('cotFolio').value || 'COT-001';
+        const cliente = document.getElementById('cliNombre').value || 'Cliente General';
+        const fecha = document.getElementById('cotFecha').value;
+        const vigencia = document.getElementById('cotVigencia').value;
+        const totalFinal = document.getElementById('cotTotalFinalText').innerText;
+
+        const items = [];
+        document.querySelectorAll('#cotTbodyItems tr').forEach(tr => {
+            items.push({
+                desc: tr.querySelector('.item-desc').value,
+                cant: tr.querySelector('.item-cant').value,
+                precio: tr.querySelector('.item-precio').value,
+                descPct: tr.querySelector('.item-desc-pct').value
+            });
+        });
+
+        const payloadCompleto = {
+            cliente: cliente,
+            rfcCliente: document.getElementById('cliRfc').value,
+            dirCliente: document.getElementById('cliDireccion').value,
+            contactoCliente: document.getElementById('cliContacto').value,
+            emailCliente: document.getElementById('cliEmail').value,
+            telCliente: document.getElementById('cliTel').value,
+            items: items,
+            notas: document.getElementById('cotNotas').value,
+            condiciones: document.getElementById('cotCondiciones').value,
+            subtotal: document.getElementById('cotSubtotalText').innerText,
+            total: totalFinal
+        };
+
+        await window.supabaseClient.from('cotizaciones_historico').upsert({
+            folio: folio,
+            cliente_nombre: cliente,
+            fecha: fecha,
+            vigencia: vigencia,
+            total: parseFloat(totalFinal.replace(/[^0-9.]/g, '')) || 0,
+            datos_json: payloadCompleto
+        }, { onConflict: 'folio' });
+
+        const elemento = document.getElementById('hojaCotizacion');
+        document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+        
+        const opt = {
+            margin: [0.3, 0.3, 0.3, 0.3],
+            filename: `Cotizacion_${folio}_PROTEC.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(elemento).save().then(() => {
+            document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+            alert('✅ Cotización guardada en Supabase y descargada en PDF.');
+            cargarHistoricoCotizaciones();
+        });
+    }
+
+    async function cargarHistoricoCotizaciones() {
+        const tbody = document.getElementById('tablaHistoricoCotizaciones');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Cargando histórico...</td></tr>';
+
+        const { data, error } = await window.supabaseClient
+            .from('cotizaciones_historico')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar</td></tr>';
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No hay cotizaciones guardadas.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(c => `
+            <tr>
+                <td><strong>${c.folio}</strong></td>
+                <td>${c.cliente_nombre || 'N/A'}</td>
+                <td>${c.fecha}</td>
+                <td>${c.vigencia}</td>
+                <td style="color:var(--accent); font-weight:bold;">$ ${c.total.toLocaleString('es-MX', {minimumFractionDigits:2})}</td>
+                <td>
+                    <button class="btn-action btn-edit" onclick='cargarCotizacionEnVista(${JSON.stringify(c.datos_json)}, "${c.folio}", "${c.fecha}", "${c.vigencia}")'>Cargar</button>
+                    <button class="btn-action btn-delete" onclick='eliminarCotizacionHistorica("${c.folio}")'>Borrar</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function cargarCotizacionEnVista(json, folio, fecha, vigencia) {
+        document.getElementById('cotFolio').value = folio;
+        document.getElementById('cotFecha').value = fecha;
+        document.getElementById('cotVigencia').value = vigencia;
+        document.getElementById('cliNombre').value = json.cliente || '';
+        document.getElementById('cliRfc').value = json.rfcCliente || '';
+        document.getElementById('cliDireccion').value = json.dirCliente || '';
+        document.getElementById('cliContacto').value = json.contactoCliente || '';
+        document.getElementById('cliEmail').value = json.emailCliente || '';
+        document.getElementById('cliTel').value = json.telCliente || '';
+        document.getElementById('cotNotas').value = json.notas || '';
+        document.getElementById('cotCondiciones').value = json.condiciones || '';
+
+        const tbody = document.getElementById('cotTbodyItems');
+        tbody.innerHTML = '';
+        if (json.items && json.items.length > 0) {
+            json.items.forEach(i => agregarFilaItem(i.desc, i.cant, i.precio, i.descPct));
+        }
+        switchCotizadorTab('crear');
+    }
+
+    async function eliminarCotizacionHistorica(folio) {
+        if (confirm(`¿Estás seguro de eliminar la cotización ${folio}?`)) {
+            await window.supabaseClient.from('cotizaciones_historico').delete().eq('folio', folio);
+            cargarHistoricoCotizaciones();
+        }
+    }
+
+
+    // =========================================
+    // 4. GESTIÓN DE MARCAS (SUPABASE)
     // =========================================
     async function renderMarcas() {
         const tbody = document.getElementById('tablaMarcas');
@@ -436,7 +838,7 @@
 
 
     // =========================================
-    // 4. SOLICITUDES (SUPABASE)
+    // 5. SOLICITUDES (SUPABASE)
     // =========================================
     async function renderSolicitudes(filtro = 'todos') {
         const tbody = document.getElementById('tablaSolicitudes');
@@ -509,7 +911,7 @@
 
 
     // =========================================
-    // 5. PRODUCTOS Y KITS (SUPABASE)
+    // 6. PRODUCTOS Y KITS (SUPABASE)
     // =========================================
     async function renderProductos() {
         const tbody = document.getElementById('tablaProductos');
@@ -629,7 +1031,7 @@
 
 
     // =========================================
-    // 6. PLANES (SUPABASE)
+    // 7. PLANES (SUPABASE)
     // =========================================
     async function renderPlanes(servicio) {
         const container = document.getElementById(`plans-${servicio}-container`);
@@ -719,7 +1121,7 @@
 
 
     // =========================================
-    // 7. GALERÍA / PORTAFOLIO (SUPABASE)
+    // 8. GALERÍA / PORTAFOLIO (SUPABASE)
     // =========================================
     async function renderGaleriaSupabase(servicio) {
         const container = document.getElementById(`galeria-${servicio}-container`) || document.getElementById(`portafolio-${servicio}-container`);
@@ -764,7 +1166,7 @@
 
 
     // =========================================
-    // 8. CONTENIDO GLOBAL (SUPABASE) - EXPUESTO GLOBALMENTE
+    // 9. CONTENIDO GLOBAL (SUPABASE)
     // =========================================
     window.cargarContenido = async function(servicio) {
         const inputTitulo = document.getElementById(`${servicio}-title`);
@@ -823,7 +1225,7 @@
 
 
     // =========================================
-    // 9. UTILIDADES DE MODALES Y IMÁGENES
+    // 10. UTILIDADES DE MODALES Y IMÁGENES
     // =========================================
     function openModal(id) {
         document.getElementById(id).style.display = 'flex';
@@ -866,7 +1268,7 @@
 
 
     // =========================================
-    // 10. INICIALIZACIÓN (DOMContentLoaded)
+    // 11. INICIALIZACIÓN (DOMContentLoaded)
     // =========================================
     document.addEventListener('DOMContentLoaded', () => {
         renderProductos(); 
