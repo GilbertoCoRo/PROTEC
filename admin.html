@@ -121,9 +121,9 @@
                 </div>
             </div>
 
-            <!-- NUEVA SECCIÓN: COTIZADOR & HISTÓRICO -->
+            <!-- SECCIÓN: COTIZADOR & HISTÓRICO -->
             <div id="global-cotizador" class="admin-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
                     <h2>📄 Generador de Cotizaciones</h2>
                     <div class="service-tabs" style="margin-bottom:0;">
                         <button class="tab-btn active" onclick="switchCotizadorTab('crear', this)">📝 Nueva Cotización</button>
@@ -134,87 +134,97 @@
 
                 <!-- PESTAÑA 1: CREAR COTIZACIÓN -->
                 <div id="cotizador-crear" class="tab-content active">
-                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom: 1rem;">
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom: 0.8rem;">
                         <button class="btn btn-primary" onclick="guardarYDescargarPDF()" style="background:#00a884; font-weight:bold;">
                             📥 Guardar y Descargar PDF
                         </button>
                     </div>
 
-                    <div id="hojaCotizacion" style="background:#fff; color:#333; padding:2rem; border-radius:8px; font-family:sans-serif; max-width:900px; margin:0 auto; box-shadow:0 0 10px rgba(0,0,0,0.3);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; border-bottom:3px solid #058B8A; padding-bottom:1rem;">
+                    <!-- HOJA OPTIMIZADA SIN ESPACIOS EXCESIVOS -->
+                    <div id="hojaCotizacion" style="background:#fff; color:#333; padding:1.2rem; border-radius:8px; font-family:sans-serif; max-width:900px; margin:0 auto; box-shadow:0 0 10px rgba(0,0,0,0.3);">
+                        
+                        <!-- ENCABEZADO CON LOGO Y DATOS -->
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; border-bottom:2px solid #058B8A; padding-bottom:0.8rem;">
                             <div>
-                                <h2 id="cotEmpresaNombre" style="margin:0; color:#058B8A; font-size:1.8rem;">PROTEC</h2>
-                                <p style="margin:5px 0 0 0; font-size:0.85rem; color:#666;">Seguridad Electrónica y Sistemas Tecnológicos</p>
+                                <div id="cotLogoContainer" style="margin-bottom:5px; max-width:140px; max-height:50px; overflow:hidden;">
+                                    <!-- Aquí aparecerá el logo cargado -->
+                                    <img id="cotLogoImg" src="" style="width:100%; height:auto; display:none;" alt="Logo Empresa">
+                                </div>
+                                <h2 id="cotEmpresaNombre" style="margin:0; color:#058B8A; font-size:1.6rem;">PROTEC</h2>
+                                <p style="margin:2px 0 0 0; font-size:0.75rem; color:#666;">Seguridad Electrónica y Sistemas Tecnológicos</p>
                             </div>
                             <div style="text-align:right;">
-                                <h1 style="margin:0; color:#058B8A; font-size:1.6rem; letter-spacing:1px;">COTIZACIÓN</h1>
-                                <div style="margin-top:5px; font-size:0.9rem;">
-                                    <strong>N° Folio:</strong> <input type="text" id="cotFolio" value="COT-00063" style="width:110px; border:1px solid #ccc; border-radius:4px; padding:2px 5px; text-align:right;"><br>
-                                    <strong>Fecha:</strong> <input type="date" id="cotFecha" style="border:1px solid #ccc; border-radius:4px; padding:2px 5px; margin-top:3px;"><br>
-                                    <strong>Válida hasta:</strong> <input type="date" id="cotVigencia" style="border:1px solid #ccc; border-radius:4px; padding:2px 5px; margin-top:3px;">
+                                <h1 style="margin:0; color:#058B8A; font-size:1.4rem; letter-spacing:1px;">COTIZACIÓN</h1>
+                                <div style="margin-top:3px; font-size:0.8rem;">
+                                    <strong>N° Folio:</strong> <input type="text" id="cotFolio" value="COT-00001" style="width:100px; border:1px solid #ccc; border-radius:4px; padding:2px 4px; text-align:right;"><br>
+                                    <strong>Fecha:</strong> <input type="date" id="cotFecha" style="border:1px solid #ccc; border-radius:4px; padding:2px 4px; margin-top:2px;"><br>
+                                    <strong>Válida hasta:</strong> <input type="date" id="cotVigencia" style="border:1px solid #ccc; border-radius:4px; padding:2px 4px; margin-top:2px;">
                                 </div>
                             </div>
                         </div>
 
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
-                            <div style="background:#f8f9fa; padding:1rem; border-radius:6px; border-top:3px solid #058B8A;">
-                                <h4 style="margin:0 0 10px 0; color:#058B8A; font-size:0.9rem; text-transform:uppercase;">Empresa Emisora</h4>
-                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Empresa:</strong> <span id="cotEmpresaLabel">PROTEC</span></p>
-                                <p style="margin:3px 0; font-size:0.85rem;"><strong>RFC:</strong> <span id="cotRfcLabel">76.000.000-0</span></p>
-                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Dirección:</strong> <span id="cotDirLabel">Pachuca de Soto, Hidalgo</span></p>
-                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Web:</strong> <span id="cotWebLabel">www.protec.ink</span></p>
-                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Ejecutivo:</strong> <span id="cotEjecutivoLabel">Gilberto Covarrubias Rodriguez</span></p>
-                                <p style="margin:3px 0; font-size:0.85rem;"><strong>Teléfono:</strong> <span id="cotTelLabel">7717485070</span></p>
+                        <!-- EMPRESA Y CLIENTE -->
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                            <div style="background:#f8f9fa; padding:0.8rem; border-radius:6px; border-top:3px solid #058B8A;">
+                                <h4 style="margin:0 0 6px 0; color:#058B8A; font-size:0.8rem; text-transform:uppercase;">Empresa Emisora</h4>
+                                <p style="margin:2px 0; font-size:0.75rem;"><strong>Empresa:</strong> <span id="cotEmpresaLabel">PROTEC</span></p>
+                                <p style="margin:2px 0; font-size:0.75rem;"><strong>RFC:</strong> <span id="cotRfcLabel">76.000.000-0</span></p>
+                                <p style="margin:2px 0; font-size:0.75rem;"><strong>Dirección:</strong> <span id="cotDirLabel">Pachuca de Soto, Hidalgo</span></p>
+                                <p style="margin:2px 0; font-size:0.75rem;"><strong>Web:</strong> <span id="cotWebLabel">www.protec.ink</span></p>
+                                <p style="margin:2px 0; font-size:0.75rem;"><strong>Ejecutivo:</strong> <span id="cotEjecutivoLabel">Gilberto Covarrubias Rodriguez</span></p>
+                                <p style="margin:2px 0; font-size:0.75rem;"><strong>Teléfono:</strong> <span id="cotTelLabel">7717485070</span></p>
                             </div>
 
-                            <div style="background:#f8f9fa; padding:1rem; border-radius:6px; border-top:3px solid #058B8A;">
-                                <h4 style="margin:0 0 10px 0; color:#058B8A; font-size:0.9rem; text-transform:uppercase;">Datos del Cliente</h4>
-                                <div style="display:flex; flex-direction:column; gap:6px;">
-                                    <input type="text" id="cliNombre" placeholder="Nombre Cliente / Empresa" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
-                                    <input type="text" id="cliRfc" placeholder="RFC / ID Fiscal (opcional)" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
-                                    <input type="text" id="cliDireccion" placeholder="Dirección del cliente" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                                        <input type="text" id="cliContacto" placeholder="Contacto / Persona" style="border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
-                                        <input type="email" id="cliEmail" placeholder="Email cliente" style="border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                            <div style="background:#f8f9fa; padding:0.8rem; border-radius:6px; border-top:3px solid #058B8A;">
+                                <h4 style="margin:0 0 6px 0; color:#058B8A; font-size:0.8rem; text-transform:uppercase;">Datos del Cliente</h4>
+                                <div style="display:flex; flex-direction:column; gap:4px;">
+                                    <input type="text" id="cliNombre" placeholder="Nombre Cliente / Empresa" style="width:100%; border:1px solid #ccc; padding:3px 6px; border-radius:4px; font-size:0.8rem;">
+                                    <input type="text" id="cliRfc" placeholder="RFC / ID Fiscal (opcional)" style="width:100%; border:1px solid #ccc; padding:3px 6px; border-radius:4px; font-size:0.8rem;">
+                                    <input type="text" id="cliDireccion" placeholder="Dirección del cliente" style="width:100%; border:1px solid #ccc; padding:3px 6px; border-radius:4px; font-size:0.8rem;">
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                                        <input type="text" id="cliContacto" placeholder="Contacto / Persona" style="border:1px solid #ccc; padding:3px 6px; border-radius:4px; font-size:0.8rem;">
+                                        <input type="email" id="cliEmail" placeholder="Email cliente" style="border:1px solid #ccc; padding:3px 6px; border-radius:4px; font-size:0.8rem;">
                                     </div>
-                                    <input type="text" id="cliTel" placeholder="Teléfono cliente" style="width:100%; border:1px solid #ccc; padding:4px 8px; border-radius:4px; font-size:0.85rem;">
+                                    <input type="text" id="cliTel" placeholder="Teléfono cliente" style="width:100%; border:1px solid #ccc; padding:3px 6px; border-radius:4px; font-size:0.8rem;">
                                 </div>
                             </div>
                         </div>
 
-                        <table style="width:100%; border-collapse:collapse; margin-bottom:1rem; font-size:0.85rem;">
+                        <!-- TABLA DE PRODUCTOS -->
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:0.8rem; font-size:0.8rem;">
                             <thead>
                                 <tr style="background:#058B8A; color:#fff; text-transform:uppercase;">
-                                    <th style="padding:8px; text-align:left;">Descripción</th>
-                                    <th style="padding:8px; text-align:center; width:70px;">Cant.</th>
-                                    <th style="padding:8px; text-align:right; width:100px;">Precio</th>
-                                    <th style="padding:8px; text-align:center; width:70px;">Desc %</th>
-                                    <th style="padding:8px; text-align:right; width:110px;">Total</th>
-                                    <th class="no-print" style="padding:8px; text-align:center; width:40px;"></th>
+                                    <th style="padding:6px; text-align:left;">Descripción</th>
+                                    <th style="padding:6px; text-align:center; width:60px;">Cant.</th>
+                                    <th style="padding:6px; text-align:right; width:90px;">Precio</th>
+                                    <th style="padding:6px; text-align:center; width:60px;">Desc %</th>
+                                    <th style="padding:6px; text-align:right; width:100px;">Total</th>
+                                    <th class="no-print" style="padding:6px; text-align:center; width:30px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="cotTbodyItems"></tbody>
                         </table>
 
-                        <div class="no-print" style="margin-bottom:1.5rem; display:flex; gap:10px;">
-                            <button type="button" class="btn btn-primary" onclick="agregarFilaItem()" style="font-size:0.8rem;">+ Agregar Ítem</button>
-                            <button type="button" class="btn btn-outline" onclick="duplicarUltimaFilaItem()" style="font-size:0.8rem; background:#666; color:#fff;">Duplicar Último</button>
+                        <div class="no-print" style="margin-bottom:1rem; display:flex; gap:8px;">
+                            <button type="button" class="btn btn-primary" onclick="agregarFilaItem()" style="font-size:0.75rem; padding:4px 10px;">+ Agregar Ítem</button>
+                            <button type="button" class="btn btn-outline" onclick="duplicarUltimaFilaItem()" style="font-size:0.75rem; padding:4px 10px; background:#666; color:#fff;">Duplicar Último</button>
                         </div>
 
-                        <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:1.5rem; border-top:1px solid #eee; padding-top:1rem;">
-                            <div style="font-size:0.8rem; color:#555;">
+                        <!-- NOTAS Y TOTALES -->
+                        <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:1rem; border-top:1px solid #eee; padding-top:0.8rem;">
+                            <div style="font-size:0.75rem; color:#555;">
                                 <strong style="color:#058B8A;">Notas / Garantía:</strong>
-                                <textarea id="cotNotas" rows="3" style="width:100%; border:1px solid #ccc; border-radius:4px; padding:5px; font-size:0.75rem; margin-bottom:8px; font-family:sans-serif;"></textarea>
+                                <textarea id="cotNotas" rows="2" style="width:100%; border:1px solid #ccc; border-radius:4px; padding:4px; font-size:0.7rem; margin-bottom:6px; font-family:sans-serif;"></textarea>
                                 <strong style="color:#058B8A;">Condiciones Comerciales:</strong>
-                                <textarea id="cotCondiciones" rows="4" style="width:100%; border:1px solid #ccc; border-radius:4px; padding:5px; font-size:0.75rem; font-family:sans-serif;"></textarea>
+                                <textarea id="cotCondiciones" rows="3" style="width:100%; border:1px solid #ccc; border-radius:4px; padding:4px; font-size:0.7rem; font-family:sans-serif;"></textarea>
                             </div>
-                            <div style="background:#f8f9fa; padding:1rem; border-radius:6px; font-size:0.85rem; display:flex; flex-direction:column; gap:8px;">
+                            <div style="background:#f8f9fa; padding:0.8rem; border-radius:6px; font-size:0.8rem; display:flex; flex-direction:column; gap:6px;">
                                 <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><strong id="cotSubtotalText">$ 0.00</strong></div>
-                                <div style="display:flex; justify-content:space-between; align-items:center;"><span>Desc. Global %:</span><input type="number" id="cotDescGlobal" value="0" min="0" max="100" onchange="calcularTotalesCotizacion()" style="width:60px; text-align:right; border:1px solid #ccc; border-radius:4px;"></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;"><span>Desc. Global %:</span><input type="number" id="cotDescGlobal" value="0" min="0" max="100" onchange="calcularTotalesCotizacion()" style="width:50px; text-align:right; border:1px solid #ccc; border-radius:4px;"></div>
                                 <div style="display:flex; justify-content:space-between;"><span>Descuento:</span><span id="cotDescMontoText">$ 0.00</span></div>
-                                <div style="display:flex; justify-content:space-between; align-items:center;"><span>Impuesto IVA %:</span><input type="number" id="cotImpuestoPorcentaje" value="0" min="0" onchange="calcularTotalesCotizacion()" style="width:60px; text-align:right; border:1px solid #ccc; border-radius:4px;"></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;"><span>Impuesto IVA %:</span><input type="number" id="cotImpuestoPorcentaje" value="0" min="0" onchange="calcularTotalesCotizacion()" style="width:50px; text-align:right; border:1px solid #ccc; border-radius:4px;"></div>
                                 <div style="display:flex; justify-content:space-between;"><span>Impuesto:</span><span id="cotImpuestoMontoText">$ 0.00</span></div>
-                                <div style="display:flex; justify-content:space-between; border-top:2px solid #058B8A; padding-top:8px; font-size:1.1rem; color:#058B8A;"><strong>TOTAL:</strong><strong id="cotTotalFinalText">$ 0.00</strong></div>
+                                <div style="display:flex; justify-content:space-between; border-top:2px solid #058B8A; padding-top:6px; font-size:1rem; color:#058B8A;"><strong>TOTAL:</strong><strong id="cotTotalFinalText">$ 0.00</strong></div>
                             </div>
                         </div>
                     </div>
@@ -242,6 +252,12 @@
                         <h3 class="accent" style="margin-bottom:1.5rem;">⚙️ Configuración de Datos del Emisor</h3>
                         <form id="formConfigCotizador" onsubmit="guardarConfigEmpresaSupabase(event)">
                             <div class="form-group"><label>Nombre Comercial</label><input type="text" id="cfgEmpresa" class="form-control" value="PROTEC" required></div>
+                            <div class="form-group">
+                                <label>Logotipo de la Empresa (Imagen)</label>
+                                <input type="file" id="cfgLogoFile" class="form-control" accept="image/*" onchange="previewLogoConfig(this)">
+                                <input type="hidden" id="cfgLogoBase64">
+                                <img id="previewLogoCfg" style="max-width:120px; margin-top:8px; display:none; border-radius:4px;">
+                            </div>
                             <div class="form-group"><label>RFC / ID Fiscal</label><input type="text" id="cfgRfc" class="form-control" value="76.000.000-0"></div>
                             <div class="form-group"><label>Dirección</label><input type="text" id="cfgDireccion" class="form-control" value="PACHUCA DE SOTO"></div>
                             <div class="form-group"><label>Sitio Web</label><input type="text" id="cfgWeb" class="form-control" value="WWW.PROTEC.INK"></div>
@@ -547,6 +563,9 @@
         vigencia.setDate(hoy.getDate() + 15);
         document.getElementById('cotVigencia').value = vigencia.toISOString().split('T')[0];
 
+        // Obtener consecutivo automático real desde la base de datos
+        await calcularSiguienteFolio();
+
         await cargarConfigEmpresaSupabase();
 
         const tbody = document.getElementById('cotTbodyItems');
@@ -556,18 +575,42 @@
         }
     }
 
+    async function calcularSiguienteFolio() {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('cotizaciones_historico')
+                .select('folio')
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (error || !data || data.length === 0) {
+                document.getElementById('cotFolio').value = 'COT-00001';
+                return;
+            }
+
+            const ultimoFolio = data[0].folio; // Ej: COT-00005
+            const numeroStr = ultimoFolio.replace(/[^0-9]/g, ''); // Extrae "00005"
+            let siguienteNum = parseInt(numeroStr, 10) + 1; // 6
+            let folioNuevo = 'COT-' + String(siguienteNum).padStart(5, '0'); // COT-00006
+            document.getElementById('cotFolio').value = folioNuevo;
+        } catch (err) {
+            console.error('Error calculando folio:', err);
+            document.getElementById('cotFolio').value = 'COT-00001';
+        }
+    }
+
     function agregarFilaItem(desc = '', cant = 1, precio = 0, descPct = 0) {
         const tbody = document.getElementById('cotTbodyItems');
         if (!tbody) return;
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #ddd';
         tr.innerHTML = `
-            <td style="padding:6px;"><input type="text" class="item-desc" value="${desc}" placeholder="Descripción" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px;"></td>
-            <td style="padding:6px;"><input type="number" class="item-cant" value="${cant}" min="1" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px; text-align:center;"></td>
-            <td style="padding:6px;"><input type="number" class="item-precio" value="${precio}" min="0" step="0.01" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px; text-align:right;"></td>
-            <td style="padding:6px;"><input type="number" class="item-desc-pct" value="${descPct}" min="0" max="100" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:4px; border-radius:4px; text-align:center;"></td>
-            <td style="padding:6px; text-align:right; font-weight:bold; color:#058B8A;" class="item-total">$ 0.00</td>
-            <td class="no-print" style="padding:6px; text-align:center;"><button type="button" onclick="eliminarFilaItem(this)" style="background:#ff5a5a; color:#fff; border:none; border-radius:4px; width:25px; height:25px; cursor:pointer;">&times;</button></td>
+            <td style="padding:5px;"><input type="text" class="item-desc" value="${desc}" placeholder="Descripción" style="width:100%; border:1px solid #ccc; padding:3px; border-radius:4px;"></td>
+            <td style="padding:5px;"><input type="number" class="item-cant" value="${cant}" min="1" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:3px; border-radius:4px; text-align:center;"></td>
+            <td style="padding:5px;"><input type="number" class="item-precio" value="${precio}" min="0" step="0.01" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:3px; border-radius:4px; text-align:right;"></td>
+            <td style="padding:5px;"><input type="number" class="item-desc-pct" value="${descPct}" min="0" max="100" onchange="calcularTotalesCotizacion()" style="width:100%; border:1px solid #ccc; padding:3px; border-radius:4px; text-align:center;"></td>
+            <td style="padding:5px; text-align:right; font-weight:bold; color:#058B8A;" class="item-total">$ 0.00</td>
+            <td class="no-print" style="padding:5px; text-align:center;"><button type="button" onclick="eliminarFilaItem(this)" style="background:#ff5a5a; color:#fff; border:none; border-radius:4px; width:22px; height:22px; cursor:pointer;">&times;</button></td>
         `;
         tbody.appendChild(tr);
         calcularTotalesCotizacion();
@@ -611,10 +654,24 @@
         document.getElementById('cotTotalFinalText').innerText = '$ ' + totalFinal.toLocaleString('es-MX', {minimumFractionDigits:2});
     }
 
+    function previewLogoConfig(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('cfgLogoBase64').value = e.target.result;
+                const prev = document.getElementById('previewLogoCfg');
+                prev.src = e.target.result;
+                prev.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     async function guardarConfigEmpresaSupabase(e) {
         e.preventDefault();
         const config = {
             empresa: document.getElementById('cfgEmpresa').value,
+            logo: document.getElementById('cfgLogoBase64').value,
             rfc: document.getElementById('cfgRfc').value,
             direccion: document.getElementById('cfgDireccion').value,
             web: document.getElementById('cfgWeb').value,
@@ -630,7 +687,7 @@
 
         if (error) alert('❌ Error al guardar config: ' + error.message);
         else {
-            alert('✅ Configuración guardada en Supabase.');
+            alert('✅ Configuración y logotipo guardados en Supabase.');
             cargarConfigEmpresaSupabase();
             switchCotizadorTab('crear');
         }
@@ -656,6 +713,16 @@
         document.getElementById('cotNotas').value = cfg.notas || '';
         document.getElementById('cotCondiciones').value = cfg.condiciones || '';
 
+        // Manejar Logo en la cotización
+        const logoImg = document.getElementById('cotLogoImg');
+        if (cfg.logo) {
+            logoImg.src = cfg.logo;
+            logoImg.style.display = 'block';
+        } else {
+            logoImg.style.display = 'none';
+        }
+
+        // Llenar inputs de config
         document.getElementById('cfgEmpresa').value = cfg.empresa || '';
         document.getElementById('cfgRfc').value = cfg.rfc || '';
         document.getElementById('cfgDireccion').value = cfg.direccion || '';
@@ -664,10 +731,16 @@
         document.getElementById('cfgTelefono').value = cfg.telefono || '';
         document.getElementById('cfgNotas').value = cfg.notas || '';
         document.getElementById('cfgCondiciones').value = cfg.condiciones || '';
+        document.getElementById('cfgLogoBase64').value = cfg.logo || '';
+        if (cfg.logo) {
+            const prev = document.getElementById('previewLogoCfg');
+            prev.src = cfg.logo;
+            prev.style.display = 'block';
+        }
     }
 
     async function guardarYDescargarPDF() {
-        const folio = document.getElementById('cotFolio').value || 'COT-001';
+        const folio = document.getElementById('cotFolio').value || 'COT-00001';
         const cliente = document.getElementById('cliNombre').value || 'Cliente General';
         const fecha = document.getElementById('cotFecha').value;
         const vigencia = document.getElementById('cotVigencia').value;
@@ -710,7 +783,7 @@
         document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
         
         const opt = {
-            margin: [0.3, 0.3, 0.3, 0.3],
+            margin: [0.15, 0.15, 0.15, 0.15],
             filename: `Cotizacion_${folio}_PROTEC.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
@@ -721,6 +794,7 @@
             document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
             alert('✅ Cotización guardada en Supabase y descargada en PDF.');
             cargarHistoricoCotizaciones();
+            calcularSiguienteFolio(); // Actualizar siguiente folio automático
         });
     }
 
@@ -784,6 +858,7 @@
         if (confirm(`¿Estás seguro de eliminar la cotización ${folio}?`)) {
             await window.supabaseClient.from('cotizaciones_historico').delete().eq('folio', folio);
             cargarHistoricoCotizaciones();
+            calcularSiguienteFolio();
         }
     }
 
