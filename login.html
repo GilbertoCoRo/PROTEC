@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROTEC - Login Admin</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4';
+      window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; position: relative;">
 
@@ -22,7 +29,7 @@
         <form id="loginForm">
             <div class="form-group">
                 <label>CORREO ELECTRÓNICO</label>
-                <input type="email" id="email" placeholder="admin@protec.mx" required autocomplete="email">
+                <input type="email" id="email" placeholder="correo@protec.ink" required autocomplete="email">
             </div>
             <div class="form-group">
                 <label>CONTRASEÑA</label>
@@ -34,65 +41,54 @@
             
             <button type="submit" class="btn btn-primary" style="width: 100%;">INICIAR SESIÓN</button>
         </form>
-
-        <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
-            Demo: admin@protec.mx / admin123
-        </p>
     </div>
 
     <script>
-        // =========================================
-        // VERIFICAR SESIÓN AL CARGAR LOGIN
-        // =========================================
         document.addEventListener('DOMContentLoaded', () => {
             const auth = localStorage.getItem('protec_auth');
             if(auth === 'true') {
-                // Ya está logueado, ir al admin
                 window.location.replace('admin.html');
                 return;
             }
         });
 
-        // =========================================
-        // FUNCIÓN DE LOGIN
-        // =========================================
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('errorMsg');
 
-            // Credenciales
-            if(email === 'admin@protec.mx' && password === 'admin123') {
-                // Guardar sesión con la MISMA clave que usa admin.html
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('usuarios_admin')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password)
+                    .maybeSingle();
+
+                if (error || !data) {
+                    errorMsg.textContent = '❌ Credenciales incorrectas o usuario no registrado.';
+                    errorMsg.style.display = 'block';
+                    
+                    const form = document.querySelector('.card');
+                    form.style.animation = 'shake 0.5s';
+                    setTimeout(() => { form.style.animation = ''; }, 500);
+                    setTimeout(() => { errorMsg.style.display = 'none'; }, 4000);
+                    return;
+                }
+
                 localStorage.setItem('protec_auth', 'true');
-                localStorage.setItem('protec_user', email);
+                localStorage.setItem('protec_user', data.email);
                 
-                // Redirigir al admin
                 window.location.replace('admin.html');
-            } else {
-                // Mostrar alerta de error
-                errorMsg.textContent = '❌ Credenciales incorrectas. Intenta de nuevo.';
+            } catch (err) {
+                console.error('Error en login:', err);
+                errorMsg.textContent = '❌ Error de conexión con el servidor.';
                 errorMsg.style.display = 'block';
-                
-                // Efecto de shake en el formulario
-                const form = document.querySelector('.card');
-                form.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    form.style.animation = '';
-                }, 500);
-                
-                // Ocultar mensaje después de 4 segundos
-                setTimeout(() => {
-                    errorMsg.style.display = 'none';
-                }, 4000);
             }
         });
 
-        // =========================================
-        // ANIMACIÓN SHAKE (opcional, agregar en CSS)
-        // =========================================
         const style = document.createElement('style');
         style.textContent = `
             @keyframes shake {

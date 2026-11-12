@@ -66,6 +66,7 @@
             <a href="#" onclick="showGlobal('kits')">📦 Kits de Instalación</a>
             <a href="#" onclick="showGlobal('solicitudes')">📨 Solicitudes</a>
             <a href="#" onclick="showGlobal('marcas')">🏷️ Gestión de Marcas</a>
+            <a href="#" onclick="showGlobal('usuarios')">👥 Gestión de Usuarios</a>
             
             <div class="menu-title" style="margin-top: 1.5rem;">📄 Cotizaciones</div>
             <a href="#" onclick="showGlobal('cotizador')">📝 Generador / Historial</a>
@@ -132,7 +133,6 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 1: CREAR COTIZACIÓN -->
                 <div id="cotizador-crear" class="tab-content active">
                     <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom: 0.8rem;">
                         <button class="btn btn-primary" onclick="guardarYDescargarPDF()" style="background:#00a884; font-weight:bold;">
@@ -140,16 +140,12 @@
                         </button>
                     </div>
 
-                    <!-- HOJA OPTIMIZADA SIN ESPACIOS EXCESIVOS -->
                     <div id="hojaCotizacion" style="background:#fff; color:#333; padding:1.2rem; border-radius:8px; font-family:sans-serif; max-width:900px; margin:0 auto; box-shadow:0 0 10px rgba(0,0,0,0.3);">
-                        
-                        <!-- ENCABEZADO CON LOGO Y DATOS -->
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; border-bottom:2px solid #058B8A; padding-bottom:0.8rem;">
                             <div>
                                 <div id="cotLogoContainer" style="margin-bottom:8px; max-width:160px;">
-                                    <!-- Aquí aparecerá el logo cargado -->
-                                <img id="cotLogoImg" src="" style="width:100%; height:auto; object-fit:contain; display:none;" alt="Logo Empresa">
-                            </div>
+                                    <img id="cotLogoImg" src="" style="width:100%; height:auto; object-fit:contain; display:none;" alt="Logo Empresa">
+                                </div>
                                 <h2 id="cotEmpresaNombre" style="margin:0; color:#058B8A; font-size:1.6rem;">PROTEC</h2>
                                 <p style="margin:2px 0 0 0; font-size:0.75rem; color:#666;">Seguridad Electrónica y Sistemas Tecnológicos</p>
                             </div>
@@ -163,7 +159,6 @@
                             </div>
                         </div>
 
-                        <!-- EMPRESA Y CLIENTE -->
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem;">
                             <div style="background:#f8f9fa; padding:0.8rem; border-radius:6px; border-top:3px solid #058B8A;">
                                 <h4 style="margin:0 0 6px 0; color:#058B8A; font-size:0.8rem; text-transform:uppercase;">Empresa Emisora</h4>
@@ -190,7 +185,6 @@
                             </div>
                         </div>
 
-                        <!-- TABLA DE PRODUCTOS -->
                         <table style="width:100%; border-collapse:collapse; margin-bottom:0.8rem; font-size:0.8rem;">
                             <thead>
                                 <tr style="background:#058B8A; color:#fff; text-transform:uppercase;">
@@ -210,7 +204,6 @@
                             <button type="button" class="btn btn-outline" onclick="duplicarUltimaFilaItem()" style="font-size:0.75rem; padding:4px 10px; background:#666; color:#fff;">Duplicar Último</button>
                         </div>
 
-                        <!-- NOTAS Y TOTALES -->
                         <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:1rem; border-top:1px solid #eee; padding-top:0.8rem;">
                             <div style="font-size:0.75rem; color:#555;">
                                 <strong style="color:#058B8A;">Notas / Garantía:</strong>
@@ -230,7 +223,6 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 2: HISTÓRICO -->
                 <div id="cotizador-historico" class="tab-content">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                         <h3>📂 Histórico de Cotizaciones Guardadas</h3>
@@ -246,7 +238,6 @@
                     </table>
                 </div>
 
-                <!-- PESTAÑA 3: CONFIGURACIÓN -->
                 <div id="cotizador-config" class="tab-content">
                     <div class="card" style="max-width:700px; margin:0 auto;">
                         <h3 class="accent" style="margin-bottom:1.5rem;">⚙️ Configuración de Datos del Emisor</h3>
@@ -325,6 +316,30 @@
                 <table class="admin-table">
                     <thead><tr><th>Marca</th><th>Acciones</th></tr></thead>
                     <tbody id="tablaMarcas"></tbody>
+                </table>
+            </div>
+
+            <!-- GESTIÓN DE USUARIOS (MAESTRO VS CONSULTA) -->
+            <div id="global-usuarios" class="admin-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <div>
+                        <h2>👥 Gestión de Usuarios Administradores</h2>
+                        <p id="infoMasterLabel" style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">(Usuario Maestro: Control total de altas y bajas)</p>
+                    </div>
+                    <button id="btnNuevoUsuario" class="btn btn-primary" onclick="openModal('modalUsuario')" style="display:none;">+ Nuevo Usuario</button>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo Electrónico</th>
+                            <th>Fecha de Creación</th>
+                            <th id="thAccionesUser" style="display:none;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios">
+                        <tr><td colspan="4" style="text-align:center;">Cargando usuarios...</td></tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -466,13 +481,30 @@
         </div>
     </div>
 
-<!-- ========================================
-     SCRIPT UNIFICADO - admin.html (Servidor)
-     ======================================== -->
+    <div id="modalUsuario" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalUsuario')">&times;</span>
+            <h3 id="titleUserModal">Registrar Usuario</h3>
+            <form id="formUsuario" onsubmit="guardarUsuarioAdmin(event)">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="userNombre" class="form-control" required placeholder="Ej: Gilberto Covarrubias">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico (Login)</label>
+                    <input type="email" id="userEmail" class="form-control" required placeholder="correo@protec.ink">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="text" id="userPassword" class="form-control" required placeholder="Contraseña de acceso">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">💾 Guardar Usuario</button>
+            </form>
+        </div>
+    </div>
+
 <script>
-    // =========================================
-    // 1. SESIÓN Y SEGURIDAD
-    // =========================================
     function verificarSesion() {
         const auth = localStorage.getItem('protec_auth');
         if (auth !== 'true') {
@@ -482,15 +514,17 @@
 
     function cerrarSesion() {
         localStorage.removeItem('protec_auth');
+        localStorage.removeItem('protec_user');
         window.location.href = 'login.html';
     }
 
     verificarSesion();
 
+    function esUsuarioMaestro() {
+        const userEmail = localStorage.getItem('protec_user');
+        return userEmail === 'gilberto@protec.ink';
+    }
 
-    // =========================================
-    // 2. NAVEGACIÓN Y CONTROL DE VISTAS
-    // =========================================
     function toggleSubmenu(id) {
         document.querySelectorAll('.submenu').forEach(s => {
             if (s.id !== id) s.classList.remove('open');
@@ -510,6 +544,7 @@
             if (section === 'kits') renderKits();
             if (section === 'marcas') renderMarcas();
             if (section === 'solicitudes') renderSolicitudes();
+            if (section === 'usuarios') renderUsuarios();
             if (section === 'cotizador') { inicializarCotizador(); cargarHistoricoCotizaciones(); }
         }
         
@@ -529,7 +564,7 @@
 
     function switchTab(servicio, tab, btnElement) {
         document.querySelectorAll(`#service-${servicio} .tab-content`).forEach(c => c.classList.remove('active'));
-        document.querySelectorAll(`#service-${servicio} .tab-btn`).forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`#service-${servicio} .service-tabs .tab-btn`).forEach(b => b.classList.remove('active'));
         
         const content = document.getElementById(`${servicio}-${tab}`);
         if (content) content.classList.add('active');
@@ -544,10 +579,6 @@
         }
     }
 
-
-    // =========================================
-    // 3. MÓDULO COTIZADOR & HISTÓRICO (SUPABASE)
-    // =========================================
     function switchCotizadorTab(tab, btn) {
         document.querySelectorAll('#global-cotizador .tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('#global-cotizador .tab-btn').forEach(b => b.classList.remove('active'));
@@ -563,9 +594,7 @@
         vigencia.setDate(hoy.getDate() + 15);
         document.getElementById('cotVigencia').value = vigencia.toISOString().split('T')[0];
 
-        // Obtener consecutivo automático real desde la base de datos
         await calcularSiguienteFolio();
-
         await cargarConfigEmpresaSupabase();
 
         const tbody = document.getElementById('cotTbodyItems');
@@ -588,10 +617,10 @@
                 return;
             }
 
-            const ultimoFolio = data[0].folio; // Ej: COT-00005
-            const numeroStr = ultimoFolio.replace(/[^0-9]/g, ''); // Extrae "00005"
-            let siguienteNum = parseInt(numeroStr, 10) + 1; // 6
-            let folioNuevo = 'COT-' + String(siguienteNum).padStart(5, '0'); // COT-00006
+            const ultimoFolio = data[0].folio;
+            const numeroStr = ultimoFolio.replace(/[^0-9]/g, '');
+            let siguienteNum = parseInt(numeroStr, 10) + 1;
+            let folioNuevo = 'COT-' + String(siguienteNum).padStart(5, '0');
             document.getElementById('cotFolio').value = folioNuevo;
         } catch (err) {
             console.error('Error calculando folio:', err);
@@ -713,7 +742,6 @@
         document.getElementById('cotNotas').value = cfg.notas || '';
         document.getElementById('cotCondiciones').value = cfg.condiciones || '';
 
-        // Manejar Logo en la cotización
         const logoImg = document.getElementById('cotLogoImg');
         if (cfg.logo) {
             logoImg.src = cfg.logo;
@@ -722,7 +750,6 @@
             logoImg.style.display = 'none';
         }
 
-        // Llenar inputs de config
         document.getElementById('cfgEmpresa').value = cfg.empresa || '';
         document.getElementById('cfgRfc').value = cfg.rfc || '';
         document.getElementById('cfgDireccion').value = cfg.direccion || '';
@@ -794,7 +821,7 @@
             document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
             alert('✅ Cotización guardada en Supabase y descargada en PDF.');
             cargarHistoricoCotizaciones();
-            calcularSiguienteFolio(); // Actualizar siguiente folio automático
+            calcularSiguienteFolio();
         });
     }
 
@@ -862,10 +889,6 @@
         }
     }
 
-
-    // =========================================
-    // 4. GESTIÓN DE MARCAS (SUPABASE)
-    // =========================================
     async function renderMarcas() {
         const tbody = document.getElementById('tablaMarcas');
         if (!tbody) return;
@@ -911,10 +934,121 @@
         });
     }
 
+    async function renderUsuarios() {
+        const tbody = document.getElementById('tablaUsuarios');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Cargando usuarios...</td></tr>';
 
-    // =========================================
-    // 5. SOLICITUDES (SUPABASE)
-    // =========================================
+        const maestro = esUsuarioMaestro();
+        const btnNuevo = document.getElementById('btnNuevoUsuario');
+        const thAcciones = document.getElementById('thAccionesUser');
+        const infoMaster = document.getElementById('infoMasterLabel');
+
+        if (maestro) {
+            if (btnNuevo) btnNuevo.style.display = 'block';
+            if (thAcciones) thAcciones.style.display = 'table-cell';
+            if (infoMaster) infoMaster.innerText = '(Usuario Maestro: Control total habilitado)';
+        } else {
+            if (btnNuevo) btnNuevo.style.display = 'none';
+            if (thAcciones) thAcciones.style.display = 'none';
+            if (infoMaster) infoMaster.innerText = '(Modo Consulta: Solo lectura para administradores secundarios)';
+        }
+
+        const { data, error } = await window.supabaseClient
+            .from('usuarios_admin')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar usuarios</td></tr>';
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hay usuarios registrados.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(u => {
+            let accionesTd = '';
+            if (maestro) {
+                accionesTd = `
+                    <td>
+                        <button class="btn-action btn-edit" onclick="editarUsuario('${u.id}', '${u.email}', '${u.nombre || ''}', '${u.password}')">Editar</button>
+                        <button class="btn-action btn-delete" onclick="eliminarUsuario('${u.id}')">Eliminar</button>
+                    </td>
+                `;
+            }
+            return `
+                <tr>
+                    <td><strong>${u.nombre || 'N/A'}</strong> ${u.email === 'gilberto@protec.ink' ? '<span style="color:var(--accent); font-size:0.75rem;">(Maestro)</span>' : ''}</td>
+                    <td>${u.email}</td>
+                    <td>${u.created_at ? new Date(u.created_at).toLocaleDateString('es-MX') : 'N/A'}</td>
+                    ${accionesTd}
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function editarUsuario(id, email, nombre, password) {
+        if (!esUsuarioMaestro()) {
+            alert('❌ Solo el usuario maestro puede editar administradores.');
+            return;
+        }
+        document.getElementById('userId').value = id;
+        document.getElementById('userEmail').value = email;
+        document.getElementById('userNombre').value = nombre;
+        document.getElementById('userPassword').value = password;
+        document.getElementById('titleUserModal').innerText = 'Editar Usuario';
+        openModal('modalUsuario');
+    }
+
+    async function guardarUsuarioAdmin(e) {
+        e.preventDefault();
+        if (!esUsuarioMaestro()) {
+            alert('❌ Acción no permitida. Solo el usuario maestro puede agregar/modificar usuarios.');
+            return;
+        }
+
+        const id = document.getElementById('userId').value;
+        const email = document.getElementById('userEmail').value.trim();
+        const nombre = document.getElementById('userNombre').value.trim();
+        const password = document.getElementById('userPassword').value.trim();
+
+        const payload = { email, nombre, password };
+
+        let error;
+        if (id) {
+            const res = await window.supabaseClient.from('usuarios_admin').update(payload).eq('id', id);
+            error = res.error;
+        } else {
+            const res = await window.supabaseClient.from('usuarios_admin').insert([payload]);
+            error = res.error;
+        }
+
+        if (error) {
+            alert('❌ Error al guardar usuario: ' + error.message);
+        } else {
+            alert('✅ Usuario guardado correctamente.');
+            closeModal('modalUsuario');
+            renderUsuarios();
+            document.getElementById('formUsuario').reset();
+            document.getElementById('userId').value = '';
+        }
+    }
+
+    async function eliminarUsuario(id) {
+        if (!esUsuarioMaestro()) {
+            alert('❌ Solo el usuario maestro puede eliminar administradores.');
+            return;
+        }
+        if (confirm('¿Estás seguro de eliminar este usuario administrador?')) {
+            const { error } = await window.supabaseClient.from('usuarios_admin').delete().eq('id', id);
+            if (!error) renderUsuarios();
+            else alert('❌ Error al eliminar: ' + error.message);
+        }
+    }
+
     async function renderSolicitudes(filtro = 'todos') {
         const tbody = document.getElementById('tablaSolicitudes');
         if (!tbody) return;
@@ -984,10 +1118,6 @@
         }
     };
 
-
-    // =========================================
-    // 6. PRODUCTOS Y KITS (SUPABASE)
-    // =========================================
     async function renderProductos() {
         const tbody = document.getElementById('tablaProductos');
         if(!tbody) return;
@@ -1104,10 +1234,6 @@
         document.getElementById('countKits').innerText = data ? data.length : 0;
     }
 
-
-    // =========================================
-    // 7. PLANES (SUPABASE)
-    // =========================================
     async function renderPlanes(servicio) {
         const container = document.getElementById(`plans-${servicio}-container`);
         if (!container) return;
@@ -1194,10 +1320,6 @@
         else renderPlanes(servicio);
     };
 
-
-    // =========================================
-    // 8. GALERÍA / PORTAFOLIO (SUPABASE)
-    // =========================================
     async function renderGaleriaSupabase(servicio) {
         const container = document.getElementById(`galeria-${servicio}-container`) || document.getElementById(`portafolio-${servicio}-container`);
         if (!container) return;
@@ -1239,10 +1361,6 @@
         }
     };
 
-
-    // =========================================
-    // 9. CONTENIDO GLOBAL (SUPABASE)
-    // =========================================
     window.cargarContenido = async function(servicio) {
         const inputTitulo = document.getElementById(`${servicio}-title`);
         const inputDesc = document.getElementById(`${servicio}-desc`);
@@ -1298,10 +1416,6 @@
         }
     };
 
-
-    // =========================================
-    // 10. UTILIDADES DE MODALES Y IMÁGENES
-    // =========================================
     function openModal(id) {
         document.getElementById(id).style.display = 'flex';
         if (id === 'modalProducto' || id === 'modalKit') renderMarcas();
@@ -1341,16 +1455,11 @@
         }
     }
 
-
-    // =========================================
-    // 11. INICIALIZACIÓN (DOMContentLoaded)
-    // =========================================
     document.addEventListener('DOMContentLoaded', () => {
         renderProductos(); 
         renderKits(); 
         showService('cctv', 'planes');
 
-        // --- FORMULARIO DE MARCAS ---
         const formMarca = document.getElementById('formMarca');
         if(formMarca) {
             formMarca.addEventListener('submit', async (e) => {
@@ -1366,7 +1475,6 @@
             });
         }
 
-        // --- FORMULARIO DE PRODUCTO (SUPABASE) ---
         document.getElementById('formProducto')?.addEventListener('submit', async e => {
             e.preventDefault();
             
@@ -1401,7 +1509,6 @@
             }
         });
 
-        // --- FORMULARIO DE KIT (SUPABASE) ---
         document.getElementById('formKit')?.addEventListener('submit', async e => {
             e.preventDefault();
             
@@ -1423,7 +1530,6 @@
             }
         });
 
-        // --- FORMULARIO DE GALERÍA (SUPABASE) ---
         document.getElementById('formGaleria')?.addEventListener('submit', async e => {
             e.preventDefault();
             const servicio = document.getElementById('galeriaServicio').value;
@@ -1446,7 +1552,6 @@
             }
         });
 
-        // --- CHECKBOX DE OFERTA ---
         document.getElementById('prodEnOferta')?.addEventListener('change', function() { 
             document.getElementById('groupPrecioOferta').style.display = this.checked ? 'block' : 'none'; 
         });
