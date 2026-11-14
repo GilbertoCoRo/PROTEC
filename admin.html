@@ -2,117 +2,28 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>PROTEC - Panel de Administración</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .admin-layout { display: flex; min-height: 100vh; }
-        .sidebar {
-            width: 280px; background: var(--bg-deep); border-right: 1px solid var(--border);
-            padding: 1.5rem; position: fixed; height: 100vh; overflow-y: auto; z-index: 100;
-        }
-        .sidebar a, .menu-item, .submenu-item {
-            display: block; padding: 0.8rem 1rem; color: var(--text-muted); 
-            text-decoration: none; margin-bottom: 0.2rem; border-radius: var(--radius); 
-            transition: 0.2s; cursor: pointer;
-        }
-        .sidebar a:hover, .menu-item:hover, .submenu-item:hover, .menu-item.active, .submenu-item.active {
-            background: var(--bg-hover); color: var(--accent);
-        }
-        .menu-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); padding: 1rem 1rem 0.5rem; font-weight: 600; letter-spacing: 1px; }
-        .submenu { display: none; padding-left: 1rem; border-left: 2px solid var(--border); margin-left: 1rem; margin-bottom: 0.5rem; }
-        .submenu.open { display: block; }
-        .main-content { flex: 1; margin-left: 280px; padding: 2rem; }
-        .admin-section { display: none; animation: fadeIn 0.3s ease; }
-        .admin-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .service-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
-        .tab-btn { padding: 0.6rem 1.2rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-weight: 500; border-radius: 6px; }
-        .tab-btn.active { background: var(--bg-card); color: var(--accent); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .plan-edit-card { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 1rem; }
-        .admin-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: var(--radius); overflow: hidden; margin-top: 1rem; }
-        .admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
-        .admin-table th { background: var(--bg-hover); color: var(--accent); font-size: 0.85rem; text-transform: uppercase; }
-        .btn-action { padding: 0.4rem 0.8rem; border-radius: 4px; border: none; cursor: pointer; font-size: 0.8rem; margin-right: 5px; }
-        .btn-edit { background: var(--accent); color: var(--bg-dark); }
-        .btn-delete { background: #ff5a5a; color: white; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--bg-card); padding: 2rem; border-radius: var(--radius); width: 90%; max-width: 600px; position: relative; border: 1px solid var(--accent); max-height: 90vh; overflow-y: auto; }
-        .close-modal { position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; color: var(--text-muted); }
-        .image-preview { width: 100%; max-height: 150px; object-fit: contain; margin: 10px 0; background: #000; border-radius: 4px; display: none; }
-    </style>
 
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- html2pdf.js SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script>
-      const SUPABASE_URL = 'https://jqehwpfgrzbgixyscvcy.supabase.co';
-      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZWh3cGZncnpiZ2l4eXNjdmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzQ2MzYsImV4cCI6MjA5MzU1MDYzNn0.u_ar9zJobhU8XSaghoLjo5x1PG6ms0rH70ldae1Xkx4';
-      window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    </script>
+    <script src="config.js"></script>
+    <script src="brand.js" defer></script>
 </head>
 <body>
 
     <div class="admin-layout">
+        <input type="checkbox" id="navToggle" class="nav-toggle-input">
+        <label for="navToggle" class="nav-fab" aria-label="Menú"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg></label>
+        <label for="navToggle" class="nav-backdrop"></label>
         <!-- BARRA LATERAL -->
-        <nav class="sidebar">
-            <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent); margin-bottom: 2rem; text-align:center;">PROTEC ADMIN</div>
-            
-            <a href="#" class="active" onclick="showGlobal('dashboard')">📊 Dashboard</a>
-            <a href="#" onclick="showGlobal('productos')">📷 Cámaras y Equipos</a>
-            <a href="#" onclick="showGlobal('kits')">📦 Kits de Instalación</a>
-            <a href="#" onclick="showGlobal('solicitudes')">📨 Solicitudes</a>
-            <a href="#" onclick="showGlobal('marcas')">🏷️ Gestión de Marcas</a>
-            <a href="#" onclick="showGlobal('usuarios')">👥 Gestión de Usuarios</a>
-            
-            <div class="menu-title" style="margin-top: 1.5rem;">📄 Cotizaciones</div>
-            <a href="#" onclick="showGlobal('cotizador')">📝 Generador / Historial</a>
-
-            <div class="menu-title" style="margin-top: 1.5rem;">🗂️ Gestión por Servicio</div>
-            
-            <div class="menu-item" onclick="toggleSubmenu('cctv-menu')">📷 CCTV</div>
-            <div id="cctv-menu" class="submenu">
-                <div class="submenu-item" onclick="showService('cctv', 'planes')">💰 Planes</div>
-                <div class="submenu-item" onclick="showService('cctv', 'galeria')">🖼️ Galería</div>
-                <div class="submenu-item" onclick="showService('cctv', 'contenido')">📄 Contenido</div>
-            </div>
-
-            <div class="menu-item" onclick="toggleSubmenu('pos-menu')">💳 POS</div>
-            <div id="pos-menu" class="submenu">
-                <div class="submenu-item" onclick="showService('pos', 'planes')">💰 Planes</div>
-                <div class="submenu-item" onclick="showService('pos', 'galeria')">🖼️ Galería</div>
-                <div class="submenu-item" onclick="showService('pos', 'contenido')">📄 Contenido</div>
-            </div>
-
-            <div class="menu-item" onclick="toggleSubmenu('web-menu')">🌐 Web</div>
-            <div id="web-menu" class="submenu">
-                <div class="submenu-item" onclick="showService('web', 'planes')">💰 Planes</div>
-                <div class="submenu-item" onclick="showService('web', 'portafolio')">🖼️ Portafolio</div>
-                <div class="submenu-item" onclick="showService('web', 'contenido')">📄 Contenido</div>
-            </div>
-
-            <div class="menu-item" onclick="toggleSubmenu('mant-menu')">🔧 Mantenimiento</div>
-            <div id="mant-menu" class="submenu">
-                <div class="submenu-item" onclick="showService('mant', 'planes')">💰 Planes</div>
-                <div class="submenu-item" onclick="showService('mant', 'galeria')">🖼️ Galería</div>
-                <div class="submenu-item" onclick="showService('mant', 'contenido')">📄 Contenido</div>
-            </div>
-
-            <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-                <a href="index.html" style="color: var(--text-primary);">🌐 Ver Sitio Web</a>
-            </div>
-            <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-                <a href="#" onclick="cerrarSesion()" style="color: #ff5a5a; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;">
-                    🚪 Cerrar Sesión
-                </a>
-            </div>
-        </nav>
+        <nav class="sidebar"><div class="brand"><span class="brand-mark" data-brand-mark><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span><span class="brand-name" data-brand-name>PROTEC</span><small>ADMIN</small></div><a href="#" class="active" onclick="showGlobal('dashboard')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 20V10M12 20V4M6 20v-6"/></svg><span class="lbl">Dashboard</span></a><a href="#" onclick="showGlobal('productos')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="lbl">Cámaras y Equipos</span></a><a href="#" onclick="showGlobal('kits')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span class="lbl">Kits de Instalación</span></a><a href="#" onclick="showGlobal('solicitudes')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 6 10-6"/></svg><span class="lbl">Solicitudes</span></a><a href="#" onclick="showGlobal('marcas')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><path d="M7 7h.01"/></svg><span class="lbl">Gestión de Marcas</span></a><a href="#" onclick="showGlobal('usuarios')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span class="lbl">Gestión de Usuarios</span></a><div class="menu-title"><span class="t">Cotizaciones</span></div><a href="#" onclick="showGlobal('cotizador')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span class="lbl">Generador / Historial</span></a><div class="menu-title"><span class="t">Gestión por servicio</span></div><div class="menu-item" onclick="toggleSubmenu('cctv-menu')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="lbl">CCTV</span></div><div id="cctv-menu" class="submenu"><div class="submenu-item" onclick="showService('cctv', 'planes')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="lbl">Planes</span></div><div class="submenu-item" onclick="showService('cctv', 'galeria')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span class="lbl">Galería</span></div><div class="submenu-item" onclick="showService('cctv', 'contenido')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg><span class="lbl">Contenido</span></div></div><div class="menu-item" onclick="toggleSubmenu('pos-menu')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span class="lbl">POS</span></div><div id="pos-menu" class="submenu"><div class="submenu-item" onclick="showService('pos', 'planes')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="lbl">Planes</span></div><div class="submenu-item" onclick="showService('pos', 'galeria')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span class="lbl">Galería</span></div><div class="submenu-item" onclick="showService('pos', 'contenido')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg><span class="lbl">Contenido</span></div></div><div class="menu-item" onclick="toggleSubmenu('web-menu')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg><span class="lbl">Web</span></div><div id="web-menu" class="submenu"><div class="submenu-item" onclick="showService('web', 'planes')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="lbl">Planes</span></div><div class="submenu-item" onclick="showService('web', 'portafolio')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span class="lbl">Portafolio</span></div><div class="submenu-item" onclick="showService('web', 'contenido')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg><span class="lbl">Contenido</span></div></div><div class="menu-item" onclick="toggleSubmenu('mant-menu')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg><span class="lbl">Mantenimiento</span></div><div id="mant-menu" class="submenu"><div class="submenu-item" onclick="showService('mant', 'planes')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="lbl">Planes</span></div><div class="submenu-item" onclick="showService('mant', 'galeria')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span class="lbl">Galería</span></div><div class="submenu-item" onclick="showService('mant', 'contenido')"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg><span class="lbl">Contenido</span></div></div><div class="foot"><a href="index.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg><span class="lbl">Ver sitio web</span></a><a href="#" class="out" onclick="cerrarSesion()"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span class="lbl">Cerrar sesión</span></a></div></nav>
 
         <!-- CONTENIDO PRINCIPAL -->
-        <main class="main-content">
+        <main class="main-content"><header class="topbar"><div class="brand"><span class="brand-mark" data-brand-mark><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span><span class="brand-name" data-brand-name>PROTEC</span></div><div class="who"><span id="topUser"></span><span class="role" id="topRole"></span></div></header>
             <div id="global-dashboard" class="admin-section active">
                 <h2>Resumen del Sistema</h2>
                 <div class="grid-3">
@@ -125,18 +36,18 @@
             <!-- SECCIÓN: COTIZADOR & HISTÓRICO -->
             <div id="global-cotizador" class="admin-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
-                    <h2>📄 Generador de Cotizaciones</h2>
+                    <h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg> Generador de Cotizaciones</h2>
                     <div class="service-tabs" style="margin-bottom:0;">
-                        <button class="tab-btn active" onclick="switchCotizadorTab('crear', this)">📝 Nueva Cotización</button>
-                        <button class="tab-btn" onclick="switchCotizadorTab('historico', this)">📂 Histórico</button>
-                        <button class="tab-btn" onclick="switchCotizadorTab('config', this)">⚙️ Datos de Empresa</button>
+                        <button class="tab-btn active" onclick="switchCotizadorTab('crear', this)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Nueva Cotización</button>
+                        <button class="tab-btn" onclick="switchCotizadorTab('historico', this)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Histórico</button>
+                        <button class="tab-btn" onclick="switchCotizadorTab('config', this)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg> Datos de Empresa</button>
                     </div>
                 </div>
 
                 <div id="cotizador-crear" class="tab-content active">
                     <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom: 0.8rem;">
                         <button class="btn btn-primary" onclick="guardarYDescargarPDF()" style="background:#00a884; font-weight:bold;">
-                            📥 Guardar y Descargar PDF
+                            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Guardar y Descargar PDF
                         </button>
                     </div>
 
@@ -225,8 +136,8 @@
 
                 <div id="cotizador-historico" class="tab-content">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                        <h3>📂 Histórico de Cotizaciones Guardadas</h3>
-                        <button class="btn btn-primary" onclick="cargarHistoricoCotizaciones()">🔄 Actualizar Lista</button>
+                        <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Histórico de Cotizaciones Guardadas</h3>
+                        <button class="btn btn-primary" onclick="cargarHistoricoCotizaciones()"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg> Actualizar Lista</button>
                     </div>
                     <table class="admin-table">
                         <thead>
@@ -240,7 +151,7 @@
 
                 <div id="cotizador-config" class="tab-content">
                     <div class="card" style="max-width:700px; margin:0 auto;">
-                        <h3 class="accent" style="margin-bottom:1.5rem;">⚙️ Configuración de Datos del Emisor</h3>
+                        <h3 class="accent" style="margin-bottom:1.5rem;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg> Configuración de Datos del Emisor</h3>
                         <form id="formConfigCotizador" onsubmit="guardarConfigEmpresaSupabase(event)">
                             <div class="form-group"><label>Nombre Comercial</label><input type="text" id="cfgEmpresa" class="form-control" value="PROTEC" required></div>
                             <div class="form-group">
@@ -256,7 +167,7 @@
                             <div class="form-group"><label>Teléfono</label><input type="text" id="cfgTelefono" class="form-control" value="7717485070"></div>
                             <div class="form-group"><label>Notas Predeterminadas</label><textarea id="cfgNotas" class="form-control" rows="3">Garantía: 60 días únicamente en equipos e insumos nuevos suministrados en esta cotización contra defectos de fabricación.</textarea></div>
                             <div class="form-group"><label>Condiciones Predeterminadas</label><textarea id="cfgCondiciones" class="form-control" rows="4">Alcance del trabajo: Incluye perforación, fijación y peinado de cableado por muro, resguardo de conexiones en cajas estancas IP65.</textarea></div>
-                            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">💾 Guardar en Supabase</button>
+                            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Guardar en Supabase</button>
                         </form>
                     </div>
                 </div>
@@ -288,7 +199,7 @@
 
             <!-- SOLICITUDES -->
             <div id="global-solicitudes" class="admin-section">
-                <h2>📨 Solicitudes Recibidas</h2>
+                <h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 6 10-6"/></svg> Solicitudes Recibidas</h2>
                 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <button class="filter-btn active" onclick="filtrarSolicitudes('todos', this)">Todos</button>
                     <button class="filter-btn" onclick="filtrarSolicitudes('CCTV', this)">CCTV</button>
@@ -323,7 +234,7 @@
             <div id="global-usuarios" class="admin-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                     <div>
-                        <h2>👥 Gestión de Usuarios Administradores</h2>
+                        <h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg> Gestión de Usuarios Administradores</h2>
                         <p id="infoMasterLabel" style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">(Usuario Maestro: Control total de altas y bajas)</p>
                     </div>
                     <button id="btnNuevoUsuario" class="btn btn-primary" onclick="openModal('modalUsuario')" style="display:none;">+ Nuevo Usuario</button>
@@ -345,7 +256,7 @@
 
             <!-- CCTV -->
             <div id="service-cctv" class="admin-section">
-                <h2>📷 Gestión CCTV</h2>
+                <h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Gestión CCTV</h2>
                 <div class="service-tabs">
                     <button class="tab-btn active" onclick="switchTab('cctv', 'planes', this)">Planes</button>
                     <button class="tab-btn" onclick="switchTab('cctv', 'galeria', this)">Galería</button>
@@ -364,7 +275,7 @@
 
             <!-- POS -->
             <div id="service-pos" class="admin-section">
-                <h2>💳 Gestión POS</h2>
+                <h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg> Gestión POS</h2>
                 <div class="service-tabs">
                     <button class="tab-btn active" onclick="switchTab('pos', 'planes', this)">Planes</button>
                     <button class="tab-btn" onclick="switchTab('pos', 'galeria', this)">Galería</button>
@@ -386,7 +297,7 @@
 
             <!-- WEB -->
             <div id="service-web" class="admin-section">
-                <h2>🌐 Gestión Web</h2>
+                <h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg> Gestión Web</h2>
                 <div class="service-tabs">
                     <button class="tab-btn active" onclick="switchTab('web', 'planes', this)">Planes</button>
                     <button class="tab-btn" onclick="switchTab('web', 'portafolio', this)">Portafolio</button>
@@ -408,7 +319,7 @@
 
             <!-- MANTENIMIENTO -->
             <div id="service-mant" class="admin-section">
-                <h2>🔧 Gestión Mantenimiento</h2>
+                <h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg> Gestión Mantenimiento</h2>
                 <div class="service-tabs">
                     <button class="tab-btn active" onclick="switchTab('mant', 'planes', this)">Planes</button>
                     <button class="tab-btn" onclick="switchTab('mant', 'galeria', this)">Galería</button>
@@ -499,31 +410,66 @@
                     <label>Contraseña</label>
                     <input type="text" id="userPassword" class="form-control" required placeholder="Contraseña de acceso">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">💾 Guardar Usuario</button>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Guardar Usuario</button>
             </form>
         </div>
     </div>
 
 <script>
-    function verificarSesion() {
-        const auth = localStorage.getItem('protec_auth');
-        if (auth !== 'true') {
-            window.location.replace('login.html');
-        }
+    const PROTEC_SESSION_KEY = 'protec_session', PROTEC_IDLE_MS = 30 * 60 * 1000;
+
+    function protecEsc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function protecArg(v) { return protecEsc(JSON.stringify(String(v == null ? '' : v))); }
+
+    function protecLeerSesion() {
+        try {
+            const s = JSON.parse(localStorage.getItem(PROTEC_SESSION_KEY) || 'null');
+            const t = Date.now();
+            if (!s || s.v !== 1 || typeof s.email !== 'string' || !/^[^@\s<>"'`;]{1,64}@[^@\s<>"'`;]{3,190}$/.test(s.email)) return null;
+            if (!(s.exp > t) || !(t - s.last < PROTEC_IDLE_MS)) return null;
+            return s;
+        } catch (e) { return null; }
     }
 
     function cerrarSesion() {
-        localStorage.removeItem('protec_auth');
-        localStorage.removeItem('protec_user');
-        window.location.href = 'login.html';
+        try {
+            localStorage.removeItem(PROTEC_SESSION_KEY);
+            localStorage.removeItem('protec_auth');
+            localStorage.removeItem('protec_user');
+        } catch (e) {}
+        window.location.replace('login.html');
+    }
+
+    function verificarSesion() {
+        if (!protecLeerSesion()) cerrarSesion();
     }
 
     verificarSesion();
 
     function esUsuarioMaestro() {
-        const userEmail = localStorage.getItem('protec_user');
-        return userEmail === 'gilberto@protec.ink';
+        const s = protecLeerSesion();
+        return !!s && s.email === 'gilberto@protec.ink';
     }
+
+    (function protecVigilarSesion() {
+        let ultimo = 0;
+        ['click', 'keydown', 'touchstart'].forEach(function (ev) {
+            document.addEventListener(ev, function () {
+                const t = Date.now();
+                if (t - ultimo < 30000) return;
+                ultimo = t;
+                const s = protecLeerSesion();
+                if (s) { s.last = t; try { localStorage.setItem(PROTEC_SESSION_KEY, JSON.stringify(s)); } catch (e) {} }
+            }, { passive: true });
+        });
+        setInterval(verificarSesion, 30000);
+        window.addEventListener('storage', function (e) { if (e.key === PROTEC_SESSION_KEY && !e.newValue) window.location.replace('login.html'); });
+        const s = protecLeerSesion();
+        if (s && window.supabaseClient) {
+            window.supabaseClient.from('usuarios_admin').select('id').eq('email', s.email).maybeSingle()
+                .then(function (r) { if (!r.error && !r.data) cerrarSesion(); });
+        }
+    })();
 
     function toggleSubmenu(id) {
         document.querySelectorAll('.submenu').forEach(s => {
@@ -714,9 +660,9 @@
             .from('configuracion_empresa')
             .upsert({ clave: 'datos_empresa', valor: config }, { onConflict: 'clave' });
 
-        if (error) alert('❌ Error al guardar config: ' + error.message);
+        if (error) alert('Error al guardar config: ' + error.message);
         else {
-            alert('✅ Configuración y logotipo guardados en Supabase.');
+            alert('Configuración y logotipo guardados en Supabase.');
             cargarConfigEmpresaSupabase();
             switchCotizadorTab('crear');
         }
@@ -819,7 +765,7 @@
 
         html2pdf().set(opt).from(elemento).save().then(() => {
             document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
-            alert('✅ Cotización guardada en Supabase y descargada en PDF.');
+            alert('Cotización guardada en Supabase y descargada en PDF.');
             cargarHistoricoCotizaciones();
             calcularSiguienteFolio();
         });
@@ -974,15 +920,15 @@
             if (maestro) {
                 accionesTd = `
                     <td>
-                        <button class="btn-action btn-edit" onclick="editarUsuario('${u.id}', '${u.email}', '${u.nombre || ''}', '${u.password}')">Editar</button>
-                        <button class="btn-action btn-delete" onclick="eliminarUsuario('${u.id}')">Eliminar</button>
+                        <button class="btn-action btn-edit" onclick="editarUsuario(${protecArg(u.id)}, ${protecArg(u.email)}, ${protecArg(u.nombre || '')}, ${protecArg(u.password)})">Editar</button>
+                        <button class="btn-action btn-delete" onclick="eliminarUsuario(${protecArg(u.id)})">Eliminar</button>
                     </td>
                 `;
             }
             return `
                 <tr>
-                    <td><strong>${u.nombre || 'N/A'}</strong> ${u.email === 'gilberto@protec.ink' ? '<span style="color:var(--accent); font-size:0.75rem;">(Maestro)</span>' : ''}</td>
-                    <td>${u.email}</td>
+                    <td><strong>${protecEsc(u.nombre || 'N/A')}</strong> ${u.email === 'gilberto@protec.ink' ? '<span style="color:var(--accent); font-size:0.75rem;">(Maestro)</span>' : ''}</td>
+                    <td>${protecEsc(u.email)}</td>
                     <td>${u.created_at ? new Date(u.created_at).toLocaleDateString('es-MX') : 'N/A'}</td>
                     ${accionesTd}
                 </tr>
@@ -992,7 +938,7 @@
 
     function editarUsuario(id, email, nombre, password) {
         if (!esUsuarioMaestro()) {
-            alert('❌ Solo el usuario maestro puede editar administradores.');
+            alert('Solo el usuario maestro puede editar administradores.');
             return;
         }
         document.getElementById('userId').value = id;
@@ -1006,7 +952,7 @@
     async function guardarUsuarioAdmin(e) {
         e.preventDefault();
         if (!esUsuarioMaestro()) {
-            alert('❌ Acción no permitida. Solo el usuario maestro puede agregar/modificar usuarios.');
+            alert('Acción no permitida. Solo el usuario maestro puede agregar/modificar usuarios.');
             return;
         }
 
@@ -1027,9 +973,9 @@
         }
 
         if (error) {
-            alert('❌ Error al guardar usuario: ' + error.message);
+            alert('Error al guardar usuario: ' + error.message);
         } else {
-            alert('✅ Usuario guardado correctamente.');
+            alert('Usuario guardado correctamente.');
             closeModal('modalUsuario');
             renderUsuarios();
             document.getElementById('formUsuario').reset();
@@ -1039,13 +985,13 @@
 
     async function eliminarUsuario(id) {
         if (!esUsuarioMaestro()) {
-            alert('❌ Solo el usuario maestro puede eliminar administradores.');
+            alert('Solo el usuario maestro puede eliminar administradores.');
             return;
         }
         if (confirm('¿Estás seguro de eliminar este usuario administrador?')) {
             const { error } = await window.supabaseClient.from('usuarios_admin').delete().eq('id', id);
             if (!error) renderUsuarios();
-            else alert('❌ Error al eliminar: ' + error.message);
+            else alert('Error al eliminar: ' + error.message);
         }
     }
 
@@ -1141,7 +1087,7 @@
             data.forEach(p => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${p.imagen_url ? `<img src="${p.imagen_url}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">` : '📷'}</td>
+                        <td>${p.imagen_url ? `<img src="${p.imagen_url}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">` : '—'}</td>
                         <td>${p.nombre}</td>
                         <td>${p.marca || '-'}</td>
                         <td>${p.modelo || '-'}</td>
@@ -1390,9 +1336,9 @@
         const res = await window.guardarOActualizarClave(servicio, 'descripcion', descripcion);
 
         if (res && res.error) {
-            alert('❌ Error al guardar contenido: ' + res.error.message);
+            alert('Error al guardar contenido: ' + res.error.message);
         } else {
-            alert('✅ Contenido guardado correctamente en el servidor.');
+            alert('Contenido guardado correctamente en el servidor.');
         }
     };
 
@@ -1557,5 +1503,6 @@
         });
     });
 </script>
+<script>(function(){document.querySelectorAll('.sidebar a, .sidebar .submenu-item').forEach(function(e){e.addEventListener('click',function(){var t=document.getElementById('navToggle');if(t)t.checked=false;});});try{var s=JSON.parse(localStorage.getItem('protec_session')||'null');var u=document.getElementById('topUser'),r=document.getElementById('topRole');if(s&&u)u.textContent=s.email;if(r)r.textContent=(typeof esUsuarioMaestro==='function'&&esUsuarioMaestro())?'Maestro':'Consulta';}catch(e){}})();</script>
 </body>
 </html>
